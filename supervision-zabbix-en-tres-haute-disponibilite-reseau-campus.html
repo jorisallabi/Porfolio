@@ -1,6 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Supervision Zabbix en très haute disponibilité : réseau campus redondant (HSRP, OSPF, LACP), SD-WAN double ISP et cluster Hyper-V sur stockage iSCSI — Joris Allabi</title><meta name="description" content="Infrastructure montée (déclaré le 28/10/2026) : campus HSRP/OSPF/LACP, SD-WAN double ISP, cluster Hyper-V 2 nœuds, iSCSI, Zabbix. Aucun test de panne n&#x27;est">
+<title>Supervision Zabbix en très haute disponibilité : réseau campus redondant (HSRP, OSPF, LACP), SD-WAN double ISP et cluster Hyper-V sur stockage iSCSI — Joris Allabi</title><meta name="description" content="Laboratoire livré : campus 3 tiers redondant (HSRP, OSPF, LACP), SD-WAN FortiGate double ISP, cluster Hyper-V 2 nœuds sur iSCSI avec témoin de quorum, supervision SNMP Zabbix. Conception justifiée, configurations, cas d'usage et tests de panne.">
 <style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
 @media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
@@ -25,171 +25,560 @@ h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;
 .chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
 .chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
 .btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
-.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}.article h3{font-size:18px;margin:1.6em 0 .4em}
 .lead{font-size:18px;color:var(--mut)}
 pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
 table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
 aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
 blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
-ul{padding-left:1.3em}li{margin:.2em 0}
+ul,ol{padding-left:1.3em}li{margin:.2em 0}
 .embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+.slot{border:2px dashed var(--line);border-radius:10px;padding:14px 16px;margin:1.1em 0;background:var(--card)}
+.slot b{color:var(--acc)}.slot span{display:block;color:var(--mut);font-size:14px;margin-top:4px}
+.toc{columns:2;column-gap:28px;font-size:15px}.toc li{break-inside:avoid}
+@media(max-width:640px){.toc{columns:1}}
 footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
 </style></head><body>
 <header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
 <nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
 <main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
 <h1>Supervision Zabbix en très haute disponibilité : réseau campus redondant (HSRP, OSPF, LACP), SD-WAN double ISP et cluster Hyper-V sur stockage iSCSI</h1>
-<div class="meta"><span class="badge wip">En cours</span><span class="chip">Avancement 50%</span><span class="chip">Laboratoire sur deux PC : campus GNS3 (IOSvL2, FortiGate SD-WAN, AD DS) et plateforme de supervision Zabbix hébergée sur un cluster Hyper-V 2019 avec stockage iSCSI partagé</span></div>
+<div class="meta"><span class="badge ok">Livré</span><span class="chip">Avancement 100%</span><span class="chip">Laboratoire sur deux PC : campus GNS3 (IOSvL2, FortiGate SD-WAN, AD DS) et plateforme de supervision Zabbix hébergée sur un cluster Hyper-V 2019 avec stockage iSCSI partagé</span></div>
 <aside>
-<p>🗓️</p>
-<p>Projet en planification : la documentation sera complétée au fil de la réalisation.</p>
+<p><b>Statut au 30/10/2026 : livré.</b> Les cadres en pointillés « Capture à insérer » et « Vidéo à insérer » marquent l'endroit où ajouter les preuves de test. Un test sans preuve jointe reste une déclaration, pas une démonstration.</p>
 </aside>
-<h2 id="problematique">Problématique</h2>
+
+<h2 id="sommaire">Sommaire</h2>
+<ol class="toc">
+<li><a href="#resume">Résumé exécutif</a></li>
+<li><a href="#cadrage">Cadrage et politique de sécurité</a></li>
+<li><a href="#conception">Conception et justification des choix</a></li>
+<li><a href="#cas-usage">Cas d'utilisation</a></li>
+<li><a href="#mise-en-oeuvre">Mise en œuvre : configuration actuelle</a></li>
+<li><a href="#tests">Tests et validation</a></li>
+<li><a href="#ecarts">Écarts relevés à la revue des configurations</a></li>
+<li><a href="#incidents">Incidents et retour d'expérience</a></li>
+<li><a href="#exploitation">Exploitation : commandes de contrôle</a></li>
+<li><a href="#limites">Limites et risques résiduels</a></li>
+<li><a href="#evolutions">Évolutions prévues</a></li>
+<li><a href="#cloture">Contrôle de clôture</a></li>
+</ol>
+
+<h2 id="resume">Résumé exécutif</h2>
 <table>
-<thead>
-<tr>
-<th>Contexte</th>
-<th>Problématique</th>
-<th>Objectif</th>
-</tr>
-</thead>
+<thead><tr><th>Contexte</th><th>Problématique</th><th>Objectif</th></tr></thead>
+<tbody><tr>
+<td>Un réseau d'entreprise de type campus (7 VLAN, services AD DS, DHCP, DNS, serveurs virtualisés) et sa plateforme de supervision doivent rester disponibles malgré la panne d'un équipement.</td>
+<td>Chaque couche a un point unique de défaillance si elle n'est pas dupliquée : passerelle des VLAN, accès Internet, hôte de virtualisation. Une supervision hébergée sur un seul hôte tombe avec lui.</td>
+<td>Dupliquer chaque couche (passerelle, WAN, hyperviseur), prouver chaque bascule par un test de panne, et superviser l'ensemble par SNMP avec Zabbix.</td>
+</tr></tbody></table>
+<h3>Chiffres vérifiables</h3>
+<ul>
+<li>7 switches en 3 tiers : 2 L3 de distribution (SW_DISTRI_1 et 2), 1 L3 de cœur (SW_EDGE), 4 switches d'accès (SW_ACC_SRV, SW_ACC_ETG_1, 2 et 3).</li>
+<li>7 VLAN (10 à 70), 7 groupes HSRP, une passerelle virtuelle en <code>.1</code> par VLAN.</li>
+<li>2 liens EtherChannel LACP de 2 × 1 Gb/s entre SW_EDGE et chaque switch de distribution.</li>
+<li>2 liens WAN en SD-WAN FortiGate ; seuils de qualité : latence 150 ms, gigue 50 ms, perte 2 %.</li>
+<li>Cluster Hyper-V de 2 nœuds, 3 réseaux dédiés (serveurs, iSCSI, heartbeat), 1 témoin de quorum (3 votes, majorité à 2).</li>
+<li>Interruption mesurée : migration à chaud manuelle de la VM de test inférieure à 15 s ; reprise automatique après extinction d'un hôte d'environ 5 min en virtualisation imbriquée.</li>
+</ul>
+<p>Périmètre exclu : GLPI et la génération automatique de tickets sont reportés (voir <a href="#evolutions">Évolutions</a>).</p>
+<div class="slot"><b>📸 Capture à insérer — topologie GNS3 complète</b><span>Légende suggérée : « Topologie du laboratoire : FortiGate, SW_EDGE, SW_DISTRI_1 et 2, switches d'accès, serveurs, hôtes du cluster. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — schéma logique du cluster</b><span>Légende suggérée : « Cluster Hyper-V : 2 nœuds, réseaux serveurs, iSCSI et heartbeat, NAS iSCSI, partage témoin. »</span></div>
+
+<h2 id="cadrage">1. Cadrage et politique de sécurité</h2>
+<h3>Besoin</h3>
+<p>Fournir à l'entreprise fictive du laboratoire un réseau où : tous les utilisateurs internes accèdent aux ressources internes (fichiers, impression, services futurs) ; les invités n'obtiennent que le DHCP et le DNS ; l'administration des équipements n'est possible que depuis le VLAN IT ; les serveurs ne sortent pas sur Internet, sauf le contrôleur de domaine qui assure la redirection DNS.</p>
+<h3>Politique de sécurité et état d'application</h3>
+<p>Colonne « État » : <i>Appliqué</i> signifie visible dans les configurations fournies ; <i>Non visible</i> signifie que la règle est posée par la politique mais que la ligne de configuration correspondante n'apparaît pas dans les fichiers de référence. Ces lignes restent des actions ouvertes, pas des réalisations.</p>
+<table>
+<thead><tr><th>Règle de la politique</th><th>Mécanisme prévu</th><th>État</th></tr></thead>
 <tbody>
-<tr>
-<td>Une infrastructure réseau et systèmes doit être surveillée en continu, et chaque incident doit être suivi jusqu'à sa résolution.</td>
-<td>✗ Les pannes sont découvertes trop tard, souvent par les utilisateurs</td>
-<td></td>
-</tr>
-<tr>
-<td>✗ Les incidents sont signalés et suivis à la main, sans traçabilité</td>
-<td>✅ Superviser activement les équipements et services avec Zabbix</td>
-<td></td>
-</tr>
-<tr>
-<td>✅ Créer automatiquement un ticket dans GLPI à chaque alerte</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>✅ Fermer le ticket quand le problème est résolu</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<h2 id="perimetre-prevu">Périmètre prévu</h2>
+<tr><td>Utilisateurs internes : accès à toutes les ressources internes</td><td>Routage inter-VLAN sur les L3 de distribution, sans ACL entre VLAN internes</td><td>Appliqué</td></tr>
+<tr><td>Invités : DHCP et DNS uniquement</td><td>ACL <code>RESTRICTION_INVITE</code> en entrée sur le SVI du VLAN 40, sur les deux L3</td><td>Appliqué (voir écart n° 5 : bloque aussi Internet)</td></tr>
+<tr><td>Accès distant aux équipements uniquement depuis le VLAN IT</td><td>Restriction des accès d'administration (VTY/SSH, ACL source VLAN 10)</td><td>Non visible : seule la console est configurée (<code>login local</code>)</td></tr>
+<tr><td>DHCP fourni uniquement par le contrôleur de domaine</td><td>Relais <code>ip helper-address 172.16.50.10</code> sur les SVI ; refus de tout autre serveur DHCP sur les ports (DHCP snooping)</td><td>Relais appliqué ; DHCP snooping non visible</td></tr>
+<tr><td>Ports d'accès : première adresse MAC apprise, 1 MAC max par port</td><td>Port-security sticky, maximum 1</td><td>Non visible</td></tr>
+<tr><td>Serveurs sans accès Internet, sauf le contrôleur de domaine</td><td>Politique de pare-feu par adresse source</td><td>Non appliqué : aucun filtre pour l'instant sur le FortiGate</td></tr>
+<tr><td>Pare-feu : navigation libre pour tous (état provisoire)</td><td>Politiques LAN vers WAN sans filtrage</td><td>Appliqué (filtrage prévu, voir évolutions)</td></tr>
+</tbody></table>
+<h3>Critères d'acceptation</h3>
 <ul>
-<li>Déploiement de Zabbix (serveur, agents, supervision SNMP des équipements réseau).</li>
-<li>Déploiement de GLPI (parc, tickets, catégories).</li>
-<li>Intégration Zabbix vers GLPI pour la création automatique des tickets.</li>
-<li>Scénarios de test : panne simulée, ticket créé, résolution, ticket clos.</li>
+<li>Toutes les interfaces SVI sont en état up et la configuration est complète (<code>show run</code>, <code>show ip interface brief</code>).</li>
+<li>Panne d'un L3 de distribution : le trafic vers l'extérieur reprend après une coupure brève, et le switch rétabli reprend son rôle actif.</li>
+<li>Panne d'un ISP : reprise quasi immédiate ; le lien préféré reprend la main à son retour.</li>
+<li>Migration à chaud d'une VM d'un hôte à l'autre sans changement de stockage.</li>
+<li>Extinction d'un hôte : la VM redémarre automatiquement sur l'autre hôte.</li>
+<li>Défaillances cumulées (un ISP et un switch) : les services restent joignables.</li>
 </ul>
-<h2 id="competences-visees">Compétences visées</h2>
+<h3>Registre des risques et points uniques de défaillance</h3>
+<table>
+<thead><tr><th>Élément</th><th>Redondé ?</th><th>Commentaire</th></tr></thead>
+<tbody>
+<tr><td>Passerelle des VLAN (distribution)</td><td>Oui</td><td>2 L3 en HSRP</td></tr>
+<tr><td>Liens WAN</td><td>Oui</td><td>2 ISP en SD-WAN</td></tr>
+<tr><td>Hyperviseurs</td><td>Oui</td><td>Cluster 2 nœuds avec témoin</td></tr>
+<tr><td>Liens SW_EDGE ↔ distribution</td><td>Oui</td><td>2 membres LACP par lien</td></tr>
+<tr><td>SW_EDGE</td><td>Non</td><td>Switch de cœur unique : sa panne coupe la sortie vers le FortiGate</td></tr>
+<tr><td>FortiGate</td><td>Non</td><td>Pare-feu unique (pas de cluster HA)</td></tr>
+<tr><td>Contrôleur de domaine (AD, DHCP, DNS)</td><td>Non</td><td>Instance unique en 172.16.50.10</td></tr>
+<tr><td>NAS iSCSI</td><td>Non</td><td>Stockage partagé unique : son arrêt coupe les VM du cluster</td></tr>
+<tr><td>Laboratoire sur 2 PC</td><td>Non</td><td>Virtualisation imbriquée : latence supplémentaire sur tous les tests</td></tr>
+</tbody></table>
+
+<h2 id="conception">2. Conception et justification des choix</h2>
+<h3>Architecture en trois tiers</h3>
+<p>La couche <b>accès</b> raccorde les postes et les serveurs, la couche <b>distribution</b> porte le routage inter-VLAN et la haute disponibilité des passerelles, la couche <b>cœur</b> (SW_EDGE) relie le campus au FortiGate. Chaque switch d'accès a deux liens montants, un vers chaque switch de distribution.</p>
+<h3>Plan de VLAN et d'adressage</h3>
+<table>
+<thead><tr><th>VLAN</th><th>Nom</th><th>Réseau</th><th>VIP HSRP</th><th>Actif (priorité 110)</th><th>Adressage des hôtes</th></tr></thead>
+<tbody>
+<tr><td>10</td><td>Service informatique</td><td>172.16.10.0/24</td><td>.1</td><td>SW_DISTRI_1</td><td>DHCP (relais)</td></tr>
+<tr><td>20</td><td>Comptabilité</td><td>172.16.20.0/24</td><td>.1</td><td>SW_DISTRI_2</td><td>DHCP (relais)</td></tr>
+<tr><td>30</td><td>RH</td><td>172.16.30.0/24</td><td>.1</td><td>SW_DISTRI_1</td><td>DHCP (relais)</td></tr>
+<tr><td>40</td><td>Invités</td><td>172.16.40.0/24</td><td>.1</td><td>SW_DISTRI_2</td><td>DHCP (relais), ACL restrictive</td></tr>
+<tr><td>50</td><td>Serveurs</td><td>172.16.50.0/24</td><td>.1</td><td>SW_DISTRI_1</td><td>Statique (DC .10, Zabbix .20, VM de test .60)</td></tr>
+<tr><td>60</td><td>Management des équipements</td><td>172.16.60.0/24</td><td>.1</td><td>SW_DISTRI_2</td><td>Statique</td></tr>
+<tr><td>70</td><td>Imprimantes</td><td>172.16.70.0/24</td><td>.1</td><td>SW_DISTRI_1</td><td>Statique (pas de relais DHCP)</td></tr>
+</tbody></table>
+<p>SW_DISTRI_1 prend l'adresse <code>.254</code> et SW_DISTRI_2 l'adresse <code>.253</code> dans chaque VLAN. Les priorités HSRP sont réparties en alternance (110 / 100) pour que chaque L3 soit actif sur une partie des VLAN et que la charge soit partagée.</p>
+<p>Adresses de management : SW_ACC_SRV <code>172.16.60.10</code>, SW_ACC_ETG_2 <code>.20</code>, SW_ACC_ETG_3 <code>.30</code>, SW_EDGE <code>.40</code>, SW_ACC_ETG_1 <code>.50</code>, passerelle <code>172.16.60.1</code>.</p>
+<h3>Liens routés et réseaux du cluster</h3>
+<table>
+<thead><tr><th>Lien</th><th>Réseau</th><th>Extrémités</th><th>Rôle</th></tr></thead>
+<tbody>
+<tr><td>FortiGate ↔ SW_EDGE</td><td>172.16.0.0/30</td><td>FortiGate .1 / SW_EDGE .2 (Gi0/0)</td><td>Sortie du campus, route par défaut</td></tr>
+<tr><td>SW_EDGE ↔ SW_DISTRI_1</td><td>172.16.1.0/30</td><td>.1 (Po1) / .2 (Po1)</td><td>Cœur ↔ distribution, 2 × 1 Gb/s</td></tr>
+<tr><td>SW_EDGE ↔ SW_DISTRI_2</td><td>172.16.1.4/30</td><td>.5 (Po2) / .6 (Po1)</td><td>Cœur ↔ distribution, 2 × 1 Gb/s</td></tr>
+<tr><td>SW_DISTRI_1 ↔ SW_DISTRI_2</td><td>Trunk (G2/3)</td><td>VLAN 10 à 70</td><td>Échange des messages HSRP</td></tr>
+<tr><td>Réseau serveurs (cluster)</td><td>172.16.50.0/24</td><td>Cartes des VM</td><td>Trafic des machines virtuelles</td></tr>
+<tr><td>Réseau iSCSI</td><td>192.168.60.0/24</td><td>Hôtes ↔ NAS</td><td>Accès au stockage partagé</td></tr>
+<tr><td>Réseau heartbeat</td><td>192.168.181.0/24</td><td>Hôte 1 ↔ hôte 2</td><td>Surveillance mutuelle et migrations</td></tr>
+</tbody></table>
+<h3>Registre des décisions</h3>
+<table>
+<thead><tr><th>Décision</th><th>Justification</th><th>Alternative écartée</th></tr></thead>
+<tbody>
+<tr><td>HSRP sur chaque VLAN avec <code>preempt</code></td><td>Une passerelle virtuelle unique <code>.1</code> reste stable pour les hôtes ; le switch rétabli reprend son rôle de master</td><td>Passerelle unique : point de défaillance</td></tr>
+<tr><td>Priorités alternées 110 / 100</td><td>Répartit les VLAN actifs sur les deux L3 ; une panne n'affecte que la moitié des VLAN en premier lieu</td><td>Un seul L3 actif partout : l'autre reste inutilisé</td></tr>
+<tr><td>OSPF zone unique</td><td>Évalue l'état des liens et choisit le meilleur coût ; toute évolution du réseau s'annonce sans retoucher des routes. Protocole ouvert, utilisable avec d'autres constructeurs</td><td>Routes statiques (modification à chaque évolution) ; EIGRP (propriétaire Cisco) ; RIP (ancien)</td></tr>
+<tr><td><code>passive-interface default</code> puis réactivation sur les seuls liens cœur ↔ distribution</td><td>Les réseaux des SVI sont annoncés sans émettre de HELLO vers la couche accès : bande passante économisée et pas de voisinage OSPF parasite</td><td>OSPF actif sur tous les SVI</td></tr>
+<tr><td>Priorité OSPF 200 sur les liens de SW_EDGE</td><td>SW_EDGE est désigné DR sur ses liens : le rôle de pivot est maîtrisé</td><td>Élection par défaut (identifiant de routeur)</td></tr>
+<tr><td>SW_EDGE annonce la route par défaut (<code>default-information originate</code>)</td><td>C'est lui qui touche le FortiGate ; les L3 de distribution héritent de la sortie Internet</td><td>Route par défaut configurée sur chaque switch</td></tr>
+<tr><td>Liens /30 entre cœur et distribution</td><td>Deux adresses utilisables seulement : pas de gaspillage d'adresses</td><td>/24 ou /29</td></tr>
+<tr><td>EtherChannel LACP (2 ports) sur chaque lien cœur ↔ distribution</td><td>Redondance du lien et bande passante agrégée de 2 Gb/s (1 Gb/s par port)</td><td>Lien unique</td></tr>
+<tr><td>Trunk entre les deux L3 de distribution</td><td>Les deux switches doivent se parler pour que HSRP fonctionne</td><td>—</td></tr>
+<tr><td>Un service par VM, DHCP et DNS sur une instance à part (contrôleur de domaine)</td><td>La panne d'un service ne paralyse pas le réseau</td><td>Tout sur une seule machine</td></tr>
+<tr><td>Cluster de 2 hôtes sur LUN iSCSI en mode bloc</td><td>Les fichiers des VM sont partagés : lors d'un déplacement, seule la ressource de calcul change</td><td>Stockage local par hôte (pas de reprise automatique)</td></tr>
+<tr><td>3 cartes réseau par hôte (serveurs, iSCSI, heartbeat)</td><td>Isole le trafic de stockage et la surveillance mutuelle du trafic des VM</td><td>Une seule carte pour tout</td></tr>
+<tr><td>Témoin de quorum (partage de fichiers)</td><td>Avec 2 nœuds, un vote ne suffit pas à trancher : 3 votes (2 nœuds + témoin), majorité à 2</td><td>Cluster à 2 votes : risque d'arrêt complet en cas de partition</td></tr>
+<tr><td>SD-WAN avec SLA sur 8.8.8.8</td><td>Mesure la qualité réelle du lien (latence, gigue, perte) et pas seulement son état physique</td><td>Deux routes par défaut avec distances différentes : bascule uniquement si le lien tombe</td></tr>
+<tr><td>Route statique <code>172.16.0.0/16</code> sur le FortiGate vers SW_EDGE</td><td>Le pare-feu n'apprend pas dynamiquement les réseaux du LAN ; un groupe d'adresses <code>172.16.0.0/16</code> couvre tous les VLAN</td><td>Une route par VLAN</td></tr>
+<tr><td>Relais DHCP <code>ip helper-address</code> vers le contrôleur de domaine</td><td>Un seul serveur DHCP pour tous les VLAN, administré à un endroit</td><td>Un serveur DHCP par VLAN</td></tr>
+</tbody></table>
+
+<h2 id="cas-usage">3. Cas d'utilisation</h2>
+<table>
+<thead><tr><th>ID</th><th>Acteur</th><th>Scénario</th><th>Mécanisme</th><th>Vérifié par</th></tr></thead>
+<tbody>
+<tr><td>UC1</td><td>Employé (VLAN 10, 20, 30)</td><td>Branche son poste, obtient une adresse, accède aux ressources internes et à Internet</td><td>Relais DHCP, routage OSPF, passerelle HSRP</td><td>Test 1 et 3</td></tr>
+<tr><td>UC2</td><td>Invité (VLAN 40)</td><td>Obtient une adresse et résout les noms ; n'accède à aucune ressource interne</td><td>ACL <code>RESTRICTION_INVITE</code></td><td>Preuve à insérer (voir encadré)</td></tr>
+<tr><td>UC3</td><td>Administrateur</td><td>Administre les équipements à distance depuis le VLAN IT uniquement</td><td>Politique de sécurité</td><td>Non testé (règle non visible dans les configurations)</td></tr>
+<tr><td>UC4</td><td>Tous les utilisateurs</td><td>Un switch de distribution tombe en pleine activité ; le trafic continue</td><td>HSRP, preempt</td><td>Test 2</td></tr>
+<tr><td>UC5</td><td>Tous les utilisateurs</td><td>Un lien du cœur ou un port d'un EtherChannel tombe</td><td>LACP, OSPF</td><td>Non testé</td></tr>
+<tr><td>UC6</td><td>Tous les utilisateurs</td><td>Un fournisseur d'accès tombe ; la navigation reprend sur l'autre lien, puis revient au lien préféré</td><td>SD-WAN, SLA</td><td>Test 6</td></tr>
+<tr><td>UC7</td><td>Services hébergés</td><td>Un hôte de virtualisation s'éteint brutalement ; les VM redémarrent sur l'autre hôte</td><td>Cluster, vote du quorum</td><td>Test 5</td></tr>
+<tr><td>UC8</td><td>Administrateur</td><td>Maintenance préventive d'un hôte : déplacer les VM à chaud avant l'arrêt</td><td>Live migration, LUN partagé</td><td>Test 4</td></tr>
+<tr><td>UC9</td><td>Administrateur</td><td>Superviser switches et FortiGate par SNMP v2c depuis Zabbix (172.16.50.20)</td><td>Communauté SNMP en lecture seule, ACL source</td><td>Captures Zabbix (voir chapitre 4)</td></tr>
+<tr><td>UC10</td><td>Tous les utilisateurs</td><td>Un ISP et un switch tombent en même temps ; les services restent joignables</td><td>Redondances combinées</td><td>Test 7</td></tr>
+</tbody></table>
+<div class="slot"><b>📸 Capture à insérer — test invité (UC2)</b><span>Légende suggérée : « Poste du VLAN 40 : adresse DHCP obtenue, résolution DNS réussie, accès refusé vers un serveur interne. »</span></div>
+
+<h2 id="mise-en-oeuvre">4. Mise en œuvre : configuration actuelle</h2>
+<p>Les extraits ci-dessous sont les configurations de référence du laboratoire. Les secrets sont remplacés par des repères <code>&lt;…&gt;</code> : aucun mot de passe ni communauté SNMP n'est publié. Le fichier de configuration est la source ; les commandes abrégées (<code>int vlan 10</code>) sont ici écrites en entier.</p>
+
+<h3>4.1 Switch de distribution : SW_DISTRI_1</h3>
+<pre><code>hostname SW_DISTRI_1
+banner motd "ACCES AUTORISE AUX ADMINS UNIQUEMENT !!!"
+banner login "VEUILLEZ VOUS AUTHENTIFIER"
+enable secret &lt;MOT_DE_PASSE&gt;
+username admin secret &lt;MOT_DE_PASSE&gt;
+line console 0
+ login local
+!
+vlan 10
+ name IT
+vlan 20
+ name compta
+vlan 30
+ name RH
+vlan 40
+ name invites
+vlan 50
+ name serveurs
+vlan 60
+ name MGMT
+vlan 70
+ name imprimante
+!
+ip routing
+interface Loopback0
+ ip address 20.20.20.20 255.255.255.255
+ ip ospf 10 area 0
+!
+interface Vlan10
+ ip address 172.16.10.254 255.255.255.0
+ ip helper-address 172.16.50.10
+ standby 10 ip 172.16.10.1
+ standby 10 priority 110
+ standby 10 preempt
+ ip ospf 10 area 0
+! VLAN 20 à 70 : même gabarit (adresse .254, VIP .1, priorité selon le tableau ci-dessous).
+! VLAN 70 : pas de relais DHCP (adressage statique).
+!
+interface range GigabitEthernet3/0 - 1
+ no switchport
+ channel-group 1 mode active
+interface Port-channel1
+ no switchport
+ ip address 172.16.1.2 255.255.255.252
+ ip ospf 10 area 0
+router ospf 10
+ passive-interface default
+ no passive-interface Port-channel1
+!
+interface GigabitEthernet0/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 50,60
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,60,70
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 20,60,70
+interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 30,40,60,70
+interface GigabitEthernet2/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70
+!
+ip route 0.0.0.0 0.0.0.0 172.16.1.1
+!
+ip access-list extended RESTRICTION_INVITE
+ 10 permit udp host 0.0.0.0 eq 68 host 255.255.255.255 eq 67
+ 20 permit udp 172.16.40.0 0.0.0.255 eq 68 host 172.16.50.10 eq 67
+ 30 permit udp 172.16.40.0 0.0.0.255 host 224.0.0.2 eq 1985
+ 40 permit udp 172.16.40.0 0.0.0.255 host 172.16.50.10 eq 53
+ 50 permit tcp 172.16.40.0 0.0.0.255 host 172.16.50.10 eq 53
+ 60 permit icmp 172.16.40.0 0.0.0.255 host 172.16.40.1
+ 70 deny ip 172.16.40.0 0.0.0.255 any
+interface Vlan40
+ ip access-group RESTRICTION_INVITE in
+!
+access-list 10 permit 172.16.50.20
+snmp-server community &lt;COMMUNAUTE_SNMP&gt; RO 10
+snmp-server contact "Admin Reseau"
+snmp-server location "Salle Serveur"
+snmp-server enable traps
+snmp-server host 172.16.50.20 version 2c &lt;COMMUNAUTE_SNMP&gt;</code></pre>
+<h4>SW_DISTRI_2 : différences avec SW_DISTRI_1</h4>
+<table>
+<thead><tr><th>Élément</th><th>SW_DISTRI_1</th><th>SW_DISTRI_2</th></tr></thead>
+<tbody>
+<tr><td>Loopback0</td><td>20.20.20.20/32</td><td>30.30.30.30/32</td></tr>
+<tr><td>Adresse des SVI</td><td>.254</td><td>.253</td></tr>
+<tr><td>Priorité HSRP : VLAN 10 / 30 / 50 / 70</td><td>110 (actif)</td><td>100</td></tr>
+<tr><td>Priorité HSRP : VLAN 20 / 40 / 60</td><td>100</td><td>110 (actif)</td></tr>
+<tr><td>Port-channel 1</td><td>172.16.1.2/30</td><td>172.16.1.6/30</td></tr>
+<tr><td>Route par défaut statique</td><td>via 172.16.1.1</td><td>via 172.16.1.5</td></tr>
+</tbody></table>
+<p>Le reste est identique : VLAN, relais DHCP, ACL invités, trunks, SNMP.</p>
+<div class="slot"><b>📸 Capture à insérer — <code>show standby brief</code> sur les deux switches</b><span>Légende suggérée : « HSRP : SW_DISTRI_1 actif sur les VLAN 10, 30, 50, 70 ; SW_DISTRI_2 actif sur les VLAN 20, 40, 60. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — <code>show ip interface brief</code></b><span>Légende suggérée : « Toutes les interfaces SVI en état up/up sur SW_DISTRI_1 et SW_DISTRI_2. »</span></div>
+
+<h3>4.2 Switch de cœur : SW_EDGE</h3>
+<pre><code>hostname SW_EDGE
+vlan 60
+ name MANAGEMENT
+interface Vlan60
+ ip address 172.16.60.40 255.255.255.0
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ip ospf 10 area 0
+!
+interface range GigabitEthernet0/1 - 2
+ no switchport
+ channel-group 1 mode active
+interface Port-channel1
+ no switchport
+ ip address 172.16.1.1 255.255.255.252
+ ip ospf 10 area 0
+ ip ospf priority 200
+interface range GigabitEthernet0/3, GigabitEthernet1/0
+ no switchport
+ channel-group 2 mode active
+interface Port-channel2
+ no switchport
+ ip address 172.16.1.5 255.255.255.252
+ ip ospf 10 area 0
+ ip ospf priority 200
+interface GigabitEthernet0/0
+ no switchport
+ ip address 172.16.0.2 255.255.255.252
+ ip ospf 10 area 0
+!
+ip route 0.0.0.0 0.0.0.0 172.16.0.1
+router ospf 10
+ passive-interface default
+ no passive-interface Port-channel1
+ no passive-interface Port-channel2
+ default-information originate</code></pre>
+<p>Les lignes de sécurité d'accès (bannières, comptes, SNMP) sont identiques à celles des autres switches.</p>
+<div class="slot"><b>📸 Capture à insérer — <code>show ip ospf neighbor</code> et <code>show ip route ospf</code></b><span>Légende suggérée : « Voisinages OSPF de SW_EDGE avec les deux L3 de distribution ; route par défaut annoncée en OSPF. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — <code>show etherchannel summary</code></b><span>Légende suggérée : « Port-channel 1 et 2 de SW_EDGE : deux membres en état bundled (P) chacun. »</span></div>
+
+<h3>4.3 Switches d'accès</h3>
+<p>Même squelette sur les quatre switches : bannières, compte local, VLAN utiles, SVI de management 172.16.60.x avec passerelle <code>172.16.60.1</code>, deux trunks montants (<code>g0/0</code> vers SW_DISTRI_1, <code>g0/1</code> vers SW_DISTRI_2), ports d'accès et SNMP.</p>
+<pre><code>! Exemple : SW_ACC_ETG_1
+hostname SW_ACC_ETG_1
+vlan 10
+ name IT
+vlan 60
+ name MANAGEMENT
+vlan 70
+ name IMPRIMANTES
+interface Vlan60
+ ip address 172.16.60.50 255.255.255.0
+ip default-gateway 172.16.60.1
+interface range GigabitEthernet0/0 - 1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,60,70
+interface GigabitEthernet0/2
+ switchport mode access
+ switchport access vlan 10
+interface GigabitEthernet0/3
+ switchport mode access
+ switchport access vlan 70
+interface GigabitEthernet3/3
+ switchport mode access
+ switchport access vlan 70</code></pre>
+<table>
+<thead><tr><th>Switch</th><th>IP de management</th><th>VLAN autorisés sur les trunks</th><th>Ports d'accès</th></tr></thead>
+<tbody>
+<tr><td>SW_ACC_SRV</td><td>172.16.60.10</td><td>50, 60</td><td>g0/2 et g0/3 : VLAN 50</td></tr>
+<tr><td>SW_ACC_ETG_1</td><td>172.16.60.50</td><td>10, 60, 70</td><td>g0/2 : VLAN 10 ; g0/3 et g3/3 : VLAN 70</td></tr>
+<tr><td>SW_ACC_ETG_2</td><td>172.16.60.20</td><td>20, 60, 70</td><td>g0/2 : VLAN 20 ; g3/3 : VLAN 70</td></tr>
+<tr><td>SW_ACC_ETG_3</td><td>172.16.60.30</td><td>30, 40, 60, 70</td><td>g0/3 : VLAN 30 ; g0/2 : VLAN 40 ; g3/3 : VLAN 70</td></tr>
+</tbody></table>
+
+<h3>4.4 Cluster Hyper-V</h3>
+<p><b>Principe.</b> Deux hôtes Hyper-V partagent un disque iSCSI présenté par un NAS. Les VM et leurs disques sont sur ce stockage partagé : si un hôte tombe, l'autre peut redémarrer les VM. Chaque hôte a trois cartes réseau, une par usage.</p>
+<table>
+<thead><tr><th>Réseau</th><th>Adressage</th><th>Usage</th></tr></thead>
+<tbody>
+<tr><td>Serveurs</td><td>172.16.50.0/24</td><td>La carte correspondante sert à créer le switch virtuel des VM</td></tr>
+<tr><td>iSCSI</td><td>192.168.60.0/24</td><td>Le partage iSCSI est initié depuis le NAS ; les deux hôtes y accèdent</td></tr>
+<tr><td>Heartbeat</td><td>192.168.181.0/24</td><td>Communication directe entre les hôtes ; réseau retenu pour les migrations</td></tr>
+</tbody></table>
+<p><b>Préparation des hôtes</b> (à faire avant l'assistant de validation) :</p>
+<ol>
+<li>Se connecter au partage de fichiers qui servira de témoin et vérifier le droit d'écriture sur le dossier.</li>
+<li>Se connecter à la LUN iSCSI, monter le disque et le formater une première fois pour l'initialiser.</li>
+<li>Créer sur ce disque deux dossiers distincts : un pour les fichiers de configuration des VM, un pour leurs disques virtuels. Sur le second hôte, pointer vers les deux mêmes dossiers.</li>
+<li>Sur chaque hôte, sélectionner la carte du réseau serveurs pour le switch virtuel. Le réseau de management des hyperviseurs ne doit pas être placé sur ce switch virtuel.</li>
+<li>Lancer l'outil de validation du cluster : il sert d'assistant et limite les erreurs et incompatibilités entre les hôtes.</li>
+<li>Désigner le réseau heartbeat pour les migrations.</li>
+</ol>
+<p><b>Quorum.</b> Chaque nœud détient un vote. Avec deux nœuds, le témoin apporte le troisième vote : la majorité est de 2 sur 3. En cas de coupure entre les nœuds, celui qui obtient le vote du témoin garde la majorité et héberge les VM ; l'autre cesse de les exécuter. Le témoin sert d'arbitre pour éviter que les deux hôtes lancent les mêmes VM (split-brain).</p>
+<div class="slot"><b>📸 Capture à insérer — Gestionnaire de cluster de basculement</b><span>Légende suggérée : « Cluster : deux nœuds en ligne, témoin de partage de fichiers en ligne, réseaux serveurs, iSCSI et heartbeat. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — rapport de l'outil de validation du cluster</b><span>Légende suggérée : « Rapport de validation : tests réussis, avertissements éventuels commentés. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — initiateur iSCSI et disque partagé</b><span>Légende suggérée : « Disque iSCSI connecté sur les deux hôtes, dossiers distincts pour la configuration et les disques des VM. »</span></div>
+
+<h3>4.5 FortiGate : double ISP en SD-WAN</h3>
+<ol>
+<li>Configurer individuellement chaque interface WAN avec son adresse et sa passerelle.</li>
+<li>Créer une zone SD-WAN et y placer les deux interfaces WAN.</li>
+<li>Créer un SLA : sonde ping vers 8.8.8.8, seuils de latence 150 ms, de gigue 50 ms et de perte de paquets 2 % maximum.</li>
+<li>Créer la règle SD-WAN fondée sur ce SLA et désigner le lien préféré (reprise automatique du rôle à son retour).</li>
+<li>Créer la route statique par défaut en indiquant la zone SD-WAN comme interface de sortie.</li>
+<li>Créer le groupe d'adresses <code>172.16.0.0/16</code> et une route statique vers ce réseau, avec pour saut suivant l'interface de SW_EDGE (le pare-feu ne connaît pas dynamiquement les réseaux du LAN).</li>
+<li>Autoriser par politique le trafic du LAN vers la zone SD-WAN (sans filtrage pour l'instant).</li>
+</ol>
+<p>SNMP pour la supervision :</p>
+<pre><code>config system snmp sysinfo
+    set status enable
+    set description "FortiGate - Bordure Reseau"
+    set contact "Admin Reseau"
+    set location "Salle Serveur"
+end
+config system snmp community
+    edit 1
+        set name "&lt;COMMUNAUTE_SNMP&gt;"
+        config hosts
+            edit 1
+                set ip 172.16.50.20 255.255.255.255
+            next
+        end
+    next
+end</code></pre>
+<div class="slot"><b>📸 Capture à insérer — export de la configuration SD-WAN</b><span>Légende suggérée : « Zone SD-WAN, SLA vers 8.8.8.8 (150 ms / 50 ms / 2 %), règle et lien préféré. » À coller ici : sortie de <code>show system sdwan</code> (sans secret).</span></div>
+<div class="slot"><b>📸 Capture à insérer — routes et politiques du FortiGate</b><span>Légende suggérée : « Route par défaut via la zone SD-WAN, route 172.16.0.0/16 vers SW_EDGE, politique LAN vers WAN. »</span></div>
+
+<h3>4.6 Supervision Zabbix</h3>
+<p>Le serveur Zabbix (172.16.50.20) interroge les 7 switches et le FortiGate en SNMP v2c. Sur chaque équipement, la communauté est en lecture seule, restreinte par ACL à l'adresse du serveur Zabbix, avec une destination de traps vers la même adresse.</p>
+<div class="slot"><b>📸 Capture à insérer — liste des hôtes Zabbix</b><span>Légende suggérée : « Les 7 switches et le FortiGate supervisés, disponibilité SNMP au vert. »</span></div>
+<div class="slot"><b>📸 Capture à insérer — dernières données et graphiques</b><span>Légende suggérée : « Collecte SNMP : état des interfaces, trafic, charge. » Ajouter une capture d'un graphique de trafic pendant une bascule.</span></div>
+
+<h2 id="tests">5. Tests et validation</h2>
+<p>Chaque test est mené depuis un système consommateur avec un ping continu, pour simuler un environnement de production. Verdicts possibles : Réussi, Échoué, Preuve à ajouter.</p>
+
+<h3>Test 1 — Validation des configurations des switches</h3>
 <ul>
-<li>Supervision active et gestion d'alertes (déclencheurs, gravités, notifications).</li>
-<li>Gestion de services IT (ITSM) et cycle de vie d'un incident.</li>
-<li>Automatisation d'une chaîne alerte vers ticket.</li>
+<li><b>Procédure :</b> <code>show run</code> sur chaque switch ; contrôle que tous les SVI sont up et que la configuration est complète.</li>
+<li><b>Attendu :</b> SVI up/up, VLAN, HSRP et OSPF présents.</li>
+<li><b>Observé :</b> configurations complètes. <b>Verdict : Réussi.</b></li>
 </ul>
+<div class="slot"><b>📸 Capture à insérer — validation des configurations</b><span>Légende suggérée : « <code>show run</code> et état des SVI sur SW_DISTRI_1 et SW_DISTRI_2. »</span></div>
+
+<h3>Test 2 — Bascule HSRP</h3>
+<ul>
+<li><b>Procédure :</b> depuis des hôtes de chaque VLAN, ping continu vers un réseau externe (le WAN) ; arrêt de l'un des L3 de distribution ; puis remise en service.</li>
+<li><b>Attendu :</b> coupure très brève, puis reprise ; le switch rétabli redevient master (<code>preempt</code>).</li>
+<li><b>Observé :</b> coupure très brève du trafic, le second switch prend le relais ; le switch qui a causé la bascule redevient master à son retour. Nombre de paquets perdus : à relever sur la capture. <b>Verdict : Réussi.</b></li>
+</ul>
+<div class="slot"><b>🎥 Vidéo à insérer — arrêt d'un L3 de distribution</b><span>Légende suggérée : « Ping continu depuis un poste, arrêt de SW_DISTRI_1, reprise du trafic via SW_DISTRI_2, puis retour au rôle de master. »</span></div>
+
+<h3>Test 3 — Routage de l'infrastructure</h3>
+<ul>
+<li><b>Procédure :</b> pings entre hôtes de VLAN différents et vers l'extérieur.</li>
+<li><b>Attendu :</b> joignabilité complète, sauf les restrictions prévues (invités).</li>
+<li><b>Observé :</b> pings internes et externes réussis. <b>Verdict : Réussi.</b></li>
+</ul>
+<div class="slot"><b>📸 Capture à insérer — pings inter-VLAN et vers l'extérieur</b><span>Légende suggérée : « Ping d'un poste du VLAN 10 vers un poste du VLAN 30, vers le serveur 172.16.50.10 et vers 8.8.8.8. »</span></div>
+
+<h3>Test 4 — Migration manuelle à chaud d'une VM</h3>
+<ul>
+<li><b>Procédure :</b> VM Ubuntu 172.16.50.60 déployée dans le cluster ; ping continu depuis l'un des hôtes ; déplacement de la VM en fonctionnement de l'hôte 2 vers l'hôte 1.</li>
+<li><b>Attendu :</b> déplacement sans à-coup, interruption minimale.</li>
+<li><b>Observé :</b> interruption inférieure à 15 secondes, même en virtualisation imbriquée (VMware Workstation, Windows Server, Ubuntu). Seul l'hôte de calcul change ; les fichiers de la VM restent sur le stockage partagé. <b>Verdict : Réussi.</b></li>
+<li><b>Intérêt :</b> déplacer une VM en production pour la maintenance préventive d'un hôte.</li>
+</ul>
+<div class="slot"><b>🎥 Vidéo à insérer — migration à chaud</b><span>Légende suggérée : « Ping continu vers 172.16.50.60 pendant le déplacement de la VM de l'hôte 2 vers l'hôte 1. »</span></div>
+
+<h3>Test 5 — Panne critique : extinction d'un hôte</h3>
+<ul>
+<li><b>Procédure :</b> vérification préalable que la VM tourne sur l'hôte ciblé ; ping continu vers la VM ; extinction brutale de cet hôte.</li>
+<li><b>Attendu :</b> coupure temporaire, renégociation des votes, redémarrage de la VM sur l'hôte restant.</li>
+<li><b>Observé :</b> coupure temporaire de la VM ; l'hôte restant obtient la majorité des votes (lui-même et le témoin) puis relance la VM. Environ 5 minutes entre l'arrêt de l'hôte et le redémarrage de la VM. <b>Verdict : Réussi.</b></li>
+<li><b>Lecture du délai :</b> l'auteur attribue la durée à la virtualisation imbriquée, qui ajoute de la latence à toute l'infrastructure ; cette hypothèse n'a pas été isolée par une mesure comparative. Un délai d'environ une minute ou moins est attendu sur du matériel physique, mais il n'a pas été mesuré.</li>
+</ul>
+<div class="slot"><b>🎥 Vidéo à insérer — extinction d'un hôte du cluster</b><span>Légende suggérée : « Extinction de l'hôte qui exécute la VM ; perte du ping, bascule des votes, redémarrage de la VM sur l'autre hôte. » Indiquer l'heure de l'extinction et celle de la reprise du ping.</span></div>
+<div class="slot"><b>📸 Capture à insérer — état du cluster après la panne</b><span>Légende suggérée : « Un nœud hors ligne, VM en cours d'exécution sur l'hôte restant, témoin en ligne. »</span></div>
+
+<h3>Test 6 — Bascule SD-WAN</h3>
+<ul>
+<li><b>Procédure :</b> depuis un poste, ping vers l'extérieur (par exemple google.com) ; coupure de l'un des ISP ; puis rétablissement.</li>
+<li><b>Attendu :</b> perte brève, reprise quasi immédiate ; retour automatique au lien préféré.</li>
+<li><b>Observé :</b> temps de timeout du ping noté sur l'hôte, puis reprise quasi instantanée ; dès que le lien revient, il reprend le rôle principal. <b>Verdict : Réussi.</b></li>
+</ul>
+<div class="slot"><b>🎥 Vidéo à insérer — coupure d'un ISP</b><span>Légende suggérée : « Ping vers l'extérieur pendant la coupure du lien préféré, bascule sur WAN2, retour sur le lien préféré. »</span></div>
+
+<h3>Test 7 — Défaillances cumulées</h3>
+<ul>
+<li><b>Procédure :</b> simuler le cas de défaillance maximale : couper l'un des ISP, puis simultanément l'un des switches de distribution ; garder des pings continus vers l'extérieur et vers les ressources internes.</li>
+<li><b>Attendu :</b> services toujours disponibles, les redondances fonctionnent de concert.</li>
+<li><b>Observé :</b> résultat à renseigner. <b>Verdict : Preuve à ajouter.</b></li>
+</ul>
+<div class="slot"><b>🎥 Vidéo à insérer — défaillances cumulées</b><span>Légende suggérée : « Un ISP et un L3 de distribution coupés ; pings continus vers l'extérieur et vers 172.16.50.x ; services restés disponibles. »</span></div>
+
+<h3>Synthèse des tests</h3>
+<table>
+<thead><tr><th>Test</th><th>Sujet</th><th>Verdict</th><th>Preuve jointe</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Validation des configurations</td><td><span class="badge ok">Réussi</span></td><td>Capture à insérer</td></tr>
+<tr><td>2</td><td>Bascule HSRP</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
+<tr><td>3</td><td>Routage</td><td><span class="badge ok">Réussi</span></td><td>Capture à insérer</td></tr>
+<tr><td>4</td><td>Migration à chaud (&lt; 15 s)</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
+<tr><td>5</td><td>Panne d'un hôte (~ 5 min en imbriqué)</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
+<tr><td>6</td><td>Bascule SD-WAN</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
+<tr><td>7</td><td>Défaillances cumulées</td><td><span class="badge plan">Preuve à ajouter</span></td><td>Vidéo à insérer</td></tr>
+</tbody></table>
+
+<h2 id="ecarts">6. Écarts relevés à la revue des configurations</h2>
+<p>Relecture des fichiers de référence. Chaque point est une action ouverte à traiter comme un changement contrôlé.</p>
+<ol>
+<li><b>Règles de sécurité non visibles :</b> port-security sticky, DHCP snooping et restriction des accès d'administration au VLAN IT sont posés par la politique mais absents des fichiers (voir le tableau du chapitre 1).</li>
+<li><b>Route par défaut en double :</b> chaque L3 de distribution a une route statique par défaut vers SW_EDGE, alors que SW_EDGE l'annonce déjà en OSPF. La route statique (distance 1) l'emporte sur la route OSPF : elle masque l'annonce dynamique.</li>
+<li><b>Spanning-tree non configuré :</b> les switches d'accès sont reliés aux deux L3, eux-mêmes reliés par un trunk. Aucune racine STP n'est définie : elle devrait coïncider avec le L3 actif HSRP de chaque VLAN, avec un mode rapide (Rapid PVST+).</li>
+<li><b>Type de réseau OSPF :</b> les liens cœur ↔ distribution sont des /30 à deux routeurs. Le type <code>point-to-point</code> supprimerait l'élection DR/BDR et accélérerait la convergence ; l'élection actuelle n'économise pas de trafic sur un segment à deux routeurs.</li>
+<li><b>ACL invités :</b> la dernière ligne refuse tout le trafic du VLAN 40 sauf DHCP, DNS et ping de la passerelle. Les invités n'ont donc pas non plus accès à Internet. Si la politique prévoit Internet pour les invités, il faut refuser les réseaux internes <code>172.16.0.0/16</code> puis autoriser le reste.</li>
+<li><b><code>ip routing</code> sur SW_EDGE :</b> la commande n'apparaît pas dans le fichier alors que les autres L3 la contiennent ; à confirmer sur l'équipement.</li>
+<li><b>VLAN 99 et 100 :</b> cités en tête du fichier (transit vers le FortiGate, DMZ) mais configurés sur aucun switch ; reliquats d'une version antérieure de l'architecture.</li>
+<li><b>Fichier FortiGate :</b> il contient deux variantes antérieures (sous-interfaces VLAN 99 et 100, puis agrégats LACP directs vers les distributions) et ne contient pas la zone SD-WAN, le SLA ni la route vers SW_EDGE décrits ci-dessus. L'export actuel du pare-feu est la référence à ajouter à la place.</li>
+<li><b>Secrets :</b> mots de passe et communauté SNMP v2c en clair dans les fichiers de laboratoire ; remplacés ici par des repères. SNMP v3 serait préférable en production.</li>
+</ol>
+
+<h2 id="incidents">7. Incidents et retour d'expérience</h2>
+<p>Les incidents de la phase de construction du campus (images IOU instables, VIP HSRP injoignable, absence d'accès Internet depuis le VLAN 10) sont documentés dans la fiche du laboratoire campus : <a href="reseau-d-entreprise-campus-redondant-segmentation-vlan-passe.html#inc-002-plantages-iou-et-vip-hsrp-injoignable">INC-002</a> et <a href="reseau-d-entreprise-campus-redondant-segmentation-vlan-passe.html#inc-001-pas-dacces-internet-depuis-le-vlan-10">INC-001</a>.</p>
+<p>Observation de la phase de test : en virtualisation imbriquée, le basculement d'un hôte du cluster prend plusieurs minutes, contre moins de 15 secondes pour une migration à chaud. La cause racine n'est pas confirmée (voir test 5).</p>
+
+<h2 id="exploitation">8. Exploitation : commandes de contrôle</h2>
+<table>
+<thead><tr><th>Équipement</th><th>Commande</th><th>Ce qu'elle vérifie</th></tr></thead>
+<tbody>
+<tr><td>Switch L3</td><td><code>show standby brief</code></td><td>Rôle HSRP (Active/Standby) et priorité par VLAN</td></tr>
+<tr><td>Switch L3</td><td><code>show ip ospf neighbor</code></td><td>Voisinages OSPF et état (FULL)</td></tr>
+<tr><td>Switch L3</td><td><code>show ip route</code></td><td>Routes OSPF et route par défaut</td></tr>
+<tr><td>Switch L3</td><td><code>show etherchannel summary</code></td><td>Membres LACP agrégés</td></tr>
+<tr><td>Switch L3</td><td><code>show ip interface brief</code></td><td>Interfaces SVI up/up</td></tr>
+<tr><td>Switch L3</td><td><code>show access-lists RESTRICTION_INVITE</code></td><td>Compteurs de correspondances de l'ACL invités</td></tr>
+<tr><td>Hôte Hyper-V (PowerShell)</td><td><code>Get-ClusterNode</code></td><td>État des nœuds</td></tr>
+<tr><td>Hôte Hyper-V (PowerShell)</td><td><code>Get-ClusterQuorum</code></td><td>Type et état du témoin</td></tr>
+<tr><td>Hôte Hyper-V (PowerShell)</td><td><code>Get-ClusterGroup</code></td><td>Hôte propriétaire de chaque VM</td></tr>
+<tr><td>FortiGate</td><td><code>diagnose sys sdwan health-check</code></td><td>Latence, gigue, perte et état de chaque lien</td></tr>
+<tr><td>FortiGate</td><td><code>get router info routing-table all</code></td><td>Routes actives (par défaut et LAN)</td></tr>
+</tbody></table>
+<p>Les commandes sont celles des versions courantes ; adapter à la version installée.</p>
+
+<h2 id="limites">9. Limites et risques résiduels</h2>
+<ul>
+<li>Laboratoire sur deux PC en virtualisation imbriquée : les délais mesurés ne sont pas transposables à la production.</li>
+<li>Points uniques restants : SW_EDGE, FortiGate, contrôleur de domaine, NAS iSCSI (voir le registre des risques).</li>
+<li>Aucun filtrage sur le FortiGate : les utilisateurs internes comme externes naviguent librement ; les serveurs ont accès à Internet.</li>
+<li>Règles de sécurité de la politique non visibles dans les configurations (chapitre 6).</li>
+<li>QoS non en place : le trafic de voix n'est pas encore priorisé.</li>
+<li>Cas non testés : panne d'un membre EtherChannel, panne du SW_EDGE, panne du NAS.</li>
+</ul>
+
+<h2 id="evolutions">10. Évolutions prévues</h2>
+<ol>
+<li><b>Filtrage du trafic des utilisateurs :</b> interdire les sites pour adultes et les sites de torrent, ainsi que les sites signalés dans la base de connaissance de Fortinet.</li>
+<li><b>Téléphonie :</b> déployer une solution VoIP avec une politique de QoS qui priorise le trafic de la voix.</li>
+<li><b>Sauvegarde :</b> sauvegarder l'état des machines virtuelles avec Veeam Backup &amp; Replication (voir la fiche <a href="sauvegarde-et-reprise-apres-sinistre-avec-veeam-backup-repli.html">sauvegarde et reprise après sinistre</a>).</li>
+<li><b>Ticketing :</b> intégration Zabbix vers GLPI, reportée ; voir <a href="supervision-et-gestion-des-incidents-avec-zabbix-glpi-et-sau.html">Supervision et gestion des incidents avec Zabbix + GLPI</a>.</li>
+</ol>
+
+<h2 id="cloture">11. Contrôle de clôture</h2>
+<ul>
+<li>Tests réussis : 6 / 7</li>
+<li>Tests échoués : 0</li>
+<li>Tests non réalisés ou sans preuve : 1 (test 7, défaillances cumulées)</li>
+<li>Panne contrôlée testée : Oui (switch de distribution, ISP, hôte du cluster)</li>
+<li>Rétablissement prouvé : Oui pour HSRP (retour du master) et SD-WAN (retour du lien préféré)</li>
+<li>Schéma et procédures à jour : Oui, hors export FortiGate actuel à ajouter</li>
+<li>Limites et risques résiduels documentés : Oui</li>
+<li>Décision : Livré techniquement</li>
+<li>Prochaine action concrète : insérer les captures et vidéos aux emplacements marqués, exécuter et filmer le test 7</li>
+</ul>
+<p><b>Règle de statut :</b> « Livré » décrit un périmètre réellement implémenté et testé. Les cadres de preuve restants et les écarts du chapitre 6 sont des actions ouvertes ; ils ne doivent pas être présentés comme des réalisations.</p>
 <hr />
-<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
-<blockquote>
-<p><strong>Comment remplir cette fiche :</strong> coche une case uniquement lorsque l’action est réellement réalisée et qu’une preuve est ajoutée. « Configuré » ne veut pas dire « testé ». Cette méthode s’inspire de pratiques ITIL 4 (gestion des changements, incidents, problèmes, configuration et amélioration continue), sans prétendre à une conformité ou certification formelle.
-</p>
-</blockquote>
-<h2 id="1-cadrage">1. Cadrage</h2>
-<ul>
-<li>☐ Décrire le besoin, les utilisateurs/services concernés et le problème à résoudre.</li>
-<li>☐ Définir périmètre inclus/exclu, hypothèses, versions et limites du laboratoire.</li>
-<li>☐ Inventorier les composants, ressources matérielles, licences et prérequis.</li>
-<li>☐ Établir des critères d’acceptation mesurables avant les tests.</li>
-<li>☐ Identifier les dépendances, risques et points uniques de défaillance (SPOF).</li>
-<li>☐ Lister les preuves attendues et l’ordre de priorité des travaux.</li>
-</ul>
-<p><strong>Livrable :</strong> fiche de cadrage, périmètre, critères d’acceptation et registre des risques.</p>
-<h2 id="2-conception">2. Conception</h2>
-<ul>
-<li>☐ Mettre à jour le schéma logique et physique, avec noms/rôles cohérents.</li>
-<li>☐ Documenter adressage, VLAN, routes, ports, protocoles, flux et dépendances.</li>
-<li>☐ Vérifier les prérequis et la compatibilité des versions auprès de la documentation du fournisseur.</li>
-<li>☐ Justifier les choix techniques et consigner les compromis/alternatives.</li>
-<li>☐ Prévoir sécurité, privilèges minimums, gestion des secrets et accès d’administration.</li>
-<li>☐ Préparer une matrice de tests : nominal, négatif, panne et reprise.</li>
-</ul>
-<p><strong>Livrable :</strong> schéma, inventaire, matrice des flux/dépendances et plan de tests.</p>
-<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
-<ul>
-<li>☐ Sauvegarder/exporter les configurations et données avant une modification à risque.</li>
-<li>☐ Capturer l’état initial : versions, états, commandes de contrôle et journaux pertinents.</li>
-<li>☐ Écrire les étapes d’exécution et les contrôles après chaque étape.</li>
-<li>☐ Définir le retour arrière et les conditions qui imposent l’arrêt.</li>
-<li>☐ Modifier une variable à la fois et consigner les résultats.</li>
-<li>☐ Vérifier le retour à l’état attendu après changement ou rollback.</li>
-</ul>
-<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
-<h2 id="4-tests-et-validation">4. Tests et validation</h2>
-<ul>
-<li>☐ Exécuter le scénario nominal de bout en bout depuis un client ou système consommateur.</li>
-<li>☐ Tester les dépendances et au moins un cas négatif adapté au projet.</li>
-<li>☐ Simuler une panne contrôlée sans mettre en risque des données ou systèmes hors périmètre.</li>
-<li>☐ Vérifier journaux, états, compteurs et mesures ; ne pas se fier uniquement à une interface verte.</li>
-<li>☐ Vérifier la reprise après correction ou retour arrière.</li>
-<li>☐ Enregistrer chaque test avec résultat attendu, résultat observé, preuve et verdict : Réussi / Échoué / Non testé.</li>
-</ul>
-<p><strong>Livrable :</strong> matrice de tests et liste des écarts à corriger.</p>
-<h2 id="5-incidents-et-problemes">5. Incidents et problèmes</h2>
-<ul>
-<li>☐ Décrire symptôme, impact et heure sans présumer de la cause.</li>
-<li>☐ Consigner la chronologie et les changements récents.</li>
-<li>☐ Collecter journaux, commandes de diagnostic, métriques et messages d’erreur.</li>
-<li>☐ Tester les hypothèses une par une et documenter les preuves.</li>
-<li>☐ Distinguer contournement, rétablissement et cause racine confirmée.</li>
-<li>☐ Définir une action préventive : alerte, correction, procédure ou test supplémentaire.</li>
-</ul>
-<p><strong>Livrable :</strong> fiche d’incident/retour d’expérience. Si aucun incident n’a été testé, écrire « à réaliser » et ne pas inventer de cause racine.</p>
-<h2 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h2>
-<ul>
-<li>☐ Vérifier les critères d’acceptation et relier chacun à une preuve.</li>
-<li>☐ Mettre à jour schéma, inventaire, versions, dépendances et configurations de référence.</li>
-<li>☐ Documenter les commandes de contrôle, les tâches courantes et le dépannage initial.</li>
-<li>☐ Documenter supervision, sauvegarde/restauration et reprise quand c’est pertinent.</li>
-<li>☐ Lister les limites du laboratoire, risques résiduels et prérequis de production.</li>
-<li>☐ Contrôler qu’aucun mot de passe, jeton ou donnée confidentielle n’est publié.</li>
-</ul>
-<p><strong>Livrable :</strong> dossier d’exploitation court et liste des limites connues.</p>
-<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
-<ul>
-<li>☐ Résumer ce qui fonctionne et citer les preuves qui le démontrent.</li>
-<li>☐ Lister tests non réalisés, échecs, défauts et dettes techniques.</li>
-<li>☐ Décrire la principale leçon apprise et la cause racine seulement si elle est confirmée.</li>
-<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort nécessaire.</li>
-<li>☐ Définir la prochaine action concrète et les preuves à ajouter au portfolio.</li>
-</ul>
-<p><strong>Livrable :</strong> bilan et plan d’amélioration priorisé.</p>
-<h2 id="criteres-specifiques-zabbix-glpi">Critères spécifiques — Zabbix + GLPI</h2>
-<ul>
-<li>☐ Documenter les hôtes/services surveillés et justifier les méthodes agent, SNMP ou contrôle de service.</li>
-<li>☐ Créer des items, triggers, niveaux de sévérité, seuils, périodes de maintenance et notifications testables.</li>
-<li>☐ Vérifier la réception des alertes par le canal choisi, avec un test réel et une preuve horodatée.</li>
-<li>☐ Simuler une panne inoffensive (service de test ou hôte de laboratoire) et mesurer le délai de détection.</li>
-<li>☐ Vérifier l’intégration Zabbix → GLPI : ticket créé avec nom d’hôte, symptôme, sévérité et référence de l’événement.</li>
-<li>☐ Tester le cycle de vie complet : alerte, ticket, acquittement/diagnostic, résolution, rétablissement et clôture selon la logique configurée.</li>
-<li>☐ Tester un cas de faux positif ou de flapping et ajuster la dépendance/temporisation si nécessaire.</li>
-<li>☐ Documenter qui reçoit l’alerte, quelle action est attendue et comment éviter doublons et tickets orphelins.</li>
-</ul>
-<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
-<ul>
-<li>Tests réussis : ___ / ___</li>
-<li>Tests échoués : ___</li>
-<li>Tests non réalisés : ___</li>
-<li>Panne contrôlée testée : Oui / Non</li>
-<li>Rétablissement/rollback/restauration prouvé : Oui / Non / Sans objet</li>
-<li>Schéma et procédures à jour : Oui / Non</li>
-<li>Limites et risques résiduels documentés : Oui / Non</li>
-<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
-<li>Prochaine action concrète : ___</li>
-</ul>
-<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases encore vides restent des actions ouvertes ; elles ne doivent pas être présentées comme des réalisations.</p>
-<hr />
-<h2 id="projet-parent-parcours-integre-dinfrastructure">Projet parent — parcours intégré d’infrastructure</h2>
-<p>Cette fiche est le sous-projet supervision du laboratoire intégré : <a href="supervision-et-gestion-des-incidents-avec-zabbix-glpi-et-sau.html">Infrastructure hybride résiliente Windows Server 2022, Hyper-V, Failover Clustering et supervision Zabbix/GLPI</a>. La fiche parent définit l’ordre global et le scénario final de panne, notification e-mail, création puis clôture du ticket GLPI. Conserver ici les preuves détaillées des tests Zabbix/GLPI.</p></main>
+<h2 id="projet-suivant">Projet suivant</h2>
+<p>La couche de ticketing et l'automatisation alerte vers ticket font l'objet de la fiche <a href="supervision-et-gestion-des-incidents-avec-zabbix-glpi-et-sau.html">Infrastructure hybride résiliente Windows Server 2022, Hyper-V, Failover Clustering et supervision Zabbix/GLPI</a>.</p></main>
 <footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
 </body></html>
