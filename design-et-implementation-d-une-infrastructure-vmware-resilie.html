@@ -362,79 +362,119 @@ simulés en laboratoire.</p>
 <p>Pour simuler une panne matérielle, j’arrête ensuite complètement l’hôte ESXi 2. En moins de 10 secondes, le cluster HA détecte la perte du heartbeat et redémarre automatiquement les deux VM Linux sur l’hôte ESXi 1 à partir du datastore iSCSI partagé. Après environ 60 à 90 secondes, tous les services sont de nouveau opérationnels. Windows Server, resté sur l’hôte ESXi 1, n’a jamais été interrompu. Aucune intervention manuelle n’a été nécessaire.</p>
 <hr />
 <h1 id="pilotage-du-projet-methodologie-inspiree-itil-4">Pilotage du projet — pratiques inspirées d’ITIL 4</h1>
-<p>Cette synthèse relie les pratiques de gestion de projet et de services aux éléments réellement réalisés dans ce laboratoire VMware. Les validations ci-dessous reposent sur l’architecture décrite, les captures et les deux scénarios filmés. Elle ne constitue pas une certification ITIL ni une preuve de processus ITIL formels en entreprise.</p>
+<p>Le bilan ci-dessous reprend les activités effectivement réalisées et visibles dans ce laboratoire VMware. Les cases cochées correspondent à des éléments décrits, configurés ou démontrés dans le projet ; elles ne signifient pas qu’un processus ITIL formel a été déployé en entreprise.</p>
 
 <h2 id="cadrage-et-perimetre">1. Cadrage et périmètre</h2>
 <ul>
-<li>☑ Besoin identifié : réduire le point unique de défaillance d’un serveur et améliorer la disponibilité des machines virtuelles.</li>
-<li>☑ Périmètre technique défini : trois hôtes ESXi 7.0 imbriqués, vCenter, TrueNAS, stockage partagé et fonctions HA/DRS.</li>
-<li>☑ Environnement et contraintes matérielles documentés : deux machines physiques, ressources attribuées aux hôtes et virtualisation imbriquée.</li>
-<li>☑ Versions, noms d’hôtes, adresses IP et services d’infrastructure inventoriés.</li>
-<li>☑ Limite majeure explicitée : les résultats proviennent d’un laboratoire imbriqué et ne représentent pas des performances garanties sur du matériel de production.</li>
+<li>☑ Besoin identifié : améliorer la disponibilité des machines virtuelles et limiter le point unique de défaillance d’un hôte.</li>
+<li>☑ Objectif de centralisation de l’administration défini autour de vCenter Server.</li>
+<li>☑ Périmètre de virtualisation défini : VMware vSphere 7.0, ESXi, vCenter, stockage partagé et fonctions HA/DRS.</li>
+<li>☑ Trois hôtes ESXi intégrés au périmètre du laboratoire.</li>
+<li>☑ Environnement physique d’hébergement décrit : un PC de bureau et un PC portable.</li>
+<li>☑ Ressources mémoire et stockage attribuées aux trois hôtes recensées.</li>
+<li>☑ Choix de la virtualisation imbriquée explicité en fonction du matériel disponible.</li>
+<li>☑ Domaine interne <code>labo.local</code> et résolution DNS intégrés à la description de l’environnement.</li>
+<li>☑ Limite du laboratoire identifiée : les résultats d’un environnement imbriqué ne constituent pas une garantie de performance sur des serveurs physiques.</li>
 </ul>
 
 <h2 id="conception-et-gestion-de-configuration">2. Conception et gestion de configuration</h2>
 <ul>
-<li>☑ Architecture vSphere décrite : datacenter, cluster et trois hôtes ESXi administrés depuis vCenter.</li>
-<li>☑ Réseau virtuel documenté : vDS, vSwitch standards, groupes de ports et interfaces VMkernel de gestion, iSCSI, NFS et vMotion.</li>
-<li>☑ Services d’infrastructure et adressage documentés : vCenter Server Appliance, DNS Technitium et NAS TrueNAS.</li>
-<li>☑ Stockage décrit : banques de données VMFS, NFS et vSAN, ainsi que la cible iSCSI TrueNAS et son rattachement à ESXi.</li>
-<li>☑ Paramètres essentiels de HA et DRS consignés : réponses à l’isolation, heartbeat, priorité et délai de redémarrage, mode automatisé et seuils de migration.</li>
+<li>☑ Datacenter et cluster vCenter présentés dans l’inventaire de l’infrastructure.</li>
+<li>☑ Noms et adresses IP des trois hôtes ESXi documentés.</li>
+<li>☑ Version ESXi 7.0.0 et numéro de build indiqués.</li>
+<li>☑ Ressources processeur, mémoire, stockage et interfaces réseau des hôtes recensées.</li>
+<li>☑ vCenter Server Appliance identifié avec son nom DNS, son adresse IP et son emplacement d’hébergement.</li>
+<li>☑ Serveur DNS Technitium identifié et enregistrements de la zone interne illustrés.</li>
+<li>☑ NAS TrueNAS identifié comme fournisseur du stockage iSCSI.</li>
+<li>☑ Commutateur distribué vDS et commutateurs standards recensés par hôte.</li>
+<li>☑ Groupes de ports des réseaux de gestion et des machines virtuelles documentés.</li>
+<li>☑ Interfaces VMkernel dédiées à la gestion, à iSCSI, à NFS et à vMotion recensées.</li>
+<li>☑ Cartes physiques virtuelles et associations aux commutateurs décrites pour les hôtes.</li>
+<li>☑ Banques de données locales VMFS 6 inventoriées avec leurs capacités et usages.</li>
+<li>☑ Banque de données NFS recensée avec sa capacité et son usage partagé.</li>
+<li>☑ Banque de données vSAN mentionnée dans l’inventaire du laboratoire.</li>
+<li>☑ Paramètres HA consignés : réponse à l’isolation, redémarrage des VM, heartbeat, priorité et délai.</li>
+<li>☑ Paramètres DRS consignés : mode entièrement automatisé, seuil de migration et seuils CPU/mémoire.</li>
 </ul>
 
-<h2 id="mise-en-oeuvre-et-gestion-des-changements">3. Mise en œuvre et changements</h2>
+<h2 id="mise-en-oeuvre-et-gestion-des-changements">3. Mise en œuvre technique</h2>
 <ul>
-<li>☑ Cluster vCenter créé et hôtes ESXi ajoutés, avec capture du datacenter et de son inventaire.</li>
-<li>☑ Réseaux virtuels et interfaces VMkernel configurés sur les hôtes, avec captures à l’appui.</li>
-<li>☑ Stockage TrueNAS iSCSI configuré et détecté côté ESXi ; les banques de données sont visibles dans vCenter.</li>
-<li>☑ Services HA et DRS configurés ; leurs paramètres sont présentés dans la documentation et illustrés par des captures.</li>
+<li>☑ vCenter Server Appliance déployé et utilisé pour administrer l’environnement vSphere.</li>
+<li>☑ Datacenter créé dans vCenter.</li>
+<li>☑ Cluster créé dans l’inventaire vCenter.</li>
+<li>☑ Trois hôtes ESXi ajoutés à l’environnement centralisé.</li>
+<li>☑ Réseaux virtuels configurés sur les hôtes selon les besoins du laboratoire.</li>
+<li>☑ Interfaces VMkernel configurées pour les usages réseau documentés.</li>
+<li>☑ Cible iSCSI TrueNAS configurée et présentée à l’environnement ESXi.</li>
+<li>☑ Adaptateur iSCSI configuré sur l’hôte illustré dans la documentation.</li>
+<li>☑ Découverte et attachement du stockage iSCSI illustrés par des captures.</li>
+<li>☑ Banques de données visibles dans l’inventaire vCenter.</li>
+<li>☑ Fonction vSphere HA configurée avec les paramètres documentés.</li>
+<li>☑ Fonction DRS configurée en mode entièrement automatisé.</li>
 </ul>
-<p><strong>Non documenté dans ce projet :</strong> fiche formelle d’autorisation de changement, analyse d’impact avant chaque modification, plan de retour arrière et preuve d’un rollback. Ces éléments ne sont donc pas déclarés réalisés.</p>
 
 <h2 id="tests-et-validation">4. Tests et validation</h2>
 <ul>
-<li>☑ Scénario DRS/vMotion exécuté : démarrage simultané de trois machines virtuelles, puis répartition automatique de deux VM Linux vers le second hôte.</li>
-<li>☑ Résultat du scénario DRS observé et mesuré : équilibrage rapporté en environ 60 secondes, avec une charge d’environ 2 Go par hôte.</li>
-<li>☑ Scénario de panne d’hôte exécuté : arrêt complet d’ESXi 2 et détection de la perte du heartbeat par HA.</li>
-<li>☑ Redémarrage automatique des deux VM Linux sur ESXi 1 depuis le stockage partagé iSCSI observé.</li>
-<li>☑ Reprise du service invité vérifiée : services de nouveau opérationnels après environ 60 à 90 secondes, sans intervention manuelle.</li>
-<li>☑ Preuves de démonstration disponibles : captures de configuration et vidéo des deux scénarios.</li>
+<li>☑ Trois machines virtuelles de test utilisées dans le scénario de répartition de charge.</li>
+<li>☑ Démarrage simultané des trois machines virtuelles réalisé pour observer le placement DRS.</li>
+<li>☑ Migration automatique de deux VM Linux vers le second hôte observée.</li>
+<li>☑ Maintien de la VM Windows Server sur le premier hôte observé pendant ce scénario.</li>
+<li>☑ Répartition de la charge rapportée comme stabilisée en environ 60 secondes.</li>
+<li>☑ Charge mémoire approximative rapportée à environ 2 Go par hôte après répartition.</li>
+<li>☑ Arrêt complet de l’hôte ESXi 2 effectué pour simuler une panne d’hôte.</li>
+<li>☑ Perte du heartbeat détectée par le mécanisme HA lors du scénario filmé.</li>
+<li>☑ Redémarrage automatique des deux VM Linux sur ESXi 1 observé.</li>
+<li>☑ Redémarrage des VM depuis le stockage iSCSI partagé observé dans le scénario.</li>
+<li>☑ Délai de détection rapporté à moins de 10 secondes dans la démonstration.</li>
+<li>☑ Retour des services invités rapporté après environ 60 à 90 secondes.</li>
+<li>☑ Absence d’intervention manuelle constatée pendant la reprise montrée.</li>
+<li>☑ Continuité de la VM Windows Server restée sur ESXi 1 observée dans le scénario décrit.</li>
+<li>☑ Captures des paramètres HA et DRS disponibles dans la fiche.</li>
+<li>☑ Vidéo de démonstration des scénarios DRS/vMotion et HA intégrée à la documentation.</li>
 </ul>
-<p><strong>Scénarios non démontrés dans les preuves présentées :</strong> perte du datastore ou du réseau iSCSI, panne du réseau de management, restauration depuis sauvegarde, rollback de configuration et validation détaillée des journaux/alertes après chaque incident.</p>
 
 <h2 id="gestion-des-incidents-et-problemes">5. Gestion des incidents et des problèmes</h2>
 <ul>
-<li>☑ Une indisponibilité d’hôte a été simulée volontairement comme scénario de test et son effet sur les VM a été observé.</li>
-<li>☑ Le comportement de reprise HA a été décrit avec la chronologie et les délais observés.</li>
+<li>☑ Scénario de perte d’un hôte simulé volontairement dans un cadre de test.</li>
+<li>☑ Effet de l’indisponibilité de l’hôte sur les machines virtuelles décrit.</li>
+<li>☑ Détection de la perte du heartbeat et réaction HA décrites.</li>
+<li>☑ Chronologie et délais observés pendant le scénario de reprise consignés.</li>
 </ul>
-<p><strong>Hors périmètre des preuves disponibles :</strong> aucun dossier d’incident réel, ticket, analyse de cause racine, historique d’escalade ou problème récurrent n’est présenté. La panne simulée reste un test de résilience, pas un incident d’exploitation traité selon un processus formel.</p>
+<p>La panne présentée est un test de résilience planifié. La documentation ne présente pas de ticket d’incident réel, de processus d’escalade ou d’analyse de cause racine d’un incident d’exploitation ; ces activités ne sont donc pas revendiquées.</p>
 
-<h2 id="exploitation-et-transfert">6. Exploitation et transfert</h2>
+<h2 id="exploitation-et-transfert">6. Exploitation et documentation</h2>
 <ul>
-<li>☑ Inventaire des hôtes, ressources, services, adresses et banques de données disponible dans la fiche projet.</li>
-<li>☑ Principaux paramètres de configuration HA/DRS consignés.</li>
-<li>☑ Captures de l’inventaire vCenter, des hôtes, du réseau virtuel, du stockage et des réglages HA/DRS fournies.</li>
-<li>☑ Limite de la virtualisation imbriquée explicitement indiquée.</li>
+<li>☑ Inventaire des hôtes et des ressources disponible dans la fiche projet.</li>
+<li>☑ Inventaire des services d’infrastructure et de leurs adresses disponible.</li>
+<li>☑ Configuration réseau virtuelle décrite par hôte.</li>
+<li>☑ Inventaire des banques de données et de leurs types disponible.</li>
+<li>☑ Paramètres essentiels HA et DRS consignés.</li>
+<li>☑ Captures vCenter, ESXi, DNS, réseau virtuel et TrueNAS intégrées à la documentation.</li>
+<li>☑ Résultats des deux scénarios de démonstration décrits.</li>
+<li>☑ Périmètre et limite de la virtualisation imbriquée explicités.</li>
 </ul>
-<p><strong>À compléter pour un dossier d’exploitation :</strong> procédure quotidienne d’administration et de dépannage, supervision et alerting, stratégie de sauvegarde/restauration, gestion des comptes et privilèges, ainsi que procédure de reprise après perte du stockage partagé.</p>
 
 <h2 id="amelioration-continue">7. Amélioration continue</h2>
 <ul>
-<li>☑ Les résultats des deux scénarios principaux sont présentés et accompagnés de preuves.</li>
-<li>☑ Une limite structurante du laboratoire — la virtualisation imbriquée et ses ressources — est identifiée.</li>
+<li>☑ Résultat du scénario de répartition DRS/vMotion présenté.</li>
+<li>☑ Résultat du scénario de reprise HA présenté.</li>
+<li>☑ Délais observés pendant les deux scénarios rapportés.</li>
+<li>☑ Limite liée à l’environnement imbriqué identifiée.</li>
+<li>☑ Dépendance du mécanisme de reprise au stockage partagé mise en évidence par le scénario HA.</li>
+<li>☑ Suites techniques pertinentes identifiées : tests de panne stockage/réseau, supervision, sauvegarde et restauration.</li>
 </ul>
-<p><strong>Pistes d’amélioration identifiées à partir du périmètre actuel :</strong> tester séparément les pannes de stockage et de réseau, ajouter une supervision avec alertes, puis documenter les sauvegardes et une restauration vérifiée. Ces travaux restent des suites à réaliser et ne sont pas comptabilisés comme acquis.</p>
 
-<h2 id="bilan-de-validation">Bilan de validation du laboratoire</h2>
+<h2 id="bilan-de-validation">Bilan du périmètre livré</h2>
 <ul>
-<li>☑ Cluster vCenter et trois hôtes ESXi intégrés.</li>
-<li>☑ Réseau virtuel et interfaces VMkernel configurés.</li>
-<li>☑ Stockage partagé iSCSI présenté dans l’environnement.</li>
-<li>☑ DRS/vMotion observé lors d’un scénario de répartition de charge.</li>
-<li>☑ HA observé lors de l’arrêt simulé d’un hôte et du redémarrage des VM.</li>
-<li>☑ Démonstration vidéo et captures disponibles.</li>
+<li>☑ Administration centralisée des hôtes ESXi depuis vCenter mise en place.</li>
+<li>☑ Cluster vSphere à trois hôtes constitué dans le laboratoire.</li>
+<li>☑ Réseau virtuel et interfaces VMkernel configurés et documentés.</li>
+<li>☑ Stockage iSCSI TrueNAS présenté à l’environnement et visible dans vCenter.</li>
+<li>☑ HA configuré et redémarrage automatique de VM démontré après arrêt simulé d’un hôte.</li>
+<li>☑ DRS configuré et répartition automatique de VM démontrée.</li>
+<li>☑ Vidéo et captures disponibles pour étayer les réalisations présentées.</li>
 </ul>
-<p><strong>Conclusion :</strong> le périmètre technique annoncé — administration centralisée vCenter, réseau et stockage vSphere, équilibrage DRS/vMotion et reprise HA — a été mis en œuvre et démontré dans le laboratoire. Le projet peut être considéré comme livré pour ce périmètre. Les tests de panne supplémentaires, la sauvegarde/restauration, la supervision et les processus formels de changement et d’incident restent hors du périmètre validé.</p>
+<p><strong>Conclusion :</strong> le projet est livré pour le périmètre effectivement mis en œuvre et démontré : administration vCenter, cluster ESXi, réseau virtuel, stockage iSCSI partagé, DRS/vMotion et reprise HA lors d’un arrêt simulé d’hôte. Les tests de perte du stockage ou du réseau, la supervision, la sauvegarde/restauration et les processus formels de gestion des changements et des incidents ne font pas partie des validations présentées.</p>
 </main>
 <footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
 </body></html>
