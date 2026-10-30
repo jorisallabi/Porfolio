@@ -1,0 +1,476 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Déploiement d’une Infrastructure VoIP Hybride Cisco CME (SCCP &amp; SIP) en Environnement Virtualisé — Joris Allabi</title><meta name="description" content="Laboratoire GNS3 terminé en 2026 : routeur Cisco 3725 avec CME, terminaux SCCP et SIP (Linphone sur Android), DHCP option 150 et priorisation du trafic voi">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
+<h1>Déploiement d’une Infrastructure VoIP Hybride Cisco CME (SCCP &amp; SIP) en Environnement Virtualisé</h1>
+<div class="meta"><span class="badge ok">Livré</span><span class="chip">Avancement 100%</span><span class="chip">Laboratoire GNS3</span></div>
+<h3 id="presentation-rapide">Présentation rapide</h3>
+<p>Ce projet d'infrastructure réseau et télécom porte sur la conception, l'interconnexion et la configuration d'une plateforme VoIP centralisée sur un routeur Cisco 3725 exécutant Cisco CallManager Express (CME). L'architecture prend en charge un ensemble mixte de terminaux clients utilisant deux protocoles de signalisation distincts : <strong>SCCP</strong> (<em>Skinny Client Control Protocol</em>) et <strong>SIP</strong> (<em>Session Initiation Protocol</em>).</p>
+<p>Le laboratoire porte également sur l'intégration d'un réseau virtuel hébergé sous GNS3 à un sous-réseau physique Wi-Fi/LAN, afin de permettre à des terminaux mobiles réels — des smartphones Android exécutant Linphone — de s'enregistrer auprès du Registrar SIP du routeur d'infrastructure.</p>
+<h3 id="fiche-technique">Fiche technique</h3>
+<table>
+<thead>
+<tr>
+<th>Composant</th>
+<th>Technologie / modèle</th>
+<th>Rôle dans l’architecture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cœur de réseau VoIP</td>
+<td>Cisco 3725 (Cisco IOS)</td>
+<td>Routeur, serveur DHCP, CME (SCCP), registrar SIP</td>
+</tr>
+<tr>
+<td>Hyperviseur réseau</td>
+<td>GNS3</td>
+<td>Virtualisation du routeur et routage d’E/S</td>
+</tr>
+<tr>
+<td>Pont physique / virtuel</td>
+<td>Cloud GNS3 / NIC Ethernet</td>
+<td>Bridging de la carte réseau du PC hôte</td>
+</tr>
+<tr>
+<td>Accès sans fil</td>
+<td>Routeur MTN (mode Bridge/AP)</td>
+<td>Point d’accès de couche 2 pour la connectivité Wi-Fi</td>
+</tr>
+<tr>
+<td>Terminaux SIP</td>
+<td>Android / client Linphone</td>
+<td>Softphones SIP enregistrés sur le CME</td>
+</tr>
+<tr>
+<td>Terminaux SCCP</td>
+<td>IP Phones Cisco (émulés / CME)</td>
+<td>Téléphones IP SCCP provisionnés dynamiquement</td>
+</tr>
+</tbody>
+</table>
+<h2 id="contexte-problematique">Contexte &amp; Problématique</h2>
+<h3 id="contexte">Contexte</h3>
+<p>Dans le cadre d'une évolution des infrastructures d'entreprise vers des télécommunications unifiées, l'intégration de flottes de téléphones IP hétérogènes (postes fixes propriétaires SCCP et softphones mobiles standards SIP) est un enjeu majeur. L'objectif était de monter un banc d'essai complet simulant un site d'entreprise autonome gérant sa téléphonie interne <u><strong>sans matériel dédié</strong></u></p>
+<h3 id="problematique-dingenierie">Problématique d'Ingénierie</h3>
+<blockquote>
+<p><em>"Comment concevoir et déployer, au sein d'une infrastructure virtualisée interconnectée à un segment physique, un cœur de téléphonie IP unifié sous Cisco CME capable de provisionner, d'enregistrer et de faire communiquer simultanément des terminaux propriétaires SCCP et open-standard SIP, tout en garantissant l'adressage automatique et la priorisation du flux de voix</em> <u><strong>sans matériel dédié</strong></u> <em>?"</em>
+</p>
+</blockquote>
+<figure class="embed"><iframe src="9024e5f8-voip_cme_sccp_sip.html" loading="lazy" title="voip_cme_sccp_sip.html"></iframe><figcaption><a href="9024e5f8-voip_cme_sccp_sip.html" target="_blank" rel="noopener">Ouvrir le schéma interactif en plein écran ↗</a></figcaption></figure>
+<h2 id="01-deploiement-de-linfrastructure-cur">01 — Déploiement de l'infrastructure cœur</h2>
+<p>La première étape consiste à préparer le routeur Cisco 3725 en configurant son horloge système (essentiel pour la synchronisation des journaux et des paquets de téléphonie), l'interface réseau Layer 3 et le pool DHCP supportant l'option vendor spécifique VoIP.</p>
+<p><img loading="lazy" alt="image.png" src="855b6931-image.png" /></p>
+<p>Routeur Cisco 3725 dans GNS3 : Sur l’image on peut apercevoir le routeur Cisco 3725 connecté via le cloud à la carte physique ETHERNET de l’ordinateur.</p>
+<pre><code>Router# ! Réglage de l'horloge système
+Router# clock set 21:25:00 oct 4 2026
+Router# configure terminal
+Router(config)# ! Configuration de l'interface LAN
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip address 192.168.10.254 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+Router(config)# ! Configuration du serveur DHCP avec l'Option 150 (TFTP / CME Server)
+Router(config)# ip dhcp pool VOICE
+Router(dhcp-config)# network 192.168.10.0 255.255.255.0
+Router(dhcp-config)# default-router 192.168.10.254
+Router(dhcp-config)# option 150 ip 192.168.10.254
+Router(dhcp-config)# exit
+</code></pre>
+<h2 id="02-mise-en-uvre-du-protocole-sccp-skinny">02 — Mise en œuvre du protocole SCCP (Skinny)</h2>
+<h3 id="concept-mecanique-sccp">Concept &amp; Mécanique SCCP</h3>
+<p>SCCP (<em>Skinny Client Control Protocol</em>) est un protocole propriétaire Cisco, orienté stimulus. Le téléphone IP SCCP est un terminal "simplifié" (dumb terminal) : toute la logique de traitement d'appel, l'état des lignes, le rafraîchissement des écrans et les tonalités sont générés par le routeur CME.</p>
+<ol>
+<li><strong>Procédure de Boot SCCP :</strong><ul>
+<li>Le téléphone obtient son IP et l'IP du serveur TFTP/CME via l'<strong>Option DHCP 150</strong>.</li>
+<li>Le téléphone contacte le CME sur le port <strong>TCP 2000</strong>.</li>
+<li>Le CME télécharge dynamiquement au téléphone son fichier de configuration généré par la commande <code>create cnf-files</code>.</li>
+</ul>
+</li>
+<li><strong>Distinction ephone-dn vs ephone :</strong><ul>
+<li><strong><code>ephone-dn</code> (Directory Number) :</strong> Représente le concept logiciel du numéro de téléphone/de la ligne (ex: numéro <code>2000</code>, nom associatif).</li>
+<li><strong><code>ephone</code> :</strong> Représente le terminal physique/matériel (défini par sa valeur d'association ou son adresse MAC).</li>
+<li><strong><code>button 1:1</code> :</strong> Fait la jonction matérielle-logique : associe le bouton n°1 de l'appareil <code>ephone 1</code> au numéro virtuel <code>ephone-dn 1</code>.</li>
+</ul>
+</li>
+</ol>
+<pre><code>Router# configure terminal
+Router(config)# telephony-service
+Router(config-telephony)# max-ephone 6
+Router(config-telephony)# max-dn 6
+Router(config-telephony)# auto assign 1 to 6
+Router(config-telephony)# auto-reg-ephone
+Router(config-telephony)# ip source-address 192.168.10.254 port 2000
+Router(config-telephony)# create cnf-files
+Router(config-telephony)# exit
+Router(config)# ephone-dn 1
+Router(config-ephone-dn)# number 2000
+Router(config-ephone-dn)# name Joris
+Router(config-ephone-dn)# label Joris
+Router(config-ephone-dn)# exit
+Router(config)# ephone-dn 2
+Router(config-ephone-dn)# number 2001
+Router(config-ephone-dn)# name Koffi
+Router(config-ephone-dn)# label Koffi
+Router(config-ephone-dn)# exit
+Router(config)# ephone-dn 3
+Router(config-ephone-dn)# number 2002
+Router(config-ephone-dn)# name David
+Router(config-ephone-dn)# label David
+Router(config-ephone-dn)# exit
+Router(config)# ephone-dn 4
+Router(config-ephone-dn)# number 2003
+Router(config-ephone-dn)# name Paul
+Router(config-ephone-dn)# label Paul
+Router(config-ephone-dn)# exit
+Router(config)# ephone-dn 5
+Router(config-ephone-dn)# number 2004
+Router(config-ephone-dn)# name Alice
+Router(config-ephone-dn)# label Alice
+Router(config-ephone-dn)# exit
+Router(config)# ephone-dn 6
+Router(config-ephone-dn)# number 2005
+Router(config-ephone-dn)# name Sarah
+Router(config-ephone-dn)# label Sarah
+Router(config-ephone-dn)# exit
+Router(config)# ephone 1
+Router(config-ephone)# button 1:1
+Router(config-ephone)# exit
+Router(config)# ephone 2
+Router(config-ephone)# button 1:2
+Router(config-ephone)# exit
+Router(config)# ephone 3
+Router(config-ephone)# button 1:3
+Router(config-ephone)# exit
+Router(config)# ephone 4
+Router(config-ephone)# button 1:4
+Router(config-ephone)# exit
+Router(config)# ephone 5
+Router(config-ephone)# button 1:5
+Router(config-ephone)# exit
+Router(config)# ephone 6
+Router(config-ephone)# button 1:6
+Router(config-ephone)# exit
+</code></pre>
+<h2 id="03-mise-en-uvre-du-protocole-sip">03 — Mise en œuvre du protocole SIP</h2>
+<h3 id="concept-mecanique-sip">Concept &amp; Mécanique SIP</h3>
+<p>A l'inverse de SCCP, <strong>SIP</strong> (<em>Session Initiation Protocol</em>) est un protocole standard (RFC 3261), basé sur le modèle peer-to-peer / client-serveur et inspiré du protocole HTTP (messages texte ascii : <code>REGISTER</code>, <code>INVITE</code>, <code>200 OK</code>, <code>ACK</code>). Le terminal SIP est "intelligent" : il embarque sa propre logique de fonctionnement et utilise le routeur Cisco CME comme <strong>Registrar / Proxy</strong>.</p>
+<p>La configuration SIP sous Cisco CME requiert la distinction entre la voix générale (<code>voice service voip</code>), les paramètres d'enregistrement globaux (<code>voice register global</code>), les lignes virtuelles (<code>voice register dn</code>) et les terminaux (<code>voice register pool</code>).</p>
+<h3 id="explication-des-commandes-cles">Explication des Commandes Clés</h3>
+<ul>
+<li><strong><code>allow-connections sip to sip</code> :</strong> Autorise le routeur à commuter directement deux sessions média/signalisation SIP entrantes et sortantes.</li>
+<li><strong><code>voice register global / mode cme</code> :</strong> Active la prise en charge de la téléphonie SIP par le CME (Cisco Unified Communications Manager Express mode).</li>
+<li><strong><code>authenticate register</code> :</strong> Exige une vérification des identifiants (username/password) lors de l'émission d'un message <code>SIP REGISTER</code> par le client (ex: Linphone).</li>
+<li><strong><code>voice register pool</code> :</strong> Associe l'adresse MAC unique de la carte Wi-Fi du téléphone Android à un profil d'autorisation, en lui liant le <code>voice register dn</code> correspondant et le codec autorisé.</li>
+<li><strong><code>codecs G.711u / G.711a</code> :</strong> Définit les algorithmes de numérisation de la voix (PCM). <code>μ-law</code> est la norme nord-américaine, <code>A-law</code> la norme internationale/européenne.</li>
+</ul>
+<pre><code>Router# configure terminal
+Router(config)# voice service voip
+Router(conf-voi-serv)# allow-connections sip to sip
+Router(conf-voi-serv)# sip
+Router(conf-serv-sip)# registrar server
+Router(conf-serv-sip)# exit
+Router(conf-voi-serv)# exit
+
+Router(config)# voice class codec 1
+Router(config-class)# codec preference 1 g711ulaw
+Router(config-class)# codec preference 2 g711alaw
+Router(config-class)# exit
+
+Router(config)# voice register global
+Router(config-register-global)# mode cme
+Router(config-register-global)# source-address 192.168.10.254 port 5060
+Router(config-register-global)# max-dn 5
+Router(config-register-global)# max-pool 5
+Router(config-register-global)# authenticate register
+Router(config-register-global)# create profile
+Router(config-register-global)# exit
+
+Router(config)# voice register dn 1
+Router(config-register-dn)# number 1001
+Router(config-register-dn)# name Alexandre
+Router(config-register-dn)# label 1001
+Router(config-register-dn)# exit
+
+Router(config)# voice register dn 2
+Router(config-register-dn)# number 1002
+Router(config-register-dn)# name Benjamin
+Router(config-register-dn)# label 1002
+Router(config-register-dn)# exit
+
+Router(config)# voice register dn 3
+Router(config-register-dn)# number 1003
+Router(config-register-dn)# name Carlos
+Router(config-register-dn)# label 1003
+Router(config-register-dn)# exit
+
+Router(config)# voice register dn 4
+Router(config-register-dn)# number 1004
+Router(config-register-dn)# name Daniel
+Router(config-register-dn)# label 1004
+Router(config-register-dn)# exit
+
+Router(config)# voice register dn 5
+Router(config-register-dn)# number 1005
+Router(config-register-dn)# name Emmanuel
+Router(config-register-dn)# label 1005
+Router(config-register-dn)# exit
+
+Router(config)# voice register pool 1
+Router(config-register-pool)# id mac XXXX.XXXX.XXXX
+Router(config-register-pool)# number 1 dn 1
+Router(config-register-pool)# username 1001 password &lt;mot_de_passe&gt;
+Router(config-register-pool)# description TELEPHONE-1001
+Router(config-register-pool)# voice-class codec 1
+Router(config-register-pool)# exit
+
+Router(config)# voice register pool 2
+Router(config-register-pool)# id mac XXXX.XXXX.XXXX
+Router(config-register-pool)# number 2 dn 2
+Router(config-register-pool)# username 1002 password &lt;mot_de_passe&gt;
+Router(config-register-pool)# description TELEPHONE-1002
+Router(config-register-pool)# voice-class codec 1
+Router(config-register-pool)# exit
+</code></pre>
+<h2 id="04-comparatif-sccp-vs-sip">04 — Comparatif : SCCP vs SIP</h2>
+<p>Cette matrice synthétise les différences architecturales observées et mises en œuvre durant ce projet :</p>
+<blockquote>
+<p><strong>Lecture rapide :</strong> SCCP privilégie l’intégration Cisco, tandis que SIP mise sur l’ouverture et la flexibilité.
+</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Critère d’analyse</th>
+<th>SCCP — Skinny</th>
+<th>SIP — Session Initiation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Philosophie &amp; standard</strong></td>
+<td>Protocole propriétaire Cisco, orienté maître-esclave</td>
+<td>Protocole standardisé — RFC 3261 — orienté pair-à-pair</td>
+</tr>
+<tr>
+<td><strong>Port de signalisation</strong></td>
+<td><code>TCP 2000</code></td>
+<td><code>UDP/TCP 5060</code> ou <code>5061</code> avec TLS</td>
+</tr>
+<tr>
+<td><strong>Intelligence du terminal</strong></td>
+<td>Faible : le routeur contrôle l’interface, l’état des touches et les tonalités</td>
+<td>Élevée : le client gère son interface, ses codecs et sa logique d’appel</td>
+</tr>
+<tr>
+<td><strong>Découverte du serveur</strong></td>
+<td>Auto-découverte via l’option DHCP 150 et TFTP</td>
+<td>Configuration manuelle ou provisionnement de l’adresse du Registrar</td>
+</tr>
+<tr>
+<td><strong>Authentification</strong></td>
+<td>Découverte et enregistrement fondés sur l’adresse MAC</td>
+<td>Authentification challenge-response avec identifiant, mot de passe et adresse MAC</td>
+</tr>
+<tr>
+<td><strong>Configuration IOS</strong></td>
+<td><code>telephony-service</code>, <code>ephone-dn</code>, <code>ephone</code></td>
+<td><code>voice register global</code>, <code>voice register dn</code>, <code>voice register pool</code></td>
+</tr>
+<tr>
+<td><strong>Clients utilisés</strong></td>
+<td>Téléphones Cisco IP matériels ou émulés</td>
+<td>Softphones open source, notamment Linphone sur Android</td>
+</tr>
+<tr>
+<td><strong>Négociation des codecs</strong></td>
+<td>Imposée centralement par Cisco CallManager Express</td>
+<td>Négociée dynamiquement entre les User Agents via SDP</td>
+</tr>
+</tbody>
+</table>
+<h2 id="05-qualite-de-service-qos-pour-la-voix">05 — Qualité de service (QoS) pour la voix</h2>
+<h3 id="justification-technique">Justification Technique</h3>
+<p>Le trafic vocal est extrêmement sensible aux variations du réseau :</p>
+<ul>
+<li><strong>Délai (Latency) :</strong> Doit rester sous la barre des 150 ms (one-way).</li>
+<li><strong>Gigue (jitter) :</strong> Variation du délai d'arrivée des paquets, destructrice pour la reconstruction audio.</li>
+<li><strong>Perte de paquets (Packet Loss) :</strong> Une perte supérieure à 1% dégrade immédiatement l'intelligibilité de la voix.</li>
+</ul>
+<p>Il convient de distinguer :</p>
+<ol>
+<li><strong>Le trafic de Signalisation (SIP 5060, SCCP 2000) :</strong> Peu gourmand en bande passante mais critique pour l'établissement/libération d'appels.</li>
+<li><strong>Le trafic Média / Audio (RTP) :</strong> Flux continu nécessitant une bande passante garantie et une priorité stricte.</li>
+</ol>
+<pre><code>Router# configure terminal
+Router(config)# priority-list 1 protocol ip high tcp 5060
+Router(config)# priority-list 1 protocol ip high udp 2000
+Router(config)# priority-list 1 protocol ip high udp 5060
+Router(config)# priority-list 1 default medium
+Router(config)# interface FastEthernet0/0
+Router(config-if)# priority-group 1
+Router(config-if)# exit
+Router(config)# voice service voip
+Router(config-voi-serv)# exit
+Router(config)# do write memory
+</code></pre>
+<p><strong>Récapitulatif des configurations du routeur</strong> </p>
+<p><img loading="lazy" alt="image.png" src="cb3d5258-image.png" /></p>
+<p><img loading="lazy" alt="image.png" src="f7b33cae-image.png" /></p>
+<p><img loading="lazy" alt="image.png" src="2460fc9f-image.png" /></p>
+<p><img loading="lazy" alt="image.png" src="71529fa0-image.png" /></p>
+<h2 id="tests-de-validation">Tests de validation</h2>
+<p>Cisco IP Communicator — utilisateur Joris</p>
+<p><img loading="lazy" alt="image.png" src="4898dbb7-image.png" /></p>
+<p>Cisco IP Communicator — utilisateur Koffi</p>
+<p><img loading="lazy" alt="image.png" src="065baff5-image.png" /></p>
+<p>Réalisation d’un appel de Koffi vers Joris (SCCP to SCCP)</p>
+<p><a href="https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing">https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing</a></p>
+<p><a href="https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing">https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing</a></p>
+<p><a href="https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing">https://drive.google.com/file/d/1GxTHlWaYYwYGR8Yvp3tfPzNSpY95IgGA/view?usp=sharing</a></p>
+<p>Réalisation d’un appel de Koffi vers Joris (SIP to SCCP)</p>
+<p><a href="https://drive.google.com/file/d/1HRJekVjzD137PDYKLNakj7IHFxdX6wgz/view?usp=sharing">https://drive.google.com/file/d/1HRJekVjzD137PDYKLNakj7IHFxdX6wgz/view?usp=sharing</a></p>
+<h2 id="competences-demontrees">Compétences démontrées</h2>
+<ul>
+<li>Configuration d'un routeur Cisco 3725 sous IOS : adressage, serveur DHCP avec option 150, horloge système.</li>
+<li>Mise en œuvre de Cisco CallManager Express pour des terminaux SCCP (<code>telephony-service</code>, <code>ephone-dn</code>, <code>ephone</code>).</li>
+<li>Mise en place d'un registrar SIP sur CME (<code>voice register global</code>, <code>dn</code>, <code>pool</code>) avec authentification et codecs G.711.</li>
+<li>Interconnexion d'un réseau virtuel GNS3 avec un segment physique via un pont, pour enregistrer des softphones Linphone sur Android.</li>
+<li>Priorisation du trafic de signalisation voix avec une <code>priority-list</code>.</li>
+<li>Validation par des appels SCCP vers SCCP et SIP vers SCCP.</li>
+</ul>
+<hr />
+<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
+<blockquote>
+<p><strong>Règle de mesure :</strong> les cases sont à cocher uniquement lorsque l’action est réalisée et qu’une preuve est ajoutée. Les descriptions et captures existantes ne suffisent pas à prouver les tests qui ne sont pas explicitement montrés. Cette démarche s’inspire des pratiques ITIL 4 ; elle ne constitue pas une certification ni une conformité formelle à ITIL.
+</p>
+</blockquote>
+<h2 id="1-cadrage-et-criteres-de-reussite">1. Cadrage et critères de réussite</h2>
+<ul>
+<li>☐ Décrire le besoin, les utilisateurs concernés et le problème à résoudre.</li>
+<li>☐ Définir le périmètre inclus et exclu, les hypothèses et les limites du laboratoire.</li>
+<li>☐ Inventorier les composants, versions, ressources matérielles et prérequis.</li>
+<li>☐ Définir des critères d’acceptation mesurables avant les tests.</li>
+<li>☐ Identifier les risques, les dépendances critiques et les points uniques de défaillance.</li>
+<li>☐ Préciser les preuves à produire et le responsable de chaque action (dans ce laboratoire : moi-même).</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de cadrage, périmètre, risques et critères d’acceptation.</p>
+<h2 id="2-conception-et-decisions-techniques">2. Conception et décisions techniques</h2>
+<ul>
+<li>☐ Mettre à jour le schéma logique/physique et identifier clairement chaque composant.</li>
+<li>☐ Documenter les adresses, flux, ports, protocoles, dépendances et versions.</li>
+<li>☐ Justifier les choix techniques et noter les alternatives écartées.</li>
+<li>☐ Décrire la sécurité : privilèges, secrets non publiés, segmentation et accès d’administration.</li>
+<li>☐ Préparer la matrice de tests : nominal, cas négatif, panne et retour au service.</li>
+</ul>
+<p><strong>Livrable :</strong> schéma, inventaire, matrice des dépendances/flux et plan de tests.</p>
+<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
+<ul>
+<li>☐ Exporter ou sauvegarder les configurations et données nécessaires avant modification.</li>
+<li>☐ Consigner l’état initial, les versions, les captures et les commandes de vérification.</li>
+<li>☐ Décrire les étapes d’exécution dans l’ordre et les contrôles intermédiaires.</li>
+<li>☐ Définir le plan de retour arrière et les conditions d’arrêt.</li>
+<li>☐ Effectuer une modification à la fois et consigner les résultats.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
+<h2 id="4-tests-techniques-et-validation">4. Tests techniques et validation</h2>
+<ul>
+<li>☐ Exécuter les tests nominaux de bout en bout et consigner le résultat observé.</li>
+<li>☐ Tester les dépendances et les cas négatifs pertinents.</li>
+<li>☐ Simuler au moins une panne contrôlée dans un environnement sûr.</li>
+<li>☐ Vérifier les journaux, états, compteurs et mesures, pas seulement l’état « service démarré ».</li>
+<li>☐ Vérifier la reprise et refaire le test après toute correction.</li>
+<li>☐ Associer à chaque test une preuve datée et un verdict : Réussi / Échoué / Non testé.</li>
+</ul>
+<p><strong>Livrable :</strong> matrice de tests avec résultats observés, preuves et anomalies restantes.</p>
+<h2 id="5-gestion-des-incidents-et-analyse-de-probleme">5. Gestion des incidents et analyse de problème</h2>
+<ul>
+<li>☐ Décrire le symptôme et l’impact sans présumer de la cause.</li>
+<li>☐ Consigner l’heure, la chronologie, les changements récents et les composants touchés.</li>
+<li>☐ Collecter journaux, commandes de diagnostic et mesures utiles.</li>
+<li>☐ Tester les hypothèses une par une et documenter les éléments qui les confirment ou les réfutent.</li>
+<li>☐ Rétablir le service de façon sûre, puis distinguer contournement et cause racine.</li>
+<li>☐ Créer une action préventive pour éviter la répétition du problème.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche d’incident et retour d’expérience. Si aucun incident n’a encore été testé, indiquer « à réaliser » plutôt que d’inventer un incident.</p>
+<h2 id="6-mise-en-service-et-dossier-dexploitation">6. Mise en service et dossier d’exploitation</h2>
+<ul>
+<li>☐ Vérifier que chaque critère d’acceptation a une preuve.</li>
+<li>☐ Mettre à jour le schéma, l’inventaire, les versions et les dépendances.</li>
+<li>☐ Écrire les procédures de vérification, d’exploitation et de dépannage.</li>
+<li>☐ Documenter supervision, sauvegarde/restauration, accès de secours et rollback selon le projet.</li>
+<li>☐ Lister les limites connues et les risques résiduels.</li>
+<li>☐ Vérifier qu’aucun mot de passe, jeton, adresse publique sensible ou donnée confidentielle n’est exposé.</li>
+</ul>
+<p><strong>Livrable :</strong> dossier d’exploitation court, procédure de dépannage et limites connues.</p>
+<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
+<ul>
+<li>☐ Résumer ce qui fonctionne et citer les preuves.</li>
+<li>☐ Lister les tests non réalisés, échecs et dettes techniques.</li>
+<li>☐ Identifier la leçon la plus importante et la cause racine si elle a été confirmée.</li>
+<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort.</li>
+<li>☐ Définir le prochain jalon et les preuves à ajouter au portfolio.</li>
+</ul>
+<p><strong>Livrable :</strong> bilan de projet et plan d’amélioration priorisé.</p>
+<h2 id="controle-de-cloture-a-remplir-honnetement">Contrôle de clôture — à remplir honnêtement</h2>
+<ul>
+<li>Tests réussis : ___ / ___</li>
+<li>Tests échoués : ___</li>
+<li>Tests non réalisés : ___</li>
+<li>Incident / panne contrôlée testé(e) : Oui / Non</li>
+<li>Restauration / retour arrière prouvé : Oui / Non / Sans objet</li>
+<li>Schéma et documentation à jour : Oui / Non</li>
+<li>Limites et risques résiduels écrits : Oui / Non</li>
+<li><strong>Décision :</strong> Livré techniquement / En cours / À corriger / Revue nécessaire</li>
+<li><strong>Prochaine action concrète :</strong> ___</li>
+</ul>
+<h2 id="criteres-specifiques-au-laboratoire-cisco-cme-sccpsip">Critères spécifiques au laboratoire Cisco CME SCCP/SIP</h2>
+<ul>
+<li>☐ Confirmer la topologie GNS3 ↔ carte physique ↔ LAN/Wi-Fi et documenter les limites du pont réseau.</li>
+<li>☐ Prouver l’attribution DHCP et l’option 150 pour les terminaux SCCP.</li>
+<li>☐ Prouver l’enregistrement d’au moins un terminal SCCP et d’un terminal SIP avec captures/logs expurgés.</li>
+<li>☐ Tester les appels dans les deux sens entre terminaux SCCP et SIP et documenter le résultat.</li>
+<li>☐ Vérifier audio bidirectionnel, ports/flux RTP et qualité de service ; ne pas conclure à une QoS complète sur la seule présence d’une commande de priorité.</li>
+<li>☐ Tester un cas d’échec : mauvaise extension, enregistrement absent ou perte de connectivité ; diagnostiquer à partir des faits.</li>
+<li>☐ Si la QoS est revendiquée, comparer un test sous charge et sans charge avec mesures (perte, latence/jitter si mesurables) ; sinon noter « QoS non validée sous congestion ».</li>
+<li>☐ Ajouter un tableau des extensions anonymisées ou de test, les commandes de vérification et les preuves d’appels.</li>
+</ul>
+<p><strong>Livrables attendus pour cette fiche :</strong> schéma VoIP, extrait de configuration expurgé, matrice d’appels, preuve DHCP/option 150, test d’échec et conclusion sur les limites du laboratoire.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>

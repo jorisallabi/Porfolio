@@ -1,0 +1,534 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interconnexion de deux sites d&#x27;entreprise par VPN IPsec IKEv2 site-à-site (FortiGate) avec réseau LAN redondant HSRP et routage OSPF — Joris Allabi</title><meta name="description" content="Tunnel IPsec IKEv2 fonctionnel selon les tests déjà réalisés ; laboratoire multi-sites en cours de finalisation. Restent à documenter et valider de manière">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
+<h1>Interconnexion de deux sites d&#x27;entreprise par VPN IPsec IKEv2 site-à-site (FortiGate) avec réseau LAN redondant HSRP et routage OSPF</h1>
+<div class="meta"><span class="badge wip">En cours</span><span class="chip">Avancement 70%</span><span class="chip">Laboratoire réseau multi-sites (FortiGate, HSRP, OSPF)</span></div>
+<h2 id="problematique">Problématique</h2>
+<table>
+<thead>
+<tr>
+<th>Contexte</th>
+<th>Problématique</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Une entreprise exploite deux sites, chacun avec son propre réseau local segmenté par services (RH, comptabilité, marketing, IT, VoIP).</td>
+<td>✗ Les deux sites sont des réseaux distincts (192.168.0.0/16 et 172.16.0.0/16)</td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Le lien WAN entre eux n'est pas fiable pour transporter du trafic interne en clair</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Une panne d'un seul commutateur de distribution ne doit pas couper un bâtiment</td>
+<td>✅ Relier les deux sites par un tunnel chiffré IPsec IKEv2</td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Faire communiquer les LAN internes des deux sites de bout en bout</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Garantir la redondance des passerelles par VLAN (HSRP)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Propager le routage interne en OSPF</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-globale">Architecture globale</h2>
+<p>Chaque site suit une architecture hiérarchique à trois niveaux (accès, distribution, cœur), avec un pare-feu <strong>FortiGate</strong> en bordure. Les deux FortiGate établissent entre leurs interfaces WAN un tunnel IPsec IKEv2.</p>
+<p><img loading="lazy" alt="Topologie du laboratoire dans l'environnement de simulation : les deux sites, leurs pare-feu FortiGate et le lien d'interconnexion" src="0703c2e8-Capture_dcran_2026-10-15_205455.png" /></p>
+<p>Topologie du laboratoire dans l'environnement de simulation : les deux sites, leurs pare-feu FortiGate et le lien d'interconnexion</p>
+<figure class="embed"><iframe src="a4f37e9b-schema_architecture_vpn_site_a_site.html" loading="lazy" title="schema_architecture_vpn_site_a_site.html"></iframe><figcaption><a href="a4f37e9b-schema_architecture_vpn_site_a_site.html" target="_blank" rel="noopener">Ouvrir le schéma interactif en plein écran ↗</a></figcaption></figure>
+<h2 id="plan-dadressage">Plan d'adressage</h2>
+<h3 id="site-principal-1921680016">Site principal (192.168.0.0/16)</h3>
+<table>
+<thead>
+<tr>
+<th>Bâtiment</th>
+<th>VLAN</th>
+<th>Nom</th>
+<th>Réseau</th>
+<th>Passerelle virtuelle (HSRP)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bât. A</td>
+<td>10</td>
+<td>RH</td>
+<td><code>192.168.10.0/24</code></td>
+<td><code>192.168.10.1</code></td>
+</tr>
+<tr>
+<td>Bât. A</td>
+<td>20</td>
+<td>Compta</td>
+<td><code>192.168.20.0/24</code></td>
+<td><code>192.168.20.1</code></td>
+</tr>
+<tr>
+<td>Bât. A</td>
+<td>30</td>
+<td>Marketing</td>
+<td><code>192.168.30.0/24</code></td>
+<td><code>192.168.30.1</code></td>
+</tr>
+<tr>
+<td>Bât. B</td>
+<td>60</td>
+<td>IT</td>
+<td><code>192.168.60.0/24</code></td>
+<td><code>192.168.60.1</code></td>
+</tr>
+<tr>
+<td>Bât. B</td>
+<td>70</td>
+<td>DEV</td>
+<td><code>192.168.70.0/24</code></td>
+<td><code>192.168.70.1</code></td>
+</tr>
+<tr>
+<td>Bât. B</td>
+<td>80</td>
+<td>MATERIEL</td>
+<td><code>192.168.80.0/24</code></td>
+<td><code>192.168.80.1</code></td>
+</tr>
+<tr>
+<td>Bât. A et B</td>
+<td>50</td>
+<td>VOIP</td>
+<td><code>192.168.50.0/24</code></td>
+<td>n/a (adresses réelles des distributions : <code>.254</code>, <code>.253</code>, <code>.252</code>, <code>.251</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="second-site-172160016">Second site (172.16.0.0/16)</h3>
+<table>
+<thead>
+<tr>
+<th>Bâtiment</th>
+<th>VLAN</th>
+<th>Nom</th>
+<th>Réseau</th>
+<th>Passerelle virtuelle (HSRP)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bât. C</td>
+<td>10</td>
+<td>RH</td>
+<td><code>172.16.10.0/24</code></td>
+<td><code>172.16.10.1</code></td>
+</tr>
+<tr>
+<td>Bât. C</td>
+<td>20</td>
+<td>Compta</td>
+<td><code>172.16.20.0/24</code></td>
+<td><code>172.16.20.1</code></td>
+</tr>
+<tr>
+<td>Bât. C</td>
+<td>30</td>
+<td>Marketing</td>
+<td><code>172.16.30.0/24</code></td>
+<td><code>172.16.30.1</code></td>
+</tr>
+<tr>
+<td>Bât. D</td>
+<td>60</td>
+<td>IT</td>
+<td><code>172.16.60.0/24</code></td>
+<td><code>172.16.60.1</code></td>
+</tr>
+<tr>
+<td>Bât. D</td>
+<td>70</td>
+<td>DEV</td>
+<td><code>172.16.70.0/24</code></td>
+<td><code>172.16.70.1</code></td>
+</tr>
+<tr>
+<td>Bât. D</td>
+<td>80</td>
+<td>MATERIEL</td>
+<td><code>172.16.80.0/24</code></td>
+<td><code>172.16.80.1</code></td>
+</tr>
+<tr>
+<td>Bât. C et D</td>
+<td>50</td>
+<td>VOIP</td>
+<td><code>172.16.50.0/24</code></td>
+<td>n/a (adresses réelles des distributions : <code>.254</code>, <code>.253</code>, <code>.252</code>, <code>.251</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="liaisons-routees-et-pare-feu">Liaisons routées et pare-feu</h3>
+<p>Les liaisons entre le cœur et chaque commutateur de distribution sont des liens routés point à point en <code>/30</code>. Le cœur est relié au FortiGate par un <code>/30</code> dédié.</p>
+<table>
+<thead>
+<tr>
+<th>Liaison</th>
+<th>Site principal</th>
+<th>Second site</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cœur <code>e0/1</code> ↔ distribution 1 <code>e0/0</code></td>
+<td><code>192.168.1.16/30</code> (cœur <code>.17</code>, distribution <code>.18</code>)</td>
+<td><code>172.16.2.16/30</code> (cœur <code>.17</code>, distribution <code>.18</code>)</td>
+</tr>
+<tr>
+<td>Cœur <code>e0/2</code> ↔ distribution 2 <code>e0/0</code></td>
+<td><code>192.168.1.12/30</code> (cœur <code>.13</code>, distribution <code>.14</code>)</td>
+<td><code>172.16.2.12/30</code> (cœur <code>.13</code>, distribution <code>.14</code>)</td>
+</tr>
+<tr>
+<td>Cœur <code>e0/3</code> ↔ distribution 3 <code>e0/0</code></td>
+<td><code>192.168.1.8/30</code> (cœur <code>.9</code>, distribution <code>.10</code>)</td>
+<td><code>172.16.2.8/30</code> (cœur <code>.9</code>, distribution <code>.10</code>)</td>
+</tr>
+<tr>
+<td>Cœur <code>e1/0</code> ↔ distribution 4 <code>e0/0</code></td>
+<td><code>192.168.1.4/30</code> (cœur <code>.5</code>, distribution <code>.6</code>)</td>
+<td><code>172.16.2.4/30</code> (cœur <code>.5</code>, distribution <code>.6</code>)</td>
+</tr>
+<tr>
+<td>Cœur <code>e0/0</code> ↔ FortiGate (LAN)</td>
+<td><code>192.168.1.0/30</code> (FortiGate <code>.1</code>, cœur <code>.2</code>)</td>
+<td><code>172.16.2.0/30</code> (FortiGate <code>.1</code>, cœur <code>.2</code>)</td>
+</tr>
+<tr>
+<td>FortiGate, interface WAN</td>
+<td><code>20.20.20.2/30</code></td>
+<td><code>30.30.30.2/30</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="conception-du-reseau-local">Conception du réseau local</h2>
+<h3 id="acces">Accès</h3>
+<p>Chaque bâtiment compte deux commutateurs d'accès (<code>MAIN_ACC_1</code> à <code>4</code>, <code>2ND_ACC_1</code> à <code>4</code>). Chacun est relié aux deux commutateurs de distribution de son bâtiment par des trunks 802.1Q (<code>e0/0</code> et <code>e0/1</code>) et porte les ports d'accès des VLAN du bâtiment. Le VLAN VOIP (50) est déclaré sur tous les commutateurs d'accès.</p>
+<h3 id="distribution-et-redondance-des-passerelles-hsrp">Distribution et redondance des passerelles (HSRP)</h3>
+<p>Chaque bâtiment dispose de deux commutateurs de distribution de niveau 3 qui portent les interfaces VLAN (SVI). Les deux se partagent une <strong>passerelle virtuelle <code>.1</code></strong> par VLAN grâce à HSRP, avec <code>preempt</code> activé. Les rôles actifs sont répartis entre les deux commutateurs, VLAN par VLAN (priorité 110 pour l'actif, 100 pour le secours), ce qui répartit la charge au lieu de laisser un commutateur au repos.</p>
+<p>L'état HSRP du bâtiment A est vérifié sur chacune des deux distributions avec la commande <code>show standby brief</code>.</p>
+<p><img loading="lazy" alt="Sortie de la commande “Show stanbdy briefe sur DSTR_MAIN_1”" src="817537c6-image.png" /></p>
+<p>Sortie de la commande “Show stanbdy briefe sur DSTR_MAIN_1”</p>
+<p><img loading="lazy" alt="Sortie de la commande “Show stanbdy briefe sur DSTR_MAIN_2”" src="7017c261-image.png" /></p>
+<p>Sortie de la commande “Show stanbdy briefe sur DSTR_MAIN_2”</p>
+<table>
+<thead>
+<tr>
+<th>Bâtiment</th>
+<th>VLAN</th>
+<th>Distribution active (priorité 110)</th>
+<th>Distribution de secours (priorité 100)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A (site principal)</td>
+<td>10 RH</td>
+<td><code>DSTR_MAIN_1</code></td>
+<td><code>DSTR_MAIN_2</code></td>
+</tr>
+<tr>
+<td>A</td>
+<td>20 Compta</td>
+<td><code>DSTR_MAIN_2</code></td>
+<td><code>DSTR_MAIN_1</code></td>
+</tr>
+<tr>
+<td>A</td>
+<td>30 Marketing</td>
+<td><code>DSTR_MAIN_1</code></td>
+<td><code>DSTR_MAIN_2</code></td>
+</tr>
+<tr>
+<td>B (site principal)</td>
+<td>60 IT</td>
+<td><code>DSTR_MAIN_3</code></td>
+<td><code>DSTR_MAIN_4</code></td>
+</tr>
+<tr>
+<td>B</td>
+<td>70 DEV</td>
+<td><code>DSTR_MAIN_4</code></td>
+<td><code>DSTR_MAIN_3</code></td>
+</tr>
+<tr>
+<td>B</td>
+<td>80 MATERIEL</td>
+<td><code>DSTR_MAIN_3</code></td>
+<td><code>DSTR_MAIN_4</code></td>
+</tr>
+<tr>
+<td>C (second site)</td>
+<td>10 RH</td>
+<td><code>DSTR_2ND_1</code></td>
+<td><code>DSTR_2ND_2</code></td>
+</tr>
+<tr>
+<td>C</td>
+<td>20 Compta</td>
+<td><code>DSTR_2ND_2</code></td>
+<td><code>DSTR_2ND_1</code></td>
+</tr>
+<tr>
+<td>C</td>
+<td>30 Marketing</td>
+<td><code>DSTR_2ND_1</code></td>
+<td><code>DSTR_2ND_2</code></td>
+</tr>
+<tr>
+<td>D (second site)</td>
+<td>60 IT</td>
+<td><code>DSTR_2ND_3</code></td>
+<td><code>DSTR_2ND_4</code></td>
+</tr>
+<tr>
+<td>D</td>
+<td>70 DEV</td>
+<td><code>DSTR_2ND_4</code></td>
+<td><code>DSTR_2ND_3</code></td>
+</tr>
+<tr>
+<td>D</td>
+<td>80 MATERIEL</td>
+<td><code>DSTR_2ND_3</code></td>
+<td><code>DSTR_2ND_4</code></td>
+</tr>
+</tbody>
+</table>
+<p>Exemple de configuration HSRP (VLAN 10 sur <code>DSTR_MAIN_1</code>) :</p>
+<pre><code>int vlan 10
+ ip address 192.168.10.254 255.255.255.0
+ no shutdown
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+</code></pre>
+<h3 id="services-dhcp">Services DHCP</h3>
+<p>Les pools DHCP des VLAN de données sont définis sur un commutateur de distribution par bâtiment (<code>DSTR_MAIN_1</code> et <code>DSTR_MAIN_3</code> sur le site principal, <code>DSTR_2ND_1</code> et <code>DSTR_2ND_3</code> sur le second site). Chaque pool distribue la passerelle virtuelle HSRP <code>.1</code> comme routeur par défaut.</p>
+<p><img loading="lazy" alt="Commande show ip dhcp binding sur DSTR_MAIN_1 : adresses attribuées par les pools DHCP aux postes du bâtiment A" src="faa32101-image.png" /></p>
+<p>Commande show ip dhcp binding sur DSTR_MAIN_1 : adresses attribuées par les pools DHCP aux postes du bâtiment A</p>
+<h2 id="routage-interne-ospf">Routage interne (OSPF)</h2>
+<p>Chaque site exécute son propre processus OSPF dans l'aire 0 : processus <code>10</code> sur le site principal, processus <code>20</code> sur le second site.</p>
+<ul>
+<li>Les liaisons cœur–distribution sont configurées en <code>ip ospf network point-to-point</code>.</li>
+<li>Sur les distributions, <code>passive-interface default</code> limite OSPF aux seules interfaces routées vers le cœur.</li>
+<li>Le cœur annonce une route par défaut aux distributions (<code>default-information originate</code>), appuyée sur une route statique <code>0.0.0.0/0</code> vers le FortiGate (<code>192.168.1.1</code> sur le site principal, <code>172.16.2.1</code> sur le second site).</li>
+<li>L'interface du cœur vers le FortiGate (<code>e0/0</code>) est passive : aucun voisinage OSPF n'est établi avec le pare-feu.</li>
+</ul>
+<p>Conséquence : tout trafic destiné à l'autre site suit la route par défaut jusqu'au FortiGate local, qui l'envoie dans le tunnel IPsec.</p>
+<p><img loading="lazy" alt="Commande show ip route sur DSTR_MAIN_1 : table de routage de la distribution avec la route par défaut annoncée par le cœur en OSPF" src="54d81c2f-image.png" /></p>
+<p>Commande show ip route sur DSTR_MAIN_1 : table de routage de la distribution avec la route par défaut annoncée par le cœur en OSPF</p>
+<p>Extrait de configuration du cœur du site principal :</p>
+<pre><code>router ospf 10
+ network 192.168.1.0 0.0.0.255 area 0
+ passive-interface e 0/0
+ default-information originate
+ip route 0.0.0.0 0.0.0.0 192.168.1.1
+
+</code></pre>
+<h2 id="vpn-ipsec-site-a-site-ikev2">VPN IPsec site-à-site (IKEv2)</h2>
+<p>Le tunnel relie les deux FortiGate à travers leurs interfaces WAN (<code>20.20.20.2/30</code> côté site principal, <code>30.30.30.2/30</code> côté second site) et fait transiter le trafic entre les deux LAN : <code>192.168.0.0/16</code> d'un côté, <code>172.16.0.0/16</code> de l'autre. Le protocole d'échange de clés est <strong>IKEv2</strong>.</p>
+<p>Les captures de cette section montrent la configuration du FortiGate du second site (site B). Le même principe s'applique côté site principal.</p>
+<h3 id="negociation-du-tunnel-phases-1-et-2">Négociation du tunnel : phases 1 et 2</h3>
+<p>La phase 1 définit l'authentification et la négociation IKEv2 entre les deux FortiGate. La phase 2 définit la protection du trafic qui traverse ensuite le tunnel.</p>
+<p><img loading="lazy" alt="PHASE 1 IPSEC SITE B" src="b4b0068a-image.png" /></p>
+<p>PHASE 1 IPSEC SITE B</p>
+<p><img loading="lazy" alt="PHASE 2 IPSEC" src="65874f7f-image.png" /></p>
+<p>PHASE 2 IPSEC</p>
+<p><img loading="lazy" alt="Liste des objets VPN SITE B" src="44d07173-image.png" /></p>
+<p>Liste des objets VPN SITE B</p>
+<h3 id="objets-dadresses">Objets d'adresses</h3>
+<p>Les politiques de pare-feu s'appuient sur deux groupes d'adresses : l'un regroupe les hôtes externes (VPN EXTERNE), l'autre les hôtes internes (VPN INTERNE).</p>
+<p><img loading="lazy" alt="Groupe d’adresse pour les hôtes externes (VPN EXTERNE)" src="ce66befb-image.png" /></p>
+<p>Groupe d’adresse pour les hôtes externes (VPN EXTERNE)</p>
+<p><img loading="lazy" alt="Groupe d’adresse pour les hôtes interne (VPN INTERNE)" src="782653e8-image.png" /></p>
+<p>Groupe d’adresse pour les hôtes interne (VPN INTERNE)</p>
+<h3 id="politiques-de-pare-feu">Politiques de pare-feu</h3>
+<p>Deux politiques encadrent le trafic, une pour chaque sens : du tunnel vers le réseau local, puis du réseau local vers le tunnel.</p>
+<p><img loading="lazy" alt="Mise en place de la politique VPN to LAN" src="504bec6f-image.png" /></p>
+<p>Mise en place de la politique VPN to LAN</p>
+<p><img loading="lazy" alt="Politique de pare-feu LAN vers VPN : trafic du réseau local à destination du tunnel" src="c54974ff-image.png" /></p>
+<p>Politique de pare-feu LAN vers VPN : trafic du réseau local à destination du tunnel</p>
+<h3 id="routage-du-trafic-chiffre">Routage du trafic chiffré</h3>
+<p>Une route est déclarée sur le FortiGate pour acheminer le trafic VPN chiffré.</p>
+<p><img loading="lazy" alt="Déclaration de la route par défaut pour le trafic VPN chiffré" src="1f1c32d3-image.png" /></p>
+<p>Déclaration de la route par défaut pour le trafic VPN chiffré</p>
+<h3 id="test-du-tunnel">Test du tunnel</h3>
+<p>Un ping est lancé depuis le site B vers <code>192.168.20.1</code>, la passerelle HSRP du VLAN 20 du site principal, ce qui force le trafic à traverser le tunnel.</p>
+<p><img loading="lazy" alt="Initiation d’un trafic via le tunnel VPN avec une commande ping vers le réseau 192.168.20.1 depuis le site B " src="13934f91-image.png" /></p>
+<p>Initiation d’un trafic via le tunnel VPN avec une commande ping vers le réseau 192.168.20.1 depuis le site B </p>
+<p><img loading="lazy" alt="Capture du trafic généré par les ping" src="7518352d-Capture_dcran_2026-10-16_002407.png" /></p>
+<p>Capture du trafic généré par les ping</p>
+<h2 id="validation">Validation</h2>
+<p>Le fonctionnement du tunnel a été vérifié par des tests de connectivité entre les deux sites :</p>
+<ul>
+<li>ping depuis le FortiGate du site principal, avec comme adresse source son interface LAN <code>192.168.1.1</code>, vers l'interface LAN du FortiGate distant <code>172.16.2.1</code> ;</li>
+<li>trafic traversant le tunnel également depuis les routeurs internes, c'est-à-dire sans se limiter au pare-feu lui-même ;</li>
+<li>ping depuis le second site (site B) vers <code>192.168.20.1</code>, passerelle HSRP du VLAN 20 du site principal, avec capture du trafic généré (voir la section « Test du tunnel » ci-dessus).</li>
+</ul>
+<h2 id="competences-demontrees">Compétences démontrées</h2>
+<ul>
+<li>Conception d'un réseau d'entreprise hiérarchique à trois niveaux (accès, distribution, cœur) sur deux sites.</li>
+<li>Segmentation par VLAN et plan d'adressage cohérent entre les deux sites.</li>
+<li>Redondance de passerelle avec HSRP et répartition de charge par VLAN (priorités alternées, <code>preempt</code>).</li>
+<li>Routage OSPF mono-aire avec liens point à point, interfaces passives et propagation d'une route par défaut.</li>
+<li>Mise en place d'un VPN IPsec site-à-site IKEv2 entre deux pare-feu FortiGate et validation du trafic inter-sites.</li>
+<li>Configuration de services DHCP par VLAN sur commutateurs de niveau 3.</li>
+</ul>
+<hr />
+<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
+<blockquote>
+<p><strong>Comment remplir cette fiche :</strong> coche une case uniquement lorsque l’action est réellement réalisée et qu’une preuve est ajoutée. « Configuré » ne veut pas dire « testé ». Cette méthode s’inspire de pratiques ITIL 4 (gestion des changements, incidents, problèmes, configuration et amélioration continue), sans prétendre à une conformité ou certification formelle.
+</p>
+</blockquote>
+<h2 id="1-cadrage">1. Cadrage</h2>
+<ul>
+<li>☐ Décrire le besoin, les utilisateurs/services concernés et le problème à résoudre.</li>
+<li>☐ Définir périmètre inclus/exclu, hypothèses, versions et limites du laboratoire.</li>
+<li>☐ Inventorier les composants, ressources matérielles, licences et prérequis.</li>
+<li>☐ Établir des critères d’acceptation mesurables avant les tests.</li>
+<li>☐ Identifier les dépendances, risques et points uniques de défaillance (SPOF).</li>
+<li>☐ Lister les preuves attendues et l’ordre de priorité des travaux.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de cadrage, périmètre, critères d’acceptation et registre des risques.</p>
+<h2 id="2-conception">2. Conception</h2>
+<ul>
+<li>☐ Mettre à jour le schéma logique et physique, avec noms/rôles cohérents.</li>
+<li>☐ Documenter adressage, VLAN, routes, ports, protocoles, flux et dépendances.</li>
+<li>☐ Vérifier les prérequis et la compatibilité des versions auprès de la documentation du fournisseur.</li>
+<li>☐ Justifier les choix techniques et consigner les compromis/alternatives.</li>
+<li>☐ Prévoir sécurité, privilèges minimums, gestion des secrets et accès d’administration.</li>
+<li>☐ Préparer une matrice de tests : nominal, négatif, panne et reprise.</li>
+</ul>
+<p><strong>Livrable :</strong> schéma, inventaire, matrice des flux/dépendances et plan de tests.</p>
+<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
+<ul>
+<li>☐ Sauvegarder/exporter les configurations et données avant une modification à risque.</li>
+<li>☐ Capturer l’état initial : versions, états, commandes de contrôle et journaux pertinents.</li>
+<li>☐ Écrire les étapes d’exécution et les contrôles après chaque étape.</li>
+<li>☐ Définir le retour arrière et les conditions qui imposent l’arrêt.</li>
+<li>☐ Modifier une variable à la fois et consigner les résultats.</li>
+<li>☐ Vérifier le retour à l’état attendu après changement ou rollback.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
+<h2 id="4-tests-et-validation">4. Tests et validation</h2>
+<ul>
+<li>☐ Exécuter le scénario nominal de bout en bout depuis un client ou système consommateur.</li>
+<li>☐ Tester les dépendances et au moins un cas négatif adapté au projet.</li>
+<li>☐ Simuler une panne contrôlée sans mettre en risque des données ou systèmes hors périmètre.</li>
+<li>☐ Vérifier journaux, états, compteurs et mesures ; ne pas se fier uniquement à une interface verte.</li>
+<li>☐ Vérifier la reprise après correction ou retour arrière.</li>
+<li>☐ Enregistrer chaque test avec résultat attendu, résultat observé, preuve et verdict : Réussi / Échoué / Non testé.</li>
+</ul>
+<p><strong>Livrable :</strong> matrice de tests et liste des écarts à corriger.</p>
+<h2 id="5-incidents-et-problemes">5. Incidents et problèmes</h2>
+<ul>
+<li>☐ Décrire symptôme, impact et heure sans présumer de la cause.</li>
+<li>☐ Consigner la chronologie et les changements récents.</li>
+<li>☐ Collecter journaux, commandes de diagnostic, métriques et messages d’erreur.</li>
+<li>☐ Tester les hypothèses une par une et documenter les preuves.</li>
+<li>☐ Distinguer contournement, rétablissement et cause racine confirmée.</li>
+<li>☐ Définir une action préventive : alerte, correction, procédure ou test supplémentaire.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche d’incident/retour d’expérience. Si aucun incident n’a été testé, écrire « à réaliser » et ne pas inventer de cause racine.</p>
+<h2 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h2>
+<ul>
+<li>☐ Vérifier les critères d’acceptation et relier chacun à une preuve.</li>
+<li>☐ Mettre à jour schéma, inventaire, versions, dépendances et configurations de référence.</li>
+<li>☐ Documenter les commandes de contrôle, les tâches courantes et le dépannage initial.</li>
+<li>☐ Documenter supervision, sauvegarde/restauration et reprise quand c’est pertinent.</li>
+<li>☐ Lister les limites du laboratoire, risques résiduels et prérequis de production.</li>
+<li>☐ Contrôler qu’aucun mot de passe, jeton ou donnée confidentielle n’est publié.</li>
+</ul>
+<p><strong>Livrable :</strong> dossier d’exploitation court et liste des limites connues.</p>
+<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
+<ul>
+<li>☐ Résumer ce qui fonctionne et citer les preuves qui le démontrent.</li>
+<li>☐ Lister tests non réalisés, échecs, défauts et dettes techniques.</li>
+<li>☐ Décrire la principale leçon apprise et la cause racine seulement si elle est confirmée.</li>
+<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort nécessaire.</li>
+<li>☐ Définir la prochaine action concrète et les preuves à ajouter au portfolio.</li>
+</ul>
+<p><strong>Livrable :</strong> bilan et plan d’amélioration priorisé.</p>
+<h2 id="criteres-specifiques-vpn-ipsec-ikev2-ospf-et-hsrp">Critères spécifiques — VPN IPsec IKEv2, OSPF et HSRP</h2>
+<ul>
+<li>☐ Vérifier les paramètres IKEv2/IPsec, propositions cryptographiques, identités, selectors, interfaces WAN et règles de pare-feu sans publier de secrets.</li>
+<li>☐ Prouver l’établissement du tunnel et les compteurs de trafic chiffré/déchiffré.</li>
+<li>☐ Valider la connectivité de bout en bout entre sous-réseaux représentatifs des deux sites, dans les deux sens, y compris le chemin retour.</li>
+<li>☐ Vérifier le routage OSPF (voisins, routes, annonces) et confirmer que seuls les préfixes prévus sont propagés.</li>
+<li>☐ Tester les VLAN, passerelles HSRP, tracking/priorités si configurés et l’accès inter-VLAN.</li>
+<li>☐ Simuler séparément la perte du tunnel, d’un lien LAN et d’un commutateur de distribution ; vérifier la convergence et le rétablissement.</li>
+<li>☐ Tester un flux qui doit être refusé et confirmer le résultat dans les logs/règles appropriés.</li>
+<li>☐ Produire une chronologie de panne et une matrice flux source/destination, résultat attendu/observé.</li>
+</ul>
+<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
+<ul>
+<li>Tests réussis : ___ / ___</li>
+<li>Tests échoués : ___</li>
+<li>Tests non réalisés : ___</li>
+<li>Panne contrôlée testée : Oui / Non</li>
+<li>Rétablissement/rollback/restauration prouvé : Oui / Non / Sans objet</li>
+<li>Schéma et procédures à jour : Oui / Non</li>
+<li>Limites et risques résiduels documentés : Oui / Non</li>
+<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
+<li>Prochaine action concrète : ___</li>
+</ul>
+<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases encore vides restent des actions ouvertes ; elles ne doivent pas être présentées comme des réalisations.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>

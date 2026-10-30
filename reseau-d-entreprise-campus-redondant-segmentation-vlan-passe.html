@@ -1,0 +1,1408 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Réseau d&#x27;entreprise campus redondant : segmentation VLAN, passerelles HSRP, DHCP centralisé (AD), FortiGate double WAN et supervision SNMP Zabbix — Joris Allabi</title><meta name="description" content="Constaté : DHCP relayé fonctionnel (PC du VLAN 10) et accès au FortiGate. Internet KO (INC-001). HSRP, STP, pannes contrôlées, ACL invités et supervision r">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
+<h1>Réseau d&#x27;entreprise campus redondant : segmentation VLAN, passerelles HSRP, DHCP centralisé (AD), FortiGate double WAN et supervision SNMP Zabbix</h1>
+<div class="meta"><span class="badge wip">En cours</span><span class="chip">Avancement 40%</span><span class="chip">Laboratoire GNS3 réseau campus (IOSvL2, FortiGate, Windows Server, Zabbix)</span></div>
+<h2 id="problematique">Problématique</h2>
+<table>
+<thead>
+<tr>
+<th>Contexte</th>
+<th>Problématique</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Une entreprise héberge ses services (AD DS, DHCP, DNS, supervision) dans un campus segmenté en VLAN : informatique, comptabilité, RH, invités, serveurs, management, imprimantes. L'accès Internet passe par un pare-feu FortiGate à double WAN.</td>
+<td>✗ Une panne d'un commutateur de distribution ne doit pas couper un service</td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Les invités ne doivent pas atteindre le réseau interne</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Les postes n'ont pas d'adresse statique : le DHCP est centralisé sur un serveur situé dans un autre VLAN</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Les équipements doivent être supervisés sans être exposés</td>
+<td>✅ Passerelles redondantes HSRP réparties par VLAN</td>
+<td></td>
+</tr>
+<tr>
+<td>✅ DHCP relayé depuis le VLAN serveurs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Sortie Internet NATée par le FortiGate avec bascule WAN2</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ VLAN invités isolé par ACL</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Supervision SNMP v2c par Zabbix</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<aside>
+<p>🧭</p>
+<p>Ce projet est traité avec la méthode d'ingénierie décrite dans la page « Méthode d'ingénierie IT — Checklist projet inspirée d'ITIL 4 » : cadrage, conception, changements contrôlés, tests avec preuves, incidents, exploitation, amélioration continue. C'est une démarche inspirée d'ITIL 4, sans prétention de certification. Aucune case n'est cochée tant que la preuve n'est pas jointe.</p>
+</aside>
+<h2 id="approche-itil-4">Approche (ITIL 4)</h2>
+<table>
+<thead>
+<tr>
+<th>Étape</th>
+<th>Pratiques ITIL 4</th>
+<th>Ce qui a été fait</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Cadrer</td>
+<td>Niveaux de service, gestion des risques</td>
+<td>Besoin formulé, 10 critères d'acceptation, 6 risques et points uniques de défaillance</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2. Concevoir</td>
+<td>Configuration, disponibilité, sécurité</td>
+<td>9 VLAN, 8 groupes HSRP répartis sur 2 distributions, DHCP centralisé, ACL invités, SNMP restreint, 7 décisions consignées</td>
+<td>2, 3</td>
+</tr>
+<tr>
+<td>3. Changer</td>
+<td>Gestion des changements</td>
+<td>6 changements tracés, sauvegarde avant modification, plan de retour arrière</td>
+<td>4</td>
+</tr>
+<tr>
+<td>4. Valider</td>
+<td>Tests, incidents, problèmes</td>
+<td>22 tests, 2 incidents, 14 écarts de configuration</td>
+<td>5, 6, 7</td>
+</tr>
+<tr>
+<td>5. Exploiter et améliorer</td>
+<td>Surveillance, mise en production, amélioration continue</td>
+<td>Supervision SNMP par Zabbix, 43 contrôles avant livraison</td>
+<td>8, 9, 10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choix de conception</strong></p>
+<ul>
+<li>Passerelles redondantes : deux distributions L3 en HSRP avec preempt, le rôle actif réparti par VLAN pour utiliser les deux commutateurs.</li>
+<li>Adressage : DHCP Windows relayé pour les VLAN utilisateurs et invités, adresses fixes pour les serveurs, le management, les imprimantes et la DMZ.</li>
+<li>Moindre privilège : chaque trunk ne transporte que les VLAN utiles, le VLAN invités est filtré par ACL, l'accès SNMP est limité à une seule IP.</li>
+</ul>
+<h2 id="resultats">Résultats</h2>
+<h3 id="chiffres-de-la-solution-verifiables-dans-les-configurations">Chiffres de la solution (vérifiables dans les configurations)</h3>
+<table>
+<thead>
+<tr>
+<th>Indicateur</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VLAN</td>
+<td>9 (7 services, 1 transit, 1 DMZ)</td>
+</tr>
+<tr>
+<td>Sous-réseaux</td>
+<td>9 (8 en 172.16.x.0/24 et la DMZ 192.168.10.0/24)</td>
+</tr>
+<tr>
+<td>Équipements gérés</td>
+<td>8 (7 commutateurs et 1 FortiGate), plus 2 serveurs</td>
+</tr>
+<tr>
+<td>Groupes HSRP</td>
+<td>8 par distribution, soit 16 interfaces VLAN, preempt partout</td>
+</tr>
+<tr>
+<td>Relais DHCP configurés</td>
+<td>7 interfaces VLAN par distribution, soit 14</td>
+</tr>
+<tr>
+<td>Liaisons agrégées</td>
+<td>4 liens physiques en 2 EtherChannels LACP entre SW_EDGE et les distributions</td>
+</tr>
+<tr>
+<td>ACL invités</td>
+<td>7 règles : 6 autorisations et 1 refus final</td>
+</tr>
+<tr>
+<td>Accès SNMP</td>
+<td>8 équipements restreints à 1 seule adresse, 172.16.50.20</td>
+</tr>
+<tr>
+<td>Accès Internet</td>
+<td>2 liens WAN, 3 politiques de pare-feu, 1 VIP publiée</td>
+</tr>
+</tbody>
+</table>
+<h3 id="resultats-mesures-au-23102026">Résultats mesurés au 23/10/2026</h3>
+<table>
+<thead>
+<tr>
+<th>Indicateur</th>
+<th>Cible</th>
+<th>Mesuré</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tests réussis</td>
+<td>22 sur 22</td>
+<td>2 sur 22 (9 %)</td>
+<td>En cours</td>
+</tr>
+<tr>
+<td>Tests échoués</td>
+<td>0</td>
+<td>1 (T04, Internet)</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>Tests non réalisés</td>
+<td>0</td>
+<td>19</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>Critères d'acceptation prouvés</td>
+<td>10 sur 10</td>
+<td>0 sur 10 (CA01 partiel : VLAN 10 seul)</td>
+<td>En cours</td>
+</tr>
+<tr>
+<td>VLAN avec DHCP validé</td>
+<td>4 sur 4 (10, 20, 30, 40)</td>
+<td>1 sur 4 (VLAN 10)</td>
+<td>En cours</td>
+</tr>
+<tr>
+<td>Écarts de configuration ouverts</td>
+<td>0</td>
+<td>14</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>Incidents ouverts</td>
+<td>0</td>
+<td>1 (INC-001) ; INC-002 contourné</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>Contrôles de la checklist cochés</td>
+<td>43 sur 43</td>
+<td>0 sur 43</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>Temps de bascule HSRP</td>
+<td>10 s ou moins</td>
+<td>À mesurer (T07, T08)</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>Temps de bascule WAN1 vers WAN2</td>
+<td>Cible à définir avant le test</td>
+<td>À mesurer (T19)</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>Équipements SNMP disponibles dans Zabbix</td>
+<td>8 sur 8</td>
+<td>À mesurer (T16)</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>Refus enregistrés par l'ACL invités</td>
+<td>Compteur supérieur à 0 sur la règle 70</td>
+<td>À mesurer (T14)</td>
+<td>Non testé</td>
+</tr>
+</tbody>
+</table>
+<aside>
+<p>📊</p>
+<p>Les lignes « À mesurer » seront remplacées par les valeurs observées pendant les tests, avec la capture correspondante. Aucune valeur n'est estimée : un chiffre sans preuve est retiré du portfolio.</p>
+</aside>
+<h2 id="a-resume-executif">A. Résumé exécutif</h2>
+<ul>
+<li><strong>Besoin :</strong> fournir à un campus de sept VLAN une passerelle redondante, des adresses distribuées automatiquement, un accès Internet filtré à double WAN et une supervision, sans point de défaillance évitable.</li>
+<li><strong>Objectif :</strong> atteindre les critères d'acceptation CA01 à CA10 (section 1) avec une preuve par critère.</li>
+<li><strong>Environnement :</strong> GNS3 ; commutateurs Cisco IOSvL2 15.2 (build 20200924) ; pare-feu FortiGate ; Windows Server (AD DS, DHCP, DNS) en 172.16.50.10 ; Zabbix en 172.16.50.20.</li>
+<li><strong>Périmètre inclus :</strong> VLAN et trunks, LACP, HSRP, relais DHCP, ACL invités, FortiGate (WAN1/WAN2, NAT, VIP DMZ), SNMP et supervision.</li>
+<li><strong>Périmètre exclu :</strong> interconnexion multi-sites (voir le projet VPN IPsec), sauvegarde Veeam, ticketing GLPI, contrôleur de domaine secondaire.</li>
+<li><strong>Statut réel :</strong> En cours.</li>
+</ul>
+<p><strong>État constaté au 23/10/2026</strong></p>
+<ul>
+<li>Constaté et à documenter par une capture : un PC du VLAN 10 obtient son adresse par DHCP via le relais, et joint le FortiGate.</li>
+<li>Échec constaté : le même PC ne joint pas Internet (8.8.8.8). Voir INC-001.</li>
+<li>Configuré mais non encore prouvé : HSRP, LACP, STP, ACL invités, SNMP et Zabbix, double WAN, VIP DMZ.</li>
+</ul>
+<h2 id="cartographie-itil-4-du-projet">Cartographie ITIL 4 du projet</h2>
+<table>
+<thead>
+<tr>
+<th>Pratique ITIL 4</th>
+<th>Application dans ce projet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Définition des niveaux de service</td>
+<td>Critères d'acceptation CA01 à CA10, mesurables</td>
+</tr>
+<tr>
+<td>Gestion de la configuration</td>
+<td>Inventaire des éléments de configuration (section 3) et configurations de référence exportées</td>
+</tr>
+<tr>
+<td>Gestion des changements</td>
+<td>Journal CHG-xx, sauvegarde avant modification, plan de retour arrière</td>
+</tr>
+<tr>
+<td>Gestion de la disponibilité</td>
+<td>HSRP, LACP, tests de panne, registre des points uniques de défaillance</td>
+</tr>
+<tr>
+<td>Gestion des incidents</td>
+<td>INC-001 et INC-002, hypothèses testées une à une</td>
+</tr>
+<tr>
+<td>Gestion des problèmes</td>
+<td>Écarts ECA-xx, cause racine déclarée seulement si confirmée</td>
+</tr>
+<tr>
+<td>Surveillance et gestion des événements</td>
+<td>SNMP v2c, traps, alertes Zabbix</td>
+</tr>
+<tr>
+<td>Gestion de la sécurité de l'information</td>
+<td>ACL invités, SSH, SNMP restreint, aucun secret publié</td>
+</tr>
+<tr>
+<td>Gestion des mises en production</td>
+<td>Checklist de validation avant « Livré » (section 9)</td>
+</tr>
+<tr>
+<td>Amélioration continue</td>
+<td>Bilan et améliorations priorisées (section 10)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-cadrage">1. Cadrage</h2>
+<h3 id="criteres-dacceptation">Critères d'acceptation</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Critère mesurable</th>
+<th>Preuve attendue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CA01</td>
+<td>Chaque VLAN utilisateur obtient un bail DHCP correct : adresse du VLAN, routeur = VIP .1, DNS = 172.16.50.10</td>
+<td>Sortie du client + liste des baux Windows</td>
+</tr>
+<tr>
+<td>CA02</td>
+<td>Les rôles HSRP actifs et de secours sont conformes à la matrice de conception</td>
+<td><code>show standby brief</code> sur D1 et D2</td>
+</tr>
+<tr>
+<td>CA03</td>
+<td>La perte du commutateur actif d'un VLAN bascule en 10 s ou moins (timers par défaut 3 s / 10 s) et le retour se fait par preempt</td>
+<td>Ping continu + chronologie</td>
+</tr>
+<tr>
+<td>CA04</td>
+<td>Les postes joignent Internet par IP puis par nom, via NAT sur le FortiGate</td>
+<td>Ping, nslookup, compteurs de la politique</td>
+</tr>
+<tr>
+<td>CA05</td>
+<td>La perte de WAN1 bascule automatiquement sur WAN2, et le retour se fait sur WAN1</td>
+<td>Table de routage avant/après + ping continu</td>
+</tr>
+<tr>
+<td>CA06</td>
+<td>Le VLAN invités obtient DHCP et DNS, et n'atteint aucun VLAN interne</td>
+<td>Compteurs ACL + tests refusés</td>
+</tr>
+<tr>
+<td>CA07</td>
+<td>Les équipements sont supervisés en SNMP v2c depuis 172.16.50.20 uniquement</td>
+<td>Zabbix + test négatif depuis une autre IP</td>
+</tr>
+<tr>
+<td>CA08</td>
+<td>Une panne de lien ou d'équipement génère une alerte</td>
+<td>Alerte datée dans Zabbix</td>
+</tr>
+<tr>
+<td>CA09</td>
+<td>Les configurations sont sauvegardées et une restauration est testée</td>
+<td>Export + restauration rejouée</td>
+</tr>
+<tr>
+<td>CA10</td>
+<td>Aucun secret ni donnée personnelle n'est publié dans le portfolio</td>
+<td>Relecture finale</td>
+</tr>
+</tbody>
+</table>
+<h3 id="registre-des-risques-et-points-uniques-de-defaillance">Registre des risques et points uniques de défaillance</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risque / SPOF</th>
+<th>Effet</th>
+<th>Traitement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R01</td>
+<td>Lien unique SW_DISTRI_1 ↔ SW_DISTRI_2 (G2/3)</td>
+<td>Perte du chemin direct entre distributions</td>
+<td>Tester le comportement ; envisager un EtherChannel</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>Serveur unique AD / DHCP / DNS (172.16.50.10)</td>
+<td>Plus d'adresses ni de résolution</td>
+<td>Limite documentée ; voir le projet Windows Server résilient</td>
+</tr>
+<tr>
+<td>R03</td>
+<td>FortiGate unique</td>
+<td>Plus de sortie Internet ni de DMZ</td>
+<td>Limite du lab, documentée</td>
+</tr>
+<tr>
+<td>R04</td>
+<td>SW_EDGE unique entre les distributions et le FortiGate</td>
+<td>Idem R03</td>
+<td>Limite du lab, documentée</td>
+</tr>
+<tr>
+<td>R05</td>
+<td>SNMP v2c en clair</td>
+<td>Communauté interceptable</td>
+<td>ACL de restriction ; SNMP v3 en amélioration</td>
+</tr>
+<tr>
+<td>R06</td>
+<td>Routage inter-VLAN sans filtrage hors VLAN invités</td>
+<td>Mouvement latéral entre VLAN</td>
+<td>ACL inter-VLAN en amélioration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-conception">2. Conception</h2>
+<aside>
+<p>🖼️</p>
+<p>Capture de la topologie GNS3 à insérer ici (sept commutateurs, FortiGate, deux nuages WAN, serveur AD et serveur Zabbix).</p>
+</aside>
+<pre><code class="language-mermaid">graph TB
+  WAN1[&quot;Internet WAN1&lt;br/&gt;port1 192.168.100.141/24&quot;] --- FGT
+  WAN2[&quot;Internet WAN2&lt;br/&gt;port2 192.168.2.250/24&quot;] --- FGT
+  FGT[&quot;FortiGate&lt;br/&gt;port3.60 / port3.99 / port3.100&quot;] --- EDGE[&quot;SW_EDGE&lt;br/&gt;VLAN 60, 99, 100&quot;]
+  EDGE --- DMZ[&quot;DMZ VLAN 100&lt;br/&gt;192.168.10.0/24&quot;]
+  EDGE ---|&quot;Po1 LACP&quot;| D1[&quot;SW_DISTRI_1&lt;br/&gt;HSRP actif 10,30,50,70,99&quot;]
+  EDGE ---|&quot;Po2 LACP&quot;| D2[&quot;SW_DISTRI_2&lt;br/&gt;HSRP actif 20,40,60&quot;]
+  D1 ---|&quot;G2/3 trunk&quot;| D2
+  D1 --- SRV[&quot;SW_ACC_SRV&lt;br/&gt;VLAN 50&quot;]
+  D2 --- SRV
+  D1 --- E1[&quot;SW_ACC_ETG_1&lt;br/&gt;VLAN 10, 70&quot;]
+  D2 --- E1
+  D1 --- E2[&quot;SW_ACC_ETG_2&lt;br/&gt;VLAN 20, 70&quot;]
+  D2 --- E2
+  D1 --- E3[&quot;SW_ACC_ETG_3&lt;br/&gt;VLAN 30, 40, 70&quot;]
+  D2 --- E3
+  SRV --- AD[&quot;AD DS / DHCP / DNS&lt;br/&gt;172.16.50.10&quot;]
+  SRV --- ZBX[&quot;Zabbix&lt;br/&gt;172.16.50.20&quot;]
+</code></pre>
+<h3 id="plan-de-vlan-et-dadressage">Plan de VLAN et d'adressage</h3>
+<table>
+<thead>
+<tr>
+<th>VLAN</th>
+<th>Nom</th>
+<th>Réseau</th>
+<th>VIP HSRP</th>
+<th>SVI D1 / D2</th>
+<th>Actif (priorité 110)</th>
+<th>Relais DHCP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>IT</td>
+<td>172.16.10.0/24</td>
+<td>172.16.10.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_1</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Comptabilité</td>
+<td>172.16.20.0/24</td>
+<td>172.16.20.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_2</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>30</td>
+<td>RH</td>
+<td>172.16.30.0/24</td>
+<td>172.16.30.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_1</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Invités</td>
+<td>172.16.40.0/24</td>
+<td>172.16.40.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_2</td>
+<td>Oui + ACL</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Serveurs</td>
+<td>172.16.50.0/24</td>
+<td>172.16.50.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_1</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Management</td>
+<td>172.16.60.0/24</td>
+<td>172.16.60.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_2</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>70</td>
+<td>Imprimantes</td>
+<td>172.16.70.0/24</td>
+<td>172.16.70.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_1</td>
+<td>Non</td>
+</tr>
+<tr>
+<td>99</td>
+<td>Transit L3 ↔ FortiGate</td>
+<td>172.16.99.0/24</td>
+<td>172.16.99.1</td>
+<td>.254 / .253</td>
+<td>SW_DISTRI_1</td>
+<td>Oui</td>
+</tr>
+<tr>
+<td>100</td>
+<td>DMZ</td>
+<td>192.168.10.0/24</td>
+<td>Aucun</td>
+<td>FortiGate 192.168.10.254</td>
+<td>Sans objet</td>
+<td>Non</td>
+</tr>
+</tbody>
+</table>
+<p>Adresses clés : FortiGate 172.16.99.10 (transit) et 172.16.60.250 (management) ; serveur web DMZ publié 192.168.10.10 ; WAN1 192.168.100.141/24 (passerelle 192.168.100.1) ; WAN2 192.168.2.250/24 (passerelle 192.168.2.1).</p>
+<p>Les VLAN 50, 60, 70 et 100 sont en adressage statique ; les VLAN 10, 20, 30, 40 et 99 sont gérés par le DHCP Windows selon la conception. Pour les VLAN 60 et 70, la colonne « Actif » ci-dessus suit la configuration ; la conception les inverse (voir ECA-12).</p>
+<h3 id="matrice-des-liens">Matrice des liens</h3>
+<table>
+<thead>
+<tr>
+<th>Équipement</th>
+<th>Port</th>
+<th>Vers</th>
+<th>VLAN autorisés</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 et D2</td>
+<td>G0/0</td>
+<td>SW_ACC_SRV</td>
+<td>50, 60</td>
+</tr>
+<tr>
+<td>D1 et D2</td>
+<td>G0/1</td>
+<td>SW_ACC_ETG_1</td>
+<td>10, 60, 70</td>
+</tr>
+<tr>
+<td>D1 et D2</td>
+<td>G0/2</td>
+<td>SW_ACC_ETG_2</td>
+<td>20, 60, 70</td>
+</tr>
+<tr>
+<td>D1 et D2</td>
+<td>G0/3</td>
+<td>SW_ACC_ETG_3</td>
+<td>30, 40, 60, 70</td>
+</tr>
+<tr>
+<td>D1 et D2</td>
+<td>G2/3</td>
+<td>Lien inter-distributions</td>
+<td>10, 20, 30, 40, 50, 60, 70, 99</td>
+</tr>
+<tr>
+<td>D1 et D2</td>
+<td>G3/0-1 (Po1)</td>
+<td>SW_EDGE (D1 sur Po1, D2 sur Po2 côté EDGE)</td>
+<td>60, 99</td>
+</tr>
+<tr>
+<td>SW_EDGE</td>
+<td>G0/0</td>
+<td>FortiGate port3</td>
+<td>60, 99, 100</td>
+</tr>
+<tr>
+<td>SW_EDGE</td>
+<td>G1/1</td>
+<td>Serveur DMZ (accès)</td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
+<h3 id="registre-des-decisions">Registre des décisions</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Décision</th>
+<th>Alternative écartée</th>
+<th>Justification (à valider par moi)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-01</td>
+<td>HSRP actif réparti par VLAN entre D1 et D2</td>
+<td>Tout actif sur D1</td>
+<td>Répartir la charge au lieu de laisser un commutateur au repos</td>
+</tr>
+<tr>
+<td>D-02</td>
+<td>DHCP centralisé sur Windows Server avec relais</td>
+<td>Pools DHCP sur les distributions</td>
+<td>Un seul point d'administration, intégré à l'AD</td>
+</tr>
+<tr>
+<td>D-03</td>
+<td>Transit VLAN 99 et route statique 172.16.0.0/16 sur le FortiGate</td>
+<td>OSPF avec le FortiGate</td>
+<td>Simplicité du lab ; limite : pas de convergence dynamique</td>
+</tr>
+<tr>
+<td>D-04</td>
+<td>Double WAN par distance (10 / 20) et deux politiques</td>
+<td>Un seul WAN</td>
+<td>Tester la bascule d'opérateur</td>
+</tr>
+<tr>
+<td>D-05</td>
+<td>ACL RESTRICTION_INVITE sur la SVI 40</td>
+<td>Politiques sur le FortiGate</td>
+<td>Filtrer au plus près de la source</td>
+</tr>
+<tr>
+<td>D-06</td>
+<td>Passage des images IOU aux images IOSvL2</td>
+<td>Rester sur IOU</td>
+<td>IOU instable (INC-002)</td>
+</tr>
+<tr>
+<td>D-07</td>
+<td>SNMP v2c restreint par ACL 10 vers Zabbix</td>
+<td>SNMP v3</td>
+<td>Simplicité du lab ; SNMP v3 en amélioration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-inventaire-des-elements-de-configuration">3. Inventaire des éléments de configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Rôle</th>
+<th>IP de management</th>
+<th>Remarque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SW_DISTRI_1</td>
+<td>Distribution L3, HSRP</td>
+<td>172.16.60.254 (SVI 60)</td>
+<td>Route par défaut vers 172.16.99.10</td>
+</tr>
+<tr>
+<td>SW_DISTRI_2</td>
+<td>Distribution L3, HSRP</td>
+<td>172.16.60.253 (SVI 60)</td>
+<td>Route par défaut absente (ECA-01)</td>
+</tr>
+<tr>
+<td>SW_EDGE</td>
+<td>Bordure L2, transit et DMZ</td>
+<td>172.16.60.40</td>
+<td>Deux port-channels LACP</td>
+</tr>
+<tr>
+<td>SW_ACC_SRV</td>
+<td>Accès serveurs</td>
+<td>172.16.60.10</td>
+<td>VLAN 50 et 60</td>
+</tr>
+<tr>
+<td>SW_ACC_ETG_1</td>
+<td>Accès IT, imprimantes</td>
+<td>172.16.60.50</td>
+<td>VLAN 10, 70</td>
+</tr>
+<tr>
+<td>SW_ACC_ETG_2</td>
+<td>Accès comptabilité, imprimantes</td>
+<td>172.16.60.20</td>
+<td>VLAN 20, 70</td>
+</tr>
+<tr>
+<td>SW_ACC_ETG_3</td>
+<td>Accès RH, invités, imprimantes</td>
+<td>172.16.60.30</td>
+<td>VLAN 30, 40, 70</td>
+</tr>
+<tr>
+<td>FortiGate</td>
+<td>Pare-feu, NAT, VIP DMZ</td>
+<td>172.16.60.250</td>
+<td>WAN1, WAN2, port3 en sous-interfaces</td>
+</tr>
+<tr>
+<td>AD-MAIN_DC-1</td>
+<td>AD DS, DHCP, DNS</td>
+<td>172.16.50.10 (VLAN 50)</td>
+<td>Serveur unique</td>
+</tr>
+<tr>
+<td>SERVEUR-ZABBIX-1</td>
+<td>Supervision</td>
+<td>172.16.50.20 (VLAN 50)</td>
+<td>SNMP v2c</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-gestion-des-changements">4. Gestion des changements</h2>
+<p>Avant chaque modification importante : exporter la configuration, noter l'état initial, modifier une variable à la fois, contrôler après chaque étape, décider de poursuivre ou de revenir en arrière.</p>
+<pre><code>! Sauvegarde avant changement (nom daté à adapter)
+copy running-config flash:backup-AAAAMMJJ.cfg
+! Retour arrière
+configure replace flash:backup-AAAAMMJJ.cfg force
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Changement</th>
+<th>Équipements</th>
+<th>Risque</th>
+<th>Contrôle après changement</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHG-01</td>
+<td>VLAN, trunks, LACP</td>
+<td>Tous les commutateurs</td>
+<td>Moyen</td>
+<td><code>show vlan brief</code>, <code>show interfaces trunk</code>, <code>show etherchannel summary</code></td>
+<td>Appliqué, non validé</td>
+</tr>
+<tr>
+<td>CHG-02</td>
+<td>SVI et HSRP</td>
+<td>D1, D2</td>
+<td>Élevé</td>
+<td><code>show standby brief</code></td>
+<td>Appliqué, non validé</td>
+</tr>
+<tr>
+<td>CHG-03</td>
+<td>Relais DHCP et rôle DHCP Windows (23/10/2026)</td>
+<td>D1, D2, serveur AD</td>
+<td>Faible</td>
+<td>DORA depuis un PC du VLAN 10</td>
+<td>Validé, preuve à joindre</td>
+</tr>
+<tr>
+<td>CHG-04</td>
+<td>Interfaces, routes, politiques et NAT du FortiGate</td>
+<td>FortiGate, D1</td>
+<td>Élevé</td>
+<td>Ping 8.8.8.8 depuis le VLAN 10</td>
+<td>Échec constaté (INC-001)</td>
+</tr>
+<tr>
+<td>CHG-05</td>
+<td>ACL RESTRICTION_INVITE</td>
+<td>D1, D2</td>
+<td>Moyen</td>
+<td><code>show ip access-lists</code>  et tests refusés</td>
+<td>Appliqué, non validé</td>
+</tr>
+<tr>
+<td>CHG-06</td>
+<td>SNMP et déclaration dans Zabbix</td>
+<td>Tous</td>
+<td>Faible</td>
+<td>Hôtes disponibles dans Zabbix</td>
+<td>Appliqué, non validé</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-ecarts-de-configuration-releves-a-la-revue">5. Écarts de configuration relevés à la revue</h2>
+<p>Revue de la configuration à partir des fichiers de configuration du lab. Ce sont des constats sur le texte, à confirmer par commande avant correction.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Constat</th>
+<th>Risque</th>
+<th>Correctif proposé</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ECA-01</td>
+<td>SW_DISTRI_2 n'a pas de route par défaut vers 172.16.99.10</td>
+<td>Les VLAN 20, 40, 60 (D2 actif) et tout basculement de D1 vers D2 perdent la sortie</td>
+<td>Ajouter la route sur D2</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-02</td>
+<td>Aucune configuration STP : racines non alignées sur HSRP</td>
+<td>Chemin L2 non optimal, comportement imprévisible à la panne</td>
+<td>Rapid-PVST, racines alignées sur les actifs HSRP</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-03</td>
+<td>Aucun <code>ip default-gateway</code> sur les commutateurs d'accès et SW_EDGE</td>
+<td>Zabbix (VLAN 50) ne reçoit pas les réponses SNMP du VLAN 60</td>
+<td><code>ip default-gateway 172.16.60.1</code></td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-04</td>
+<td>SW_EDGE : hôte de traps déclaré avec une casse différente de la communauté</td>
+<td>Traps rejetés ou mal authentifiés</td>
+<td>Aligner la casse sur les autres équipements</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-05</td>
+<td>ACL invités : règle finale <code>deny ip any</code></td>
+<td>Les invités n'ont aucun accès Internet</td>
+<td>Décision D-05 : le confirmer, ou autoriser Internet et refuser les réseaux privés</td>
+<td>À décider</td>
+</tr>
+<tr>
+<td>ECA-06</td>
+<td>Aucune ligne VTY ni SSH configurés ; identifiants de lab faibles</td>
+<td>Pas d'administration distante propre</td>
+<td>SSH v2, <code>transport input ssh</code>, comptes dédiés</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-07</td>
+<td>Pas de suivi (tracking) de l'uplink pour HSRP</td>
+<td>Une panne partielle laisse le mauvais actif</td>
+<td><code>standby track</code> sur l'interface de sortie</td>
+<td>Amélioration</td>
+</tr>
+<tr>
+<td>ECA-08</td>
+<td>Relais DHCP configuré sur les VLAN 50 et 60 alors que la conception les prévoit en adressage statique ; aucun client DHCP attendu sur le VLAN 99</td>
+<td>Surface inutile et étendues sans client</td>
+<td>Retirer les relais des VLAN 50 et 60, documenter ou retirer celui du VLAN 99</td>
+<td>À vérifier</td>
+</tr>
+<tr>
+<td>ECA-09</td>
+<td>FortiGate : pas de journalisation du trafic sur les politiques 10 et 11</td>
+<td>Pas de preuve de flux dans les journaux</td>
+<td><code>set logtraffic all</code> pendant les tests</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-10</td>
+<td>Seul le port g0/2 de SW_ACC_SRV est affecté au VLAN 50</td>
+<td>Un serveur branché sur un autre port serait dans le VLAN 1</td>
+<td>Vérifier le port de la VM Zabbix</td>
+<td>À vérifier</td>
+</tr>
+<tr>
+<td>ECA-11</td>
+<td>Pas de NTP ni de syslog</td>
+<td>Horodatage des preuves non fiable</td>
+<td>NTP et <code>logging host</code> vers Zabbix ou le serveur</td>
+<td>Amélioration</td>
+</tr>
+<tr>
+<td>ECA-12</td>
+<td>HSRP : la conception donne SW_DISTRI_1 actif sur les VLAN 60 et SW_DISTRI_2 actif sur le VLAN 70, la configuration fait l'inverse</td>
+<td>Matrice de référence et configuration divergentes, tests T06 à T08 ambigus</td>
+<td>Choisir la référence, puis aligner l'autre</td>
+<td>À trancher</td>
+</tr>
+<tr>
+<td>ECA-13</td>
+<td>Route de WAN1 : la conception indique une distance de 1, la configuration une distance de 10</td>
+<td>Documentation fausse ou configuration non conforme</td>
+<td>Aligner la description sur la configuration, ou l'inverse</td>
+<td>À corriger</td>
+</tr>
+<tr>
+<td>ECA-14</td>
+<td>La description place l'EtherChannel entre les distributions et le FortiGate ; il relie en réalité les distributions à SW_EDGE, et le FortiGate est relié à SW_EDGE par un seul lien (port3)</td>
+<td>Fausse impression de redondance côté pare-feu</td>
+<td>Corriger la description (voir R03 et R04)</td>
+<td>À corriger</td>
+</tr>
+</tbody>
+</table>
+<h3 id="correctifs-proposes-a-appliquer-comme-changements-controles">Correctifs proposés (à appliquer comme changements contrôlés)</h3>
+<pre><code>! ECA-01 — SW_DISTRI_2
+ip route 0.0.0.0 0.0.0.0 172.16.99.10
+
+! ECA-03 — SW_EDGE et les quatre commutateurs d'accès
+ip default-gateway 172.16.60.1
+
+! ECA-02 — tous les commutateurs
+spanning-tree mode rapid-pvst
+! SW_DISTRI_1
+spanning-tree vlan 10,30,50,70,99 root primary
+spanning-tree vlan 20,40,60 root secondary
+! SW_DISTRI_2
+spanning-tree vlan 20,40,60 root primary
+spanning-tree vlan 10,30,50,70,99 root secondary
+! ports d'accès hôtes
+spanning-tree portfast
+spanning-tree bpduguard enable
+
+! ECA-06 — chaque commutateur (domaine à adapter)
+ip domain-name lab.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+
+! ECA-05 — option si l'accès Internet invité est voulu
+ip access-list extended RESTRICTION_INVITE
+ no 70
+ 70 deny ip 172.16.40.0 0.0.0.255 172.16.0.0 0.15.255.255 log
+ 80 deny ip 172.16.40.0 0.0.0.255 192.168.0.0 0.0.255.255 log
+ 90 permit ip 172.16.40.0 0.0.0.255 any
+</code></pre>
+<pre><code># ECA-09 — FortiGate
+config firewall policy
+    edit 10
+        set logtraffic all
+    next
+    edit 11
+        set logtraffic all
+    next
+end
+</code></pre>
+<h2 id="6-plan-de-tests-et-preuves">6. Plan de tests et preuves</h2>
+<p>Les lignes restent « Non testé » tant qu'aucun résultat observé et aucune preuve ne sont enregistrés.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Scénario</th>
+<th>Résultat attendu</th>
+<th>Résultat observé</th>
+<th>Preuve</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T01</td>
+<td>DHCP sur le VLAN 10 (<code>ip dhcp -d</code> sur le PC)</td>
+<td>Adresse 172.16.10.x, routeur .1, DNS 172.16.50.10</td>
+<td>Adresse obtenue via le relais (constaté le 23/10/2026)</td>
+<td>Capture à joindre</td>
+<td>Réussi</td>
+</tr>
+<tr>
+<td>T02</td>
+<td>DHCP sur les VLAN 20, 30, 40</td>
+<td>Baux conformes à CA01</td>
+<td>À renseigner</td>
+<td>Capture / liste des baux</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T03</td>
+<td>Ping du PC VLAN 10 vers la VIP .1 puis vers 172.16.99.10</td>
+<td>Réponses</td>
+<td>Le FortiGate est joint (constaté)</td>
+<td>Capture à joindre</td>
+<td>Réussi</td>
+</tr>
+<tr>
+<td>T04</td>
+<td>Ping 8.8.8.8 depuis le VLAN 10</td>
+<td>Réponses via NAT</td>
+<td>Échec constaté</td>
+<td>INC-001</td>
+<td>Échoué</td>
+</tr>
+<tr>
+<td>T05</td>
+<td>Résolution DNS (<code>nslookup</code>) puis navigation</td>
+<td>Nom résolu, accès au site</td>
+<td>À renseigner</td>
+<td>Capture</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T06</td>
+<td>État HSRP initial sur D1 et D2</td>
+<td>Rôles conformes à la matrice</td>
+<td>À renseigner</td>
+<td><code>show standby brief</code></td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T07</td>
+<td>Panne de D1 : ping continu depuis les VLAN 10, 30, 50</td>
+<td>Bascule en 10 s ou moins, retour par preempt</td>
+<td>À renseigner</td>
+<td>Chronologie + captures</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T08</td>
+<td>Panne de D2 : ping continu depuis les VLAN 20, 40, 60</td>
+<td>Bascule, sortie Internet conservée (dépend d'ECA-01)</td>
+<td>À renseigner</td>
+<td>Chronologie + captures</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T09</td>
+<td>LACP : état puis coupure d'un membre</td>
+<td>Po1 et Po2 en SU, aucune perte à la coupure</td>
+<td>À renseigner</td>
+<td><code>show etherchannel summary</code></td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T10</td>
+<td>STP : racine par VLAN</td>
+<td>Racine = actif HSRP, aucun blocage inattendu</td>
+<td>À renseigner</td>
+<td><code>show spanning-tree vlan 10</code></td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T11</td>
+<td>Panne du lien G2/3 entre distributions</td>
+<td>Comportement documenté (HSRP via les accès)</td>
+<td>À renseigner</td>
+<td>Chronologie</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T12</td>
+<td>Panne de SW_EDGE puis du FortiGate</td>
+<td>Perte d'Internet et de la DMZ, LAN interne conservé</td>
+<td>À renseigner</td>
+<td>Chronologie</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T13</td>
+<td>Inter-VLAN : VLAN 10 vers le serveur 172.16.50.10</td>
+<td>Réponses dans les deux sens</td>
+<td>À renseigner</td>
+<td>Capture</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T14</td>
+<td>ACL invités : DHCP, DNS, ping vers la VIP, ping vers le VLAN 10</td>
+<td>Les trois premiers passent, le dernier est refusé</td>
+<td>À renseigner</td>
+<td><code>show ip access-lists</code></td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T15</td>
+<td>Invités vers Internet</td>
+<td>Conforme à la décision D-05</td>
+<td>À renseigner</td>
+<td>Capture</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T16</td>
+<td>Zabbix interroge les sept commutateurs et le FortiGate</td>
+<td>Hôtes disponibles</td>
+<td>À renseigner</td>
+<td>Capture Zabbix</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T17</td>
+<td>SNMP depuis une IP non autorisée</td>
+<td>Pas de réponse (ACL 10)</td>
+<td>À renseigner</td>
+<td>Capture</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T18</td>
+<td>Alerte : coupure d'un lien supervisé</td>
+<td>Alerte datée dans Zabbix</td>
+<td>À renseigner</td>
+<td>Capture + horodatage</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T19</td>
+<td>Bascule WAN1 vers WAN2 puis retour</td>
+<td>Trafic via port2, puis retour via port1</td>
+<td>À renseigner</td>
+<td>Table de routage + ping continu</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T20</td>
+<td>VIP DMZ : HTTP depuis l'extérieur vers WAN1</td>
+<td>Page du serveur 192.168.10.10</td>
+<td>À renseigner</td>
+<td>Capture + compteur de politique</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T21</td>
+<td>Accès d'administration SSH depuis le VLAN 60, refusé depuis les invités</td>
+<td>Accès autorisé puis refusé</td>
+<td>À renseigner</td>
+<td>Capture</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T22</td>
+<td>Sauvegarde et restauration d'une configuration</td>
+<td>Équipement revenu à l'état attendu</td>
+<td>À renseigner</td>
+<td>Export + sortie de restauration</td>
+<td>Non testé</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-incidents">7. Incidents</h2>
+<h3 id="inc-001-pas-dacces-internet-depuis-le-vlan-10">INC-001 — Pas d'accès Internet depuis le VLAN 10</h3>
+<ul>
+<li><strong>Symptôme :</strong> un PC du VLAN 10 obtient son adresse, joint le FortiGate, mais pas 8.8.8.8.</li>
+<li><strong>Impact :</strong> aucune sortie Internet depuis le LAN.</li>
+<li><strong>Chronologie :</strong> 23/10/2026, DHCP validé, FortiGate joint, Internet en échec.</li>
+<li><strong>Cause racine :</strong> inconnue à ce stade. Ne pas conclure avant les tests ci-dessous.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hypothèse</th>
+<th>Test</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1 : le FortiGate n'a pas lui-même Internet</td>
+<td><code>execute ping 8.8.8.8</code> sur le FortiGate</td>
+<td>À tester</td>
+</tr>
+<tr>
+<td>H2 : la passerelle 192.168.100.1 est injoignable</td>
+<td><code>execute ping 192.168.100.1</code>, <code>get system arp</code></td>
+<td>À tester</td>
+</tr>
+<tr>
+<td>H3 : la route par défaut n'est pas active</td>
+<td><code>get router info routing-table all</code></td>
+<td>À tester</td>
+</tr>
+<tr>
+<td>H4 : la politique ou le NAT ne s'applique pas</td>
+<td>Compteurs de la politique 10 et trace de flux</td>
+<td>À tester</td>
+</tr>
+<tr>
+<td>H5 : le retour vers 172.16.10.0/24 échoue</td>
+<td>Route 172.16.0.0/16 via 172.16.99.1, HSRP du VLAN 99</td>
+<td>À tester</td>
+</tr>
+<tr>
+<td>H6 : le pont ou nuage côté hôte ne laisse pas sortir 192.168.100.141</td>
+<td>Capture sur port1 pendant un ping</td>
+<td>À tester</td>
+</tr>
+</tbody>
+</table>
+<pre><code># Trace de flux FortiGate (à lancer pendant un ping du PC)
+diagnose debug reset
+diagnose debug flow filter addr 8.8.8.8
+diagnose debug flow show function-name enable
+diagnose debug flow trace start 20
+diagnose debug enable
+# ... ping depuis le PC, puis :
+diagnose debug disable
+diagnose debug reset
+</code></pre>
+<h3 id="inc-002-plantages-iou-et-vip-hsrp-injoignable">INC-002 — Plantages IOU et VIP HSRP injoignable</h3>
+<ul>
+<li><strong>Symptôme :</strong> l'image IOU i86bi-linux-l3-adventerprisek9-15.5.2T plantait (code -6) et la VIP HSRP restait injoignable.</li>
+<li><strong>Contournement :</strong> migration vers les images IOSvL2 et réécriture des configurations avec des interfaces Gi.</li>
+<li><strong>Cause racine :</strong> non confirmée. Statut : contourné.</li>
+<li><strong>Action préventive :</strong> noter la version d'image dans l'inventaire et valider HSRP par T06 à T08.</li>
+</ul>
+<h2 id="8-exploitation-commandes-de-controle">8. Exploitation — commandes de contrôle</h2>
+<table>
+<thead>
+<tr>
+<th>Contrôle</th>
+<th>Commande</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>État HSRP</td>
+<td><code>show standby brief</code></td>
+</tr>
+<tr>
+<td>LACP</td>
+<td><code>show etherchannel summary</code></td>
+</tr>
+<tr>
+<td>STP</td>
+<td><code>show spanning-tree summary</code></td>
+</tr>
+<tr>
+<td>Trunks et VLAN</td>
+<td><code>show interfaces trunk</code>, <code>show vlan brief</code></td>
+</tr>
+<tr>
+<td>Relais DHCP</td>
+<td><code>show ip interface vlan 10</code> (ligne « Helper address »)</td>
+</tr>
+<tr>
+<td>ACL invités</td>
+<td><code>show ip access-lists RESTRICTION_INVITE</code></td>
+</tr>
+<tr>
+<td>SNMP</td>
+<td><code>show snmp</code></td>
+</tr>
+<tr>
+<td>FortiGate : routes</td>
+<td><code>get router info routing-table all</code></td>
+</tr>
+<tr>
+<td>FortiGate : état</td>
+<td><code>get system status</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-checklist-de-validation-avant-livre">9. Checklist de validation avant « Livré »</h2>
+<aside>
+<p>✅</p>
+<p>Coche une case uniquement lorsque l'action est réalisée et qu'une preuve est jointe. « Configuré » ne veut pas dire « testé ». Le projet n'est « Livré » que lorsque toutes les sections A à I sont cochées, ou que chaque case restante est explicitement déclarée comme limite connue.</p>
+</aside>
+<h3 id="a-documentation-et-preuves">A. Documentation et preuves</h3>
+<ul>
+<li>☐ Capture de la topologie GNS3 insérée, schéma logique à jour avec les vrais noms de ports</li>
+<li>☐ Plan de VLAN et matrice HSRP identiques aux configurations actives (comparer avec <code>show running-config</code>)</li>
+<li>☐ Inventaire complet : sept commutateurs, FortiGate, AD, Zabbix, versions d'images</li>
+<li>☐ Registre des décisions : chaque justification relue et validée par moi</li>
+<li>☐ Configurations de référence exportées pour chaque équipement, secrets masqués</li>
+</ul>
+<h3 id="b-couche-2">B. Couche 2</h3>
+<ul>
+<li>☐ VLAN identiques sur D1, D2 et les accès (<code>show vlan brief</code>)</li>
+<li>☐ Trunks conformes à la matrice des liens (<code>show interfaces trunk</code>)</li>
+<li>☐ LACP : Po1 et Po2 en SU, membres en P (T09)</li>
+<li>☐ STP Rapid-PVST, racines alignées sur HSRP, ports hôtes en portfast et bpduguard (ECA-02, T10)</li>
+<li>☐ Chaque port d'accès dans le bon VLAN, dont le port de la VM Zabbix (ECA-10)</li>
+<li>☐ VTP en mode transparent, ports inutilisés désactivés</li>
+</ul>
+<h3 id="c-couche-3-et-hsrp">C. Couche 3 et HSRP</h3>
+<ul>
+<li>☐ Routage IP actif sur D1 et D2 (<code>show ip route</code>)</li>
+<li>☐ Route par défaut présente sur D1 et sur D2 (ECA-01)</li>
+<li>☐ ECA-12 tranché, puis rôles HSRP conformes à la matrice retenue sur D1 et D2 (T06)</li>
+<li>☐ Bascule testée dans les deux sens avec temps de coupure mesuré, et retour par preempt (T07, T08)</li>
+<li>☐ Ping continu depuis un PC des VLAN 10, 20 et 30 pendant les pannes</li>
+<li>☐ Routage inter-VLAN prouvé vers le serveur 172.16.50.10 (T13)</li>
+</ul>
+<h3 id="d-dhcp-dns-et-ad">D. DHCP, DNS et AD</h3>
+<ul>
+<li>☐ Étendues DHCP créées par VLAN avec routeur = VIP .1 et DNS = 172.16.50.10</li>
+<li>☐ DORA validé sur les VLAN 10, 20, 30, 40 (T01, T02)</li>
+<li>☐ Bail renouvelé après une bascule HSRP</li>
+<li>☐ Résolution DNS interne et transfert vers l'extérieur (T05)</li>
+<li>☐ Adresses fixes des VLAN 50, 60, 70 et 100 inventoriées, relais DHCP inutiles retirés (ECA-08)</li>
+<li>☐ Limite du serveur unique AD / DHCP / DNS documentée (R02)</li>
+</ul>
+<h3 id="e-fortigate-et-internet">E. FortiGate et Internet</h3>
+<ul>
+<li>☐ INC-001 résolu, cause racine confirmée, test T04 rejoué avec succès</li>
+<li>☐ Compteurs de politique et journalisation du trafic activée (ECA-09)</li>
+<li>☐ Bascule WAN2 puis retour WAN1 prouvés (T19)</li>
+<li>☐ VIP DMZ testée depuis l'extérieur, ou retirée du périmètre (T20)</li>
+<li>☐ Administration du FortiGate limitée au VLAN 60</li>
+</ul>
+<h3 id="f-securite">F. Sécurité</h3>
+<ul>
+<li>☐ ACL invités : refus prouvés par les compteurs, décision sur Internet invité actée (T14, T15, ECA-05)</li>
+<li>☐ SSH v2 sur tous les équipements, accès Telnet absent (ECA-06, T21)</li>
+<li>☐ SNMP : casse alignée sur SW_EDGE, refus depuis une IP non autorisée (ECA-04, T17)</li>
+<li>☐ Identifiants de lab remplacés ou clairement déclarés comme identifiants de lab</li>
+</ul>
+<h3 id="g-supervision">G. Supervision</h3>
+<ul>
+<li>☐ Les sept commutateurs et le FortiGate sont disponibles dans Zabbix (T16)</li>
+<li>☐ Route de retour de management en place sur les commutateurs d'accès (ECA-03)</li>
+<li>☐ Alertes testées : lien coupé, équipement éteint, changement HSRP (T18)</li>
+<li>☐ NTP et syslog configurés pour horodater les preuves (ECA-11)</li>
+</ul>
+<h3 id="h-pannes-et-exploitation">H. Pannes et exploitation</h3>
+<ul>
+<li>☐ Comportement documenté pour la panne de D1, de D2, du lien G2/3, d'un membre LACP, de SW_EDGE et du FortiGate (T07 à T12)</li>
+<li>☐ Restauration d'une configuration sauvegardée testée (T22)</li>
+<li>☐ Commandes de contrôle et premier diagnostic rédigés (section 8)</li>
+<li>☐ Au moins un incident documenté avec cause racine confirmée (INC-001)</li>
+</ul>
+<h3 id="i-hygiene-du-portfolio">I. Hygiène du portfolio</h3>
+<ul>
+<li>☐ Aucun mot de passe, communauté SNMP ni adresse e-mail personnelle dans les captures et blocs de code (contact SNMP compris)</li>
+<li>☐ Chaque compétence affichée est reliée à une preuve ; sinon elle est retirée</li>
+<li>☐ Statut, Avancement, Revue ITIL et Conformité ITIL mis à jour dans la base Projets</li>
+</ul>
+<h2 id="10-amelioration-continue">10. Amélioration continue</h2>
+<ul>
+<li>☐ Ce qui fonctionne, avec la preuve qui le démontre</li>
+<li>☐ Ce qui n'a pas été testé et pourquoi</li>
+<li>☐ Panne la plus instructive et cause racine confirmée</li>
+<li>☐ Décision d'architecture à changer avec plus de ressources (second FortiGate, second SW_EDGE, EtherChannel inter-distributions, second contrôleur de domaine)</li>
+<li>☐ Trois améliorations priorisées selon le risque réduit : SNMP v3, ACL inter-VLAN, HSRP avec tracking</li>
+<li>☐ Prochaine action concrète et preuves à ajouter au portfolio</li>
+</ul>
+<h2 id="competences">Compétences</h2>
+<p><strong>Démontrées à ce jour (preuves à joindre) :</strong> segmentation en VLAN avec plan d'adressage, relais DHCP vers un serveur Windows.</p>
+<p><strong>Configurées, à prouver par les tests :</strong> HSRP avec répartition par VLAN, LACP, ACL invités, SNMP et Zabbix, double WAN et NAT sur FortiGate.</p>
+<p><strong>Non démontrées :</strong> bascules de panne, alertes de supervision, restauration de configuration.</p>
+<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
+<ul>
+<li>Tests réussis : ___ / 22</li>
+<li>Tests échoués : ___</li>
+<li>Tests non réalisés : ___</li>
+<li>Panne contrôlée testée : Oui / Non</li>
+<li>Retour arrière ou restauration prouvé : Oui / Non</li>
+<li>Schéma et procédures à jour : Oui / Non</li>
+<li>Limites et risques résiduels documentés : Oui / Non</li>
+<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
+<li>Prochaine action concrète : ___</li>
+</ul>
+<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases vides restent des actions ouvertes ; elles ne sont pas présentées comme des réalisations.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>

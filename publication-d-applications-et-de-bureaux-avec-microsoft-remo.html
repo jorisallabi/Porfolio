@@ -1,0 +1,192 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publication d&#x27;applications et de bureaux avec Microsoft Remote Desktop Services (RDS) — Joris Allabi</title><meta name="description" content="Projet planifié, non encore validé. Les rôles RDS, la publication RemoteApp, l&#x27;accès sécurisé et les tests restent à réaliser et à documenter. Ne pas prése">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
+<h1>Publication d&#x27;applications et de bureaux avec Microsoft Remote Desktop Services (RDS)</h1>
+<div class="meta"><span class="badge plan">Planifié</span><span class="chip">Avancement 0%</span><span class="chip">Laboratoire virtualisation d&#x27;applications et de bureaux (Microsoft RDS, Windows Server)</span></div>
+<aside>
+<p>🗓️</p>
+<p>Projet en planification : la documentation sera complétée au fil de la réalisation.</p>
+</aside>
+<h2 id="problematique">Problématique</h2>
+<table>
+<thead>
+<tr>
+<th>Contexte</th>
+<th>Problématique</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Une entreprise doit donner à ses utilisateurs un accès centralisé aux applications et aux bureaux Windows, avec les outils de l'écosystème Microsoft.</td>
+<td>✗ Les applications sont installées poste par poste, difficiles à maintenir</td>
+<td></td>
+</tr>
+<tr>
+<td>✗ L'accès à distance doit être contrôlé et sécurisé</td>
+<td>✅ Déployer une infrastructure RDS (hôte de session, courtier de connexions, accès Web, passerelle)</td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Publier des bureaux et des applications RemoteApp</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Sécuriser l'accès à distance avec la passerelle RD Gateway et des certificats</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="perimetre-prevu">Périmètre prévu</h2>
+<ul>
+<li>Domaine Active Directory et serveurs Windows Server du laboratoire.</li>
+<li>Rôles RDS : hôte de session, courtier de connexions, accès Web, passerelle, licences.</li>
+<li>Collections de sessions et publication d'applications RemoteApp.</li>
+<li>Accès sécurisé par certificat, test depuis un poste client.</li>
+</ul>
+<h2 id="competences-visees">Compétences visées</h2>
+<ul>
+<li>Administration des services Remote Desktop sur Windows Server.</li>
+<li>Publication d'applications et gestion des sessions utilisateurs.</li>
+<li>Comparaison des approches Microsoft RDS et Citrix.</li>
+</ul>
+<hr />
+<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
+<blockquote>
+<p><strong>Comment remplir cette fiche :</strong> coche une case uniquement lorsque l’action est réellement réalisée et qu’une preuve est ajoutée. « Configuré » ne veut pas dire « testé ». Cette méthode s’inspire de pratiques ITIL 4 (gestion des changements, incidents, problèmes, configuration et amélioration continue), sans prétendre à une conformité ou certification formelle.
+</p>
+</blockquote>
+<h2 id="1-cadrage">1. Cadrage</h2>
+<ul>
+<li>☐ Décrire le besoin, les utilisateurs/services concernés et le problème à résoudre.</li>
+<li>☐ Définir périmètre inclus/exclu, hypothèses, versions et limites du laboratoire.</li>
+<li>☐ Inventorier les composants, ressources matérielles, licences et prérequis.</li>
+<li>☐ Établir des critères d’acceptation mesurables avant les tests.</li>
+<li>☐ Identifier les dépendances, risques et points uniques de défaillance (SPOF).</li>
+<li>☐ Lister les preuves attendues et l’ordre de priorité des travaux.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de cadrage, périmètre, critères d’acceptation et registre des risques.</p>
+<h2 id="2-conception">2. Conception</h2>
+<ul>
+<li>☐ Mettre à jour le schéma logique et physique, avec noms/rôles cohérents.</li>
+<li>☐ Documenter adressage, VLAN, routes, ports, protocoles, flux et dépendances.</li>
+<li>☐ Vérifier les prérequis et la compatibilité des versions auprès de la documentation du fournisseur.</li>
+<li>☐ Justifier les choix techniques et consigner les compromis/alternatives.</li>
+<li>☐ Prévoir sécurité, privilèges minimums, gestion des secrets et accès d’administration.</li>
+<li>☐ Préparer une matrice de tests : nominal, négatif, panne et reprise.</li>
+</ul>
+<p><strong>Livrable :</strong> schéma, inventaire, matrice des flux/dépendances et plan de tests.</p>
+<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
+<ul>
+<li>☐ Sauvegarder/exporter les configurations et données avant une modification à risque.</li>
+<li>☐ Capturer l’état initial : versions, états, commandes de contrôle et journaux pertinents.</li>
+<li>☐ Écrire les étapes d’exécution et les contrôles après chaque étape.</li>
+<li>☐ Définir le retour arrière et les conditions qui imposent l’arrêt.</li>
+<li>☐ Modifier une variable à la fois et consigner les résultats.</li>
+<li>☐ Vérifier le retour à l’état attendu après changement ou rollback.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
+<h2 id="4-tests-et-validation">4. Tests et validation</h2>
+<ul>
+<li>☐ Exécuter le scénario nominal de bout en bout depuis un client ou système consommateur.</li>
+<li>☐ Tester les dépendances et au moins un cas négatif adapté au projet.</li>
+<li>☐ Simuler une panne contrôlée sans mettre en risque des données ou systèmes hors périmètre.</li>
+<li>☐ Vérifier journaux, états, compteurs et mesures ; ne pas se fier uniquement à une interface verte.</li>
+<li>☐ Vérifier la reprise après correction ou retour arrière.</li>
+<li>☐ Enregistrer chaque test avec résultat attendu, résultat observé, preuve et verdict : Réussi / Échoué / Non testé.</li>
+</ul>
+<p><strong>Livrable :</strong> matrice de tests et liste des écarts à corriger.</p>
+<h2 id="5-incidents-et-problemes">5. Incidents et problèmes</h2>
+<ul>
+<li>☐ Décrire symptôme, impact et heure sans présumer de la cause.</li>
+<li>☐ Consigner la chronologie et les changements récents.</li>
+<li>☐ Collecter journaux, commandes de diagnostic, métriques et messages d’erreur.</li>
+<li>☐ Tester les hypothèses une par une et documenter les preuves.</li>
+<li>☐ Distinguer contournement, rétablissement et cause racine confirmée.</li>
+<li>☐ Définir une action préventive : alerte, correction, procédure ou test supplémentaire.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche d’incident/retour d’expérience. Si aucun incident n’a été testé, écrire « à réaliser » et ne pas inventer de cause racine.</p>
+<h2 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h2>
+<ul>
+<li>☐ Vérifier les critères d’acceptation et relier chacun à une preuve.</li>
+<li>☐ Mettre à jour schéma, inventaire, versions, dépendances et configurations de référence.</li>
+<li>☐ Documenter les commandes de contrôle, les tâches courantes et le dépannage initial.</li>
+<li>☐ Documenter supervision, sauvegarde/restauration et reprise quand c’est pertinent.</li>
+<li>☐ Lister les limites du laboratoire, risques résiduels et prérequis de production.</li>
+<li>☐ Contrôler qu’aucun mot de passe, jeton ou donnée confidentielle n’est publié.</li>
+</ul>
+<p><strong>Livrable :</strong> dossier d’exploitation court et liste des limites connues.</p>
+<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
+<ul>
+<li>☐ Résumer ce qui fonctionne et citer les preuves qui le démontrent.</li>
+<li>☐ Lister tests non réalisés, échecs, défauts et dettes techniques.</li>
+<li>☐ Décrire la principale leçon apprise et la cause racine seulement si elle est confirmée.</li>
+<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort nécessaire.</li>
+<li>☐ Définir la prochaine action concrète et les preuves à ajouter au portfolio.</li>
+</ul>
+<p><strong>Livrable :</strong> bilan et plan d’amélioration priorisé.</p>
+<h2 id="criteres-specifiques-microsoft-rds">Critères spécifiques — Microsoft RDS</h2>
+<ul>
+<li>☐ Vérifier les rôles RDS réellement nécessaires pour la topologie et la version Windows Server choisie.</li>
+<li>☐ Documenter l’architecture : Session Host, Connection Broker, Web Access, RD Gateway et Licensing selon le périmètre.</li>
+<li>☐ Configurer la collection de sessions et publier une application RemoteApp ou un bureau de test.</li>
+<li>☐ Vérifier les licences RDS et les stratégies d’accès, les certificats et la résolution DNS.</li>
+<li>☐ Prouver l’ouverture d’une session depuis un client autorisé et l’accès à la ressource publiée.</li>
+<li>☐ Tester un utilisateur non autorisé et vérifier que l’accès est refusé.</li>
+<li>☐ Tester une panne pertinente (passerelle, broker ou hôte de session selon la maquette) et documenter les conséquences.</li>
+<li>☐ Comparer brièvement RDS et Citrix sur les fonctionnalités réellement testées, sans généraliser au-delà du laboratoire.</li>
+</ul>
+<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
+<ul>
+<li>Tests réussis : ___ / ___</li>
+<li>Tests échoués : ___</li>
+<li>Tests non réalisés : ___</li>
+<li>Panne contrôlée testée : Oui / Non</li>
+<li>Rétablissement/rollback/restauration prouvé : Oui / Non / Sans objet</li>
+<li>Schéma et procédures à jour : Oui / Non</li>
+<li>Limites et risques résiduels documentés : Oui / Non</li>
+<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
+<li>Prochaine action concrète : ___</li>
+</ul>
+<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases encore vides restent des actions ouvertes ; elles ne doivent pas être présentées comme des réalisations.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>

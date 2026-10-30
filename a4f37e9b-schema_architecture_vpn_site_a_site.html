@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture du projet VPN site-à-site</title>
+<style>
+:root{--bg:#f4f5f6;--card:#ffffff;--ink:#1f2328;--mute:#5b636b;--line:#b9c0c8;--acc:#2f6f5e;--tun:#b4531c;--tag:#e9ecef}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1d1f;--card:#26292c;--ink:#e8eaec;--mute:#9aa3ab;--line:#464b50;--acc:#5fb89f;--tun:#e8985e;--tag:#33373b}}
+*{box-sizing:border-box}
+body{margin:0;padding:18px;background:var(--bg);color:var(--ink);font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.wrap{display:grid;grid-template-columns:1fr 170px 1fr;gap:14px;max-width:1040px;margin:0 auto}
+.site{display:flex;flex-direction:column;gap:0}
+.head{text-align:center;padding:8px 10px;border-bottom:2px solid var(--ink);margin-bottom:12px}
+.head b{display:block;font-size:16px;letter-spacing:.04em;text-transform:uppercase}
+.head span{color:var(--mute)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row.one{grid-template-columns:1fr}
+.box{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:9px 11px}
+.tier{display:inline-block;background:var(--tag);color:var(--mute);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border-radius:3px;margin-bottom:5px}
+.name{font-weight:700;font-size:14px}
+.sub{color:var(--mute);font-size:12.5px}
+.link{text-align:center;color:var(--mute);font-size:12px;padding:5px 0;position:relative}
+.link::before{content:"";display:block;width:1px;height:10px;background:var(--line);margin:0 auto 3px}
+.fw{border:2px solid var(--acc);min-height:92px}
+.fw .tier{background:var(--acc);color:#fff}
+.mid{display:flex;flex-direction:column;justify-content:flex-end}
+.tunnel{min-height:92px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:var(--tun)}
+.tunnel .bar{width:100%;border-top:4px dashed var(--tun);margin:6px 0}
+.tunnel b{font-size:13px}
+.tunnel span{font-size:12px;color:var(--mute)}
+.legend{max-width:1040px;margin:14px auto 0;color:var(--mute);font-size:12.5px;text-align:center}
+@media (max-width:760px){.wrap{grid-template-columns:1fr}.mid{justify-content:center}.tunnel .bar{width:60%}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="site">
+    <div class="head"><b>Site principal</b><span>192.168.0.0/16</span></div>
+    <div class="row">
+      <div class="box"><span class="tier">Accès · Bât. A</span><div class="name">MAIN_ACC_1 · MAIN_ACC_2</div><div class="sub">VLAN 10 RH · 20 Compta · 30 Marketing · 50 VOIP</div></div>
+      <div class="box"><span class="tier">Accès · Bât. B</span><div class="name">MAIN_ACC_3 · MAIN_ACC_4</div><div class="sub">VLAN 60 IT · 70 DEV · 80 MATERIEL · 50 VOIP</div></div>
+    </div>
+    <div class="link">trunks 802.1Q</div>
+    <div class="row">
+      <div class="box"><span class="tier">Distribution</span><div class="name">DSTR_MAIN_1 · DSTR_MAIN_2</div><div class="sub">HSRP, passerelles virtuelles .1</div></div>
+      <div class="box"><span class="tier">Distribution</span><div class="name">DSTR_MAIN_3 · DSTR_MAIN_4</div><div class="sub">HSRP, passerelles virtuelles .1</div></div>
+    </div>
+    <div class="link">liens routés /30 · OSPF</div>
+    <div class="row one">
+      <div class="box"><span class="tier">Cœur</span><div class="name">MAIN_CORE</div><div class="sub">OSPF 10 · aire 0 · route par défaut vers le FortiGate</div></div>
+    </div>
+    <div class="link">192.168.1.0/30</div>
+    <div class="row one">
+      <div class="box fw"><span class="tier">Pare-feu</span><div class="name">FortiGate</div><div class="sub">LAN 192.168.1.1/30<br>WAN 20.20.20.2/30</div></div>
+    </div>
+  </div>
+
+  <div class="mid">
+    <div class="tunnel"><b>Tunnel IPsec IKEv2</b><div class="bar"></div><span>20.20.20.2 ↔ 30.30.30.2</span></div>
+  </div>
+
+  <div class="site">
+    <div class="head"><b>Second site</b><span>172.16.0.0/16</span></div>
+    <div class="row">
+      <div class="box"><span class="tier">Accès · Bât. C</span><div class="name">2ND_ACC_1 · 2ND_ACC_2</div><div class="sub">VLAN 10 RH · 20 Compta · 30 Marketing · 50 VOIP</div></div>
+      <div class="box"><span class="tier">Accès · Bât. D</span><div class="name">2ND_ACC_3 · 2ND_ACC_4</div><div class="sub">VLAN 60 IT · 70 DEV · 80 MATERIEL · 50 VOIP</div></div>
+    </div>
+    <div class="link">trunks 802.1Q</div>
+    <div class="row">
+      <div class="box"><span class="tier">Distribution</span><div class="name">DSTR_2ND_1 · DSTR_2ND_2</div><div class="sub">HSRP, passerelles virtuelles .1</div></div>
+      <div class="box"><span class="tier">Distribution</span><div class="name">DSTR_2ND_3 · DSTR_2ND_4</div><div class="sub">HSRP, passerelles virtuelles .1</div></div>
+    </div>
+    <div class="link">liens routés /30 · OSPF</div>
+    <div class="row one">
+      <div class="box"><span class="tier">Cœur</span><div class="name">2ND_CORE</div><div class="sub">OSPF 20 · aire 0 · route par défaut vers le FortiGate</div></div>
+    </div>
+    <div class="link">172.16.2.0/30</div>
+    <div class="row one">
+      <div class="box fw"><span class="tier">Pare-feu</span><div class="name">FortiGate</div><div class="sub">LAN 172.16.2.1/30<br>WAN 30.30.30.2/30</div></div>
+    </div>
+  </div>
+
+</div>
+<p class="legend">Chaque site : accès → distribution (paire HSRP par bâtiment) → cœur → FortiGate. Les deux FortiGate sont reliés par un tunnel IPsec IKEv2 entre leurs interfaces WAN.</p>
+</body>
+</html>

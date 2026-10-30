@@ -1,0 +1,1083 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interconnexion de sites clients par un backbone opérateur MPLS L3VPN (OSPF, LDP, VRF, MP-BGP VPNv4) avec LAN redondant HSRP — Joris Allabi</title><meta name="description" content="Laboratoire GNS3 de 34 équipements : backbone opérateur de six routeurs (OSPF, MPLS LDP) fournissant un service VPN MPLS de niveau 3 à deux clients isolés ">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
+<h1>Interconnexion de sites clients par un backbone opérateur MPLS L3VPN (OSPF, LDP, VRF, MP-BGP VPNv4) avec LAN redondant HSRP</h1>
+<div class="meta"><span class="badge rev">En révision</span><span class="chip">Laboratoire GNS3 réseau opérateur (MPLS L3VPN, MP-BGP, VRF, HSRP)</span></div>
+<h2 id="problematique">Problématique</h2>
+<table>
+<thead>
+<tr>
+<th>Contexte</th>
+<th>Problématique</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Un opérateur télécom doit relier le siège et l'agence de deux entreprises clientes, <strong>ATLAS</strong> et <strong>POSEIDON</strong>, à travers une seule infrastructure partagée. Chaque client dispose de son propre réseau local segmenté en VLAN.</td>
+<td>✗ Deux clients partagent le même backbone : leur trafic ne doit jamais se mélanger</td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Chaque client doit garder son plan d'adressage, sans coordination avec les autres</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✗ Des liaisons dédiées ou des tunnels point à point par site ne passent pas à l'échelle</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✗ La panne d'un lien du cœur ou d'un commutateur de site ne doit pas couper le service</td>
+<td>✅ Fournir un service VPN MPLS de niveau 3 (L3VPN) à deux clients isolés</td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Isoler chaque client dans une VRF sur les routeurs de bordure de l'opérateur</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Échanger les routes des clients entre les PE avec MP-BGP (VPNv4)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Transporter le trafic dans le backbone par commutation d'étiquettes (OSPF et LDP)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>✅ Garantir la redondance : double chemin dans le cœur opérateur, HSRP dans chaque LAN client</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-globale">Architecture globale</h2>
+<p>La maquette GNS3 compte <strong>34 équipements</strong> : un backbone opérateur de six routeurs (AS 1) et quatre sites clients, le siège et l'agence de chacun des deux clients. ATLAS a son siège et son agence à Cotonou ; POSEIDON a son siège à Cotonou et son agence à Parakou.</p>
+<p>Chaque site client comprend un routeur de bordure (CE), deux commutateurs de cœur de niveau 3 en HSRP, deux commutateurs d'accès et deux postes de test VPCS.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : topologie complète du laboratoire dans GNS3, avec le backbone opérateur au centre et les quatre sites clients autour</p>
+</aside>
+<pre><code class="language-mermaid">flowchart LR
+  subgraph ATLAS[&quot;Client ATLAS - VRF ATLAS&quot;]
+    AHQ[&quot;atlas_HQ_WAN (CE)&lt;br/&gt;Siège Cotonou&quot;]
+    ABR[&quot;atlas_BR_WAN (CE)&lt;br/&gt;Agence Cotonou&quot;]
+  end
+  subgraph POSEIDON[&quot;Client POSEIDON - VRF POSEIDON&quot;]
+    PHQ[&quot;poseidon_HQ_WAN (CE)&lt;br/&gt;Siège Cotonou&quot;]
+    PBR[&quot;poseidon_BR_WAN (CE)&lt;br/&gt;Agence Parakou&quot;]
+  end
+  subgraph ISP[&quot;Backbone opérateur AS 1 - OSPF 20 et MPLS LDP&quot;]
+    PE1[&quot;ISP_PE1&lt;br/&gt;5.5.5.5&quot;]
+    P1[&quot;ISP_P1&lt;br/&gt;6.6.6.6&quot;]
+    P2[&quot;ISP_P2&lt;br/&gt;7.7.7.7&quot;]
+    P4[&quot;ISP_P4&lt;br/&gt;9.9.9.9&quot;]
+    P3[&quot;ISP_P3&lt;br/&gt;8.8.8.8&quot;]
+    PE2[&quot;ISP_PE2&lt;br/&gt;10.10.10.10&quot;]
+  end
+  AHQ ---|&quot;20.20.20.0/30&quot;| PE1
+  PHQ ---|&quot;20.20.20.4/30&quot;| PE1
+  PE1 ---|&quot;20.20.20.8/30&quot;| P1
+  P1 ---|&quot;20.20.20.12/30&quot;| P2
+  P2 ---|&quot;20.20.20.16/30&quot;| P3
+  P1 ---|&quot;20.20.20.24/30&quot;| P4
+  P4 ---|&quot;20.20.20.20/30&quot;| P3
+  P3 ---|&quot;20.20.20.28/30&quot;| PE2
+  PE2 ---|&quot;20.20.20.32/30&quot;| ABR
+  PE2 ---|&quot;20.20.20.36/30&quot;| PBR
+</code></pre>
+<p><img loading="lazy" alt="vpn MPLS.png" src="40e3ae91-vpn_MPLS.png" /></p>
+<h3 id="roles-dans-larchitecture">Rôles dans l'architecture</h3>
+<table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Équipements</th>
+<th>Fonction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P</strong> (Provider)</td>
+<td><code>ISP_P1</code> à <code>ISP_P4</code></td>
+<td>Routeurs internes du backbone. Ils commutent les paquets sur l'étiquette MPLS et ne connaissent aucune route client</td>
+</tr>
+<tr>
+<td><strong>PE</strong> (Provider Edge)</td>
+<td><code>ISP_PE1</code>, <code>ISP_PE2</code></td>
+<td>Bordure du backbone. Ils portent les VRF, établissent les sessions MP-BGP et imposent les étiquettes</td>
+</tr>
+<tr>
+<td><strong>CE</strong> (Customer Edge)</td>
+<td><code>atlas_HQ_WAN</code>, <code>atlas_BR_WAN</code>, <code>poseidon_HQ_WAN</code>, <code>poseidon_BR_WAN</code></td>
+<td>Routeur de bordure de chaque site client. Il ne connaît pas MPLS : il échange ses routes en OSPF avec le PE</td>
+</tr>
+<tr>
+<td>Cœur de LAN</td>
+<td>8 commutateurs de niveau 3 (2 par site)</td>
+<td>Interfaces VLAN, passerelles HSRP, routage OSPF vers le CE</td>
+</tr>
+<tr>
+<td>Accès</td>
+<td>8 commutateurs de niveau 2 (2 par site)</td>
+<td>Trunks 802.1Q vers les deux commutateurs de cœur, VLAN 10 et 20</td>
+</tr>
+</tbody>
+</table>
+<h3 id="choix-de-conception">Choix de conception</h3>
+<ul>
+<li>MPLS est activé uniquement à l'intérieur du backbone, jamais sur les interfaces tournées vers les clients.</li>
+<li>Le cœur du backbone est sans BGP : seuls les deux PE échangent les routes des clients. Les routeurs P n'ont besoin que de l'IGP et de LDP.</li>
+<li>Le backbone suit une topologie en losange, avec deux chemins entre <code>ISP_P1</code> et <code>ISP_P3</code> (par <code>ISP_P2</code> ou par <code>ISP_P4</code>).</li>
+<li>Chaque client a sa propre VRF, son RD et son RT. Chaque client a aussi son propre processus OSPF côté CE (processus 1 pour ATLAS, processus 2 pour POSEIDON).</li>
+<li>L'IGP du backbone est un processus OSPF distinct (processus 20), activé directement sur les interfaces.</li>
+<li>Les sessions BGP s'appuient sur les loopbacks des PE, ce qui les rend indépendantes d'un lien physique.</li>
+</ul>
+<h2 id="plan-dadressage">Plan d'adressage</h2>
+<h3 id="backbone-operateur">Backbone opérateur</h3>
+<p>Chaque routeur du backbone porte une loopback <code>/32</code>, utilisée pour l'identité LDP, les sessions BGP et l'IGP.</p>
+<table>
+<thead>
+<tr>
+<th>Équipement</th>
+<th>Rôle</th>
+<th>Loopback0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ISP_PE1</code></td>
+<td>PE</td>
+<td><code>5.5.5.5/32</code></td>
+</tr>
+<tr>
+<td><code>ISP_P1</code></td>
+<td>P</td>
+<td><code>6.6.6.6/32</code></td>
+</tr>
+<tr>
+<td><code>ISP_P2</code></td>
+<td>P</td>
+<td><code>7.7.7.7/32</code></td>
+</tr>
+<tr>
+<td><code>ISP_P3</code></td>
+<td>P</td>
+<td><code>8.8.8.8/32</code></td>
+</tr>
+<tr>
+<td><code>ISP_P4</code></td>
+<td>P</td>
+<td><code>9.9.9.9/32</code></td>
+</tr>
+<tr>
+<td><code>ISP_PE2</code></td>
+<td>PE</td>
+<td><code>10.10.10.10/32</code></td>
+</tr>
+</tbody>
+</table>
+<p>Les liaisons du backbone sont des liens point à point en <code>/30</code> :</p>
+<table>
+<thead>
+<tr>
+<th>Liaison</th>
+<th>Réseau</th>
+<th>Adresses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ISP_PE1</code> g2/0 ↔ <code>ISP_P1</code> g0/0</td>
+<td><code>20.20.20.8/30</code></td>
+<td><code>.9</code> et <code>.10</code></td>
+</tr>
+<tr>
+<td><code>ISP_P1</code> g1/0 ↔ <code>ISP_P2</code> g0/0</td>
+<td><code>20.20.20.12/30</code></td>
+<td><code>.13</code> et <code>.14</code></td>
+</tr>
+<tr>
+<td><code>ISP_P2</code> g1/0 ↔ <code>ISP_P3</code> g1/0</td>
+<td><code>20.20.20.16/30</code></td>
+<td><code>.17</code> et <code>.18</code></td>
+</tr>
+<tr>
+<td><code>ISP_P4</code> g0/0 ↔ <code>ISP_P3</code> g2/0</td>
+<td><code>20.20.20.20/30</code></td>
+<td><code>.22</code> et <code>.21</code></td>
+</tr>
+<tr>
+<td><code>ISP_P1</code> g2/0 ↔ <code>ISP_P4</code> g1/0</td>
+<td><code>20.20.20.24/30</code></td>
+<td><code>.25</code> et <code>.26</code></td>
+</tr>
+<tr>
+<td><code>ISP_P3</code> g0/0 ↔ <code>ISP_PE2</code> g2/0</td>
+<td><code>20.20.20.28/30</code></td>
+<td><code>.30</code> et <code>.29</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="liaisons-pece-placees-dans-les-vrf">Liaisons PE–CE (placées dans les VRF)</h3>
+<table>
+<thead>
+<tr>
+<th>Client et site</th>
+<th>Liaison</th>
+<th>Réseau</th>
+<th>Côté PE (VRF)</th>
+<th>Côté CE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATLAS siège Cotonou</td>
+<td><code>ISP_PE1</code> g0/0 ↔ <code>atlas_HQ_WAN</code> g0/0</td>
+<td><code>20.20.20.0/30</code></td>
+<td><code>.2</code> (ATLAS)</td>
+<td><code>.1</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège Cotonou</td>
+<td><code>ISP_PE1</code> g1/0 ↔ <code>poseidon_HQ_WAN</code> g0/0</td>
+<td><code>20.20.20.4/30</code></td>
+<td><code>.6</code> (POSEIDON)</td>
+<td><code>.5</code></td>
+</tr>
+<tr>
+<td>ATLAS agence Cotonou</td>
+<td><code>ISP_PE2</code> g0/0 ↔ <code>atlas_BR_WAN</code> g0/0</td>
+<td><code>20.20.20.32/30</code></td>
+<td><code>.34</code> (ATLAS)</td>
+<td><code>.33</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence Parakou</td>
+<td><code>ISP_PE2</code> g1/0 ↔ <code>poseidon_BR_WAN</code> g0/0</td>
+<td><code>20.20.20.36/30</code></td>
+<td><code>.38</code> (POSEIDON)</td>
+<td><code>.37</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="reseaux-locaux-des-sites-clients">Réseaux locaux des sites clients</h3>
+<p>Chaque site porte deux VLAN : <strong>10 (IT)</strong> et <strong>20 (DRH)</strong>. Les deux commutateurs de cœur partagent une passerelle virtuelle <code>.1</code> par VLAN (HSRP), leurs adresses réelles étant <code>.254</code> (cœur 1) et <code>.253</code> (cœur 2).</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>VLAN</th>
+<th>Nom</th>
+<th>Réseau</th>
+<th>Passerelle virtuelle (HSRP)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATLAS siège Cotonou</td>
+<td>10</td>
+<td>IT</td>
+<td><code>192.168.10.0/24</code></td>
+<td><code>192.168.10.1</code></td>
+</tr>
+<tr>
+<td>ATLAS siège Cotonou</td>
+<td>20</td>
+<td>DRH</td>
+<td><code>192.168.20.0/24</code></td>
+<td><code>192.168.20.1</code></td>
+</tr>
+<tr>
+<td>ATLAS agence Cotonou</td>
+<td>10</td>
+<td>IT</td>
+<td><code>172.16.10.0/24</code></td>
+<td><code>172.16.10.1</code></td>
+</tr>
+<tr>
+<td>ATLAS agence Cotonou</td>
+<td>20</td>
+<td>DRH</td>
+<td><code>172.16.20.0/24</code></td>
+<td><code>172.16.20.1</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège Cotonou</td>
+<td>10</td>
+<td>IT</td>
+<td><code>192.168.100.0/24</code></td>
+<td><code>192.168.100.1</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège Cotonou</td>
+<td>20</td>
+<td>DRH</td>
+<td><code>192.168.200.0/24</code></td>
+<td><code>192.168.200.1</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence Parakou</td>
+<td>10</td>
+<td>IT</td>
+<td><code>172.16.100.0/24</code></td>
+<td><code>172.16.100.1</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence Parakou</td>
+<td>20</td>
+<td>DRH</td>
+<td><code>172.16.200.0/24</code></td>
+<td><code>172.16.200.1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Chaque commutateur de cœur est relié au CE de son site par un lien routé en <code>/30</code> (cœur 1 vers <code>f2/0</code>, cœur 2 vers <code>f2/1</code>). Le CE porte aussi une loopback.</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Cœur 1 ↔ CE f2/0</th>
+<th>Cœur 2 ↔ CE f2/1</th>
+<th>Loopback du CE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATLAS siège</td>
+<td><code>192.168.1.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>192.168.2.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>1.1.1.1/32</code></td>
+</tr>
+<tr>
+<td>ATLAS agence</td>
+<td><code>172.16.1.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>172.16.2.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>2.2.2.2/32</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège</td>
+<td><code>192.168.3.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>192.168.4.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>3.3.3.3/32</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence</td>
+<td><code>172.16.3.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>172.16.4.0/30</code> (cœur <code>.1</code>, CE <code>.2</code>)</td>
+<td><code>4.4.4.4/32</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="demarche-de-mise-en-uvre">Démarche de mise en œuvre</h2>
+<p>Les LAN clients sont préparés en amont (VLAN, HSRP, OSPF jusqu'au CE). Le service VPN est ensuite construit en sept étapes, dans cet ordre :</p>
+<ol>
+<li>OSPF (processus 20, aire 0) entre les routeurs du backbone, pour la joignabilité des loopbacks.</li>
+<li>Découverte des voisins et distribution des étiquettes avec LDP (<code>mpls ip</code>), uniquement sur les interfaces du backbone.</li>
+<li>Authentification MD5 des sessions LDP.</li>
+<li>Création des VRF sur les PE (RD et RT), puis rattachement des interfaces tournées vers les clients.</li>
+<li>Routage PE–CE : OSPF dans chaque VRF.</li>
+<li>MP-BGP VPNv4 entre les loopbacks des deux PE.</li>
+<li>Redistribution mutuelle OSPF ↔ BGP dans chaque VRF.</li>
+</ol>
+<p>Chaque étape est validée avant de passer à la suivante, de la couche transport vers le service client.</p>
+<h2 id="backbone-operateur_1">Backbone opérateur</h2>
+<h3 id="ospf-ligp-du-backbone">OSPF : l'IGP du backbone</h3>
+<p>Tous les routeurs du backbone activent OSPF (processus 20, aire 0) directement sur leurs interfaces, loopback comprise, en mode point à point. Les interfaces PE–CE ne participent pas à cet IGP : elles appartiennent aux VRF. L'IGP sert à une seule chose : rendre joignables les loopbacks, qui sont les identités LDP et les extrémités des sessions BGP.</p>
+<p>Extrait de <code>ISP_P1</code> :</p>
+<pre><code>interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+!
+interface GigabitEthernet0/0
+ ip address 20.20.20.10 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+</code></pre>
+<h3 id="mpls-et-ldp">MPLS et LDP</h3>
+<p>La commande <code>mpls ip</code> est posée uniquement sur les interfaces entre routeurs du backbone, jamais vers les abonnés. LDP distribue alors une étiquette par préfixe de l'IGP. Chaque session LDP est protégée par une authentification MD5, déclarée voisin par voisin.</p>
+<p>Extrait de <code>ISP_P1</code>, qui a trois voisins LDP (<code>ISP_PE1</code>, <code>ISP_P2</code> et <code>ISP_P4</code>) :</p>
+<pre><code>interface GigabitEthernet0/0
+ mpls ip
+interface GigabitEthernet1/0
+ mpls ip
+interface GigabitEthernet2/0
+ mpls ip
+!
+mpls ldp neighbor 20.20.20.9 password &lt;MOT_DE_PASSE&gt;
+mpls ldp neighbor 20.20.20.14 password &lt;MOT_DE_PASSE&gt;
+mpls ldp neighbor 20.20.20.26 password &lt;MOT_DE_PASSE&gt;
+</code></pre>
+<h2 id="service-vpn-sur-les-routeurs-pe">Service VPN sur les routeurs PE</h2>
+<h3 id="vrf-une-table-de-routage-par-client">VRF : une table de routage par client</h3>
+<p>Les VRF se créent sur les PE. Elles séparent le trafic des clients et leur permettent d'avoir des plans d'adressage indépendants. Chaque VRF a un <strong>RD</strong> (qui rend les préfixes uniques dans BGP) et un <strong>RT</strong> (qui décide quelles routes sont exportées et importées).</p>
+<table>
+<thead>
+<tr>
+<th>VRF</th>
+<th>RD</th>
+<th>Route-target (import et export)</th>
+<th>Interface sur <code>ISP_PE1</code></th>
+<th>Interface sur <code>ISP_PE2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ATLAS</code></td>
+<td><code>111:111</code></td>
+<td><code>111:111</code></td>
+<td>g0/0</td>
+<td>g0/0</td>
+</tr>
+<tr>
+<td><code>POSEIDON</code></td>
+<td><code>222:222</code></td>
+<td><code>222:222</code></td>
+<td>g1/0</td>
+<td>g1/0</td>
+</tr>
+</tbody>
+</table>
+<p>Extrait de <code>ISP_PE1</code> :</p>
+<pre><code>ip vrf ATLAS
+ rd 111:111
+ route-target both 111:111
+!
+interface GigabitEthernet0/0
+ ip vrf forwarding ATLAS
+ ip address 20.20.20.2 255.255.255.252
+</code></pre>
+<p>Les tests de connectivité depuis un PE se font dans la VRF avec <code>ping vrf ATLAS &lt;adresse&gt;</code>.</p>
+<h3 id="routage-pece-ospf-dans-chaque-vrf">Routage PE–CE : OSPF dans chaque VRF</h3>
+<p>Le PE parle OSPF avec chaque CE, dans le contexte de la VRF correspondante. Côté CE, c'est un OSPF ordinaire en aire 0 : le client n'a rien à savoir de MPLS.</p>
+<pre><code>router ospf 1 vrf ATLAS
+ network 20.20.20.0 0.0.0.3 area 0
+!
+router ospf 2 vrf POSEIDON
+ network 20.20.20.4 0.0.0.3 area 0
+</code></pre>
+<h3 id="mp-bgp-vpnv4-entre-les-pe">MP-BGP VPNv4 entre les PE</h3>
+<p>Les deux PE sont voisins iBGP (AS 1), via leurs loopbacks. La famille d'adresses <code>vpnv4</code> transporte les préfixes clients avec leur RD, leur RT et une étiquette VPN. <code>send-community both</code> est indispensable : sans les communautés étendues, les RT ne voyagent pas et aucune route n'est importée côté distant.</p>
+<p>Extrait de <code>ISP_PE1</code> :</p>
+<pre><code>router bgp 1
+ neighbor 10.10.10.10 remote-as 1
+ neighbor 10.10.10.10 update-source Loopback0
+ address-family vpnv4
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 send-community both
+</code></pre>
+<h3 id="redistribution-ospf-bgp">Redistribution OSPF ↔ BGP</h3>
+<p>Dans chaque VRF, les routes apprises du CE en OSPF sont injectées dans BGP, et les routes apprises des autres sites par BGP sont réinjectées en OSPF vers le CE.</p>
+<pre><code>router bgp 1
+ address-family ipv4 vrf ATLAS
+  redistribute ospf 1 metric 10
+ address-family ipv4 vrf POSEIDON
+  redistribute ospf 2 metric 10
+!
+router ospf 1 vrf ATLAS
+ redistribute bgp 1 metric 10
+router ospf 2 vrf POSEIDON
+ redistribute bgp 1 metric 10
+</code></pre>
+<h2 id="comment-une-route-et-un-paquet-traversent-le-backbone">Comment une route et un paquet traversent le backbone</h2>
+<h3 id="plan-de-controle-la-route">Plan de contrôle : la route</h3>
+<p>Exemple avec le réseau <code>192.168.10.0/24</code> du siège ATLAS, qui doit devenir joignable depuis l'agence :</p>
+<pre><code class="language-mermaid">flowchart LR
+  A[&quot;Siège ATLAS&lt;br/&gt;annonce 192.168.10.0/24 en OSPF 1&quot;] --&gt; B[&quot;ISP_PE1 - VRF ATLAS&lt;br/&gt;route apprise via ospf 1 vrf&quot;]
+  B --&gt; C[&quot;BGP ipv4 vrf ATLAS&lt;br/&gt;redistribute ospf 1&quot;]
+  C --&gt; D[&quot;Préfixe VPNv4&lt;br/&gt;RD 111:111 et RT 111:111&lt;br/&gt;plus étiquette VPN&quot;]
+  D --&gt;|&quot;iBGP 5.5.5.5 vers 10.10.10.10&quot;| E[&quot;ISP_PE2&lt;br/&gt;import du RT 111:111 dans la VRF ATLAS&quot;]
+  E --&gt; F[&quot;router ospf 1 vrf ATLAS&lt;br/&gt;redistribute bgp 1&quot;]
+  F --&gt; G[&quot;Agence ATLAS&lt;br/&gt;apprend la route en OSPF&quot;]
+</code></pre>
+<h3 id="plan-de-donnees-le-paquet">Plan de données : le paquet</h3>
+<p>À l'entrée du backbone, <code>ISP_PE1</code> empile deux étiquettes sur le paquet du client :</p>
+<ul>
+<li>une étiquette <strong>interne (VPN)</strong>, annoncée par MP-BGP, qui indique à <code>ISP_PE2</code> dans quelle VRF livrer le paquet ;</li>
+<li>une étiquette <strong>externe (transport)</strong>, distribuée par LDP, qui mène à la loopback de <code>ISP_PE2</code>.</li>
+</ul>
+<p>Les routeurs P ne regardent que l'étiquette externe, sans jamais consulter l'adresse IP du client. L'avant-dernier routeur (<code>ISP_P3</code>) retire l'étiquette externe, et <code>ISP_PE2</code> utilise l'étiquette VPN pour choisir la VRF et remettre le paquet au CE de l'agence.</p>
+<h2 id="reseaux-locaux-des-sites-clients_1">Réseaux locaux des sites clients</h2>
+<h3 id="conception">Conception</h3>
+<p>Chaque site client suit la même conception :</p>
+<ul>
+<li><strong>Accès</strong> : deux commutateurs de niveau 2, chacun relié aux deux commutateurs de cœur par des trunks 802.1Q (<code>e0/0</code> et <code>e0/1</code>) autorisant les VLAN 10 et 20.</li>
+<li><strong>Cœur</strong> : deux commutateurs de niveau 3 portant les interfaces VLAN, reliés entre eux par un trunk (<code>e0/3</code>) et reliés au CE par un lien routé (<code>e0/0</code>).</li>
+<li><strong>Bordure</strong> : un routeur CE relié aux deux commutateurs de cœur (<code>f2/0</code> et <code>f2/1</code>), qui parle OSPF avec le PE.</li>
+</ul>
+<p>Les configurations de base de tous les équipements incluent le nom d'hôte, un mot de passe privilégié chiffré, l'accès console protégé et <code>service password-encryption</code>.</p>
+<h3 id="redondance-des-passerelles-hsrp">Redondance des passerelles (HSRP)</h3>
+<p>Les deux commutateurs de cœur d'un site se partagent une passerelle virtuelle <code>.1</code> par VLAN grâce à HSRP, avec <code>preempt</code> activé. Les rôles sont répartis VLAN par VLAN (priorité 110 pour l'actif, 100 pour le secours) : chaque commutateur est actif pour un VLAN et en secours pour l'autre, ce qui répartit la charge au lieu de laisser un commutateur au repos. Ce schéma est identique sur les quatre sites.</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>VLAN</th>
+<th>Passerelle virtuelle</th>
+<th>Actif (priorité 110)</th>
+<th>Secours (priorité 100)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATLAS siège</td>
+<td>10 IT</td>
+<td><code>192.168.10.1</code></td>
+<td><code>atlas_HQ_core_sw_1</code></td>
+<td><code>atlas_HQ_core_sw_2</code></td>
+</tr>
+<tr>
+<td>ATLAS siège</td>
+<td>20 DRH</td>
+<td><code>192.168.20.1</code></td>
+<td><code>atlas_HQ_core_sw_2</code></td>
+<td><code>atlas_HQ_core_sw_1</code></td>
+</tr>
+<tr>
+<td>ATLAS agence</td>
+<td>10 IT</td>
+<td><code>172.16.10.1</code></td>
+<td><code>atlas_BR_core_sw_1</code></td>
+<td><code>atlas_BR_core_sw_2</code></td>
+</tr>
+<tr>
+<td>ATLAS agence</td>
+<td>20 DRH</td>
+<td><code>172.16.20.1</code></td>
+<td><code>atlas_BR_core_sw_2</code></td>
+<td><code>atlas_BR_core_sw_1</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège</td>
+<td>10 IT</td>
+<td><code>192.168.100.1</code></td>
+<td><code>poseidon_HQ_core_sw_1</code></td>
+<td><code>poseidon_HQ_core_sw_2</code></td>
+</tr>
+<tr>
+<td>POSEIDON siège</td>
+<td>20 DRH</td>
+<td><code>192.168.200.1</code></td>
+<td><code>poseidon_HQ_core_sw_2</code></td>
+<td><code>poseidon_HQ_core_sw_1</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence</td>
+<td>10 IT</td>
+<td><code>172.16.100.1</code></td>
+<td><code>poseidon_BR_core_sw_1</code></td>
+<td><code>poseidon_BR_core_sw_2</code></td>
+</tr>
+<tr>
+<td>POSEIDON agence</td>
+<td>20 DRH</td>
+<td><code>172.16.200.1</code></td>
+<td><code>poseidon_BR_core_sw_2</code></td>
+<td><code>poseidon_BR_core_sw_1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Exemple de configuration (VLAN 10 sur <code>atlas_HQ_core_sw_1</code>) :</p>
+<pre><code>interface Vlan10
+ ip address 192.168.10.254 255.255.255.0
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+</code></pre>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : sortie de <code>show standby brief</code> sur <code>atlas_HQ_core_sw_1</code>, montrant les états Active (VLAN 10) et Standby (VLAN 20)</p>
+</aside>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : sortie de <code>show standby brief</code> sur <code>atlas_HQ_core_sw_2</code>, montrant les états inverses</p>
+</aside>
+<h3 id="routage-ospf-dans-les-lan">Routage OSPF dans les LAN</h3>
+<p>Chaque site exécute OSPF en aire 0 : processus 1 pour ATLAS, processus 2 pour POSEIDON. Sur les commutateurs de cœur, <code>passive-interface default</code> empêche toute adjacence sur les interfaces VLAN. Seuls le lien vers le CE (<code>e0/0</code>) et le lien inter-cœur (<code>e0/3</code>) restent actifs, en mode point à point. Les commutateurs de cœur annoncent les réseaux des VLAN, et le CE les remonte au PE.</p>
+<pre><code>router ospf 1
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+ network 192.168.1.0 0.0.0.3 area 0
+ passive-interface default
+ no passive-interface Ethernet0/0
+ no passive-interface Ethernet0/3
+</code></pre>
+<h2 id="validation">Validation</h2>
+<p>La validation suit l'ordre de construction du lab, de la couche transport vers le service client. Pour chaque contrôle, la commande et le résultat attendu sont indiqués.</p>
+<h3 id="1-voisinages-ospf-du-backbone">1. Voisinages OSPF du backbone</h3>
+<pre><code>show ip ospf neighbor
+show ip route ospf
+</code></pre>
+<p>Résultat attendu : sur <code>ISP_P1</code>, trois voisins à l'état FULL (<code>ISP_PE1</code>, <code>ISP_P2</code>, <code>ISP_P4</code>) ; sur <code>ISP_PE1</code>, les loopbacks de tous les autres routeurs du backbone sont présentes dans la table de routage.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show ip ospf neighbor</code> sur <code>ISP_P1</code>, avec les trois voisins à l'état FULL</p>
+</aside>
+<h3 id="2-sessions-ldp-et-table-de-commutation">2. Sessions LDP et table de commutation</h3>
+<pre><code>show mpls interfaces
+show mpls ldp neighbor
+show mpls forwarding-table
+</code></pre>
+<p>Résultat attendu : une session LDP par lien du backbone, établie avec l'authentification, et une étiquette locale et sortante pour chaque loopback.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show mpls ldp neighbor</code> sur <code>ISP_P1</code>, avec les sessions LDP établies</p>
+</aside>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show mpls forwarding-table</code> sur <code>ISP_PE1</code></p>
+</aside>
+<h3 id="3-vrf-et-voisinage-pece">3. VRF et voisinage PE–CE</h3>
+<pre><code>show ip vrf
+show ip vrf interfaces
+show ip ospf neighbor
+</code></pre>
+<p>Résultat attendu : les VRF <code>ATLAS</code> et <code>POSEIDON</code> existent sur chaque PE avec leur RD et leur interface, et le CE est voisin OSPF du PE à l'état FULL.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show ip vrf</code> et <code>show ip vrf interfaces</code> sur <code>ISP_PE1</code></p>
+</aside>
+<h3 id="4-sessions-mp-bgp-et-routes-vpnv4">4. Sessions MP-BGP et routes VPNv4</h3>
+<pre><code>show bgp vpnv4 unicast all summary
+show bgp vpnv4 unicast all
+</code></pre>
+<p>Résultat attendu : la session avec la loopback de l'autre PE est établie, et les préfixes des sites distants apparaissent avec leur RD (<code>111:111</code> ou <code>222:222</code>).</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show bgp vpnv4 unicast all summary</code> sur <code>ISP_PE1</code></p>
+</aside>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show bgp vpnv4 unicast all</code> sur <code>ISP_PE1</code>, avec les préfixes de l'agence</p>
+</aside>
+<h3 id="5-table-de-routage-dans-la-vrf">5. Table de routage dans la VRF</h3>
+<pre><code>show ip route vrf ATLAS
+show ip route vrf POSEIDON
+</code></pre>
+<p>Résultat attendu : chaque VRF contient les réseaux de son client au siège et à l'agence, et uniquement les siens.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show ip route vrf ATLAS</code> sur <code>ISP_PE1</code>, avec les routes de l'agence apprises par BGP</p>
+</aside>
+<h3 id="6-connectivite-de-bout-en-bout">6. Connectivité de bout en bout</h3>
+<p>Ping entre un poste du siège et un poste de l'agence du même client, puis traceroute depuis le CE du siège vers un réseau de l'agence.</p>
+<pre><code>ping &lt;adresse du poste de l'agence&gt;
+traceroute &lt;adresse d'un réseau de l'agence&gt;
+</code></pre>
+<p>Résultat attendu : le ping réussit pour les deux clients, et le traceroute montre la traversée du backbone avec les étiquettes MPLS.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : ping entre PC5 (siège ATLAS) et un poste de l'agence ATLAS</p>
+</aside>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : traceroute depuis <code>atlas_HQ_WAN</code> vers l'agence, avec les sauts et les étiquettes MPLS</p>
+</aside>
+<h3 id="7-isolation-entre-les-clients">7. Isolation entre les clients</h3>
+<p>Ping d'un poste ATLAS vers un poste POSEIDON.</p>
+<p>Résultat attendu : échec. Les deux clients sont dans des VRF distinctes avec des route-targets différents, donc aucune route ne fuit de l'un vers l'autre.</p>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : ping d'un poste ATLAS vers un poste POSEIDON, resté sans réponse</p>
+</aside>
+<h3 id="8-scenarios-de-resilience">8. Scénarios de résilience</h3>
+<ul>
+<li><strong>Panne dans le cœur opérateur</strong> : arrêt d'une interface entre <code>ISP_P1</code> et <code>ISP_P2</code> pendant un ping continu. Résultat attendu : le trafic bascule par <code>ISP_P4</code> avec une perte limitée à quelques paquets.</li>
+<li><strong>Panne d'un commutateur de cœur de site</strong> : arrêt du commutateur actif d'un VLAN. Résultat attendu : le second commutateur devient Active (<code>show standby brief</code>) et les postes gardent leur passerelle <code>.1</code>.</li>
+</ul>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : ping continu pendant la coupure du lien <code>ISP_P1</code> ↔ <code>ISP_P2</code>, avec reprise via <code>ISP_P4</code></p>
+</aside>
+<aside>
+<p>📸</p>
+<p><strong>Capture à insérer</strong> : <code>show standby brief</code> après arrêt du commutateur actif</p>
+</aside>
+<h2 id="points-dattention-techniques">Points d'attention techniques</h2>
+<ul>
+<li>MPLS et LDP restent à l'intérieur du backbone : les interfaces vers les clients n'activent jamais <code>mpls ip</code>.</li>
+<li>L'application de <code>ip vrf forwarding</code> sur une interface efface son adresse IP, qui doit être reconfigurée juste après.</li>
+<li>Dans une VRF, <code>ping</code> et <code>traceroute</code> depuis un PE exigent le mot-clé <code>vrf</code> pour utiliser la bonne table de routage.</li>
+<li>Les sessions BGP et LDP s'appuient sur les loopbacks : elles ne s'établissent que si l'IGP les rend joignables.</li>
+<li><code>send-community both</code> est nécessaire pour que les route-targets traversent MP-BGP.</li>
+<li>Les identifiants de processus OSPF des VRF (1 et 2 sur les PE) sont locaux à l'équipement et distincts du processus 20 de l'IGP du backbone.</li>
+</ul>
+<h2 id="competences-demontrees">Compétences démontrées</h2>
+<ul>
+<li>Conception d'un réseau opérateur avec séparation des rôles P, PE et CE.</li>
+<li>Mise en œuvre de MPLS avec LDP et authentification MD5 des sessions.</li>
+<li>Création de VPN MPLS de niveau 3 : VRF, RD et route-targets, isolation des clients.</li>
+<li>Configuration de MP-BGP (VPNv4) entre PE, via les loopbacks, avec échange de communautés étendues.</li>
+<li>Routage OSPF multi-processus et dans les VRF, avec redistribution mutuelle OSPF ↔ BGP.</li>
+<li>Compréhension des plans de contrôle et de données d'un L3VPN : étiquette VPN, étiquette de transport, avant-dernier saut.</li>
+<li>Conception de LAN redondants : VLAN, trunks 802.1Q, HSRP avec répartition de charge par VLAN, routage OSPF avec interfaces passives.</li>
+<li>Élaboration d'un plan d'adressage cohérent sur quatre sites et un backbone de six routeurs.</li>
+<li>Construction méthodique d'un laboratoire de 34 équipements, validé couche par couche.</li>
+</ul>
+<h2 id="perspectives-devolution">Perspectives d'évolution</h2>
+<ul>
+<li>Remplacer les deux PE en maillage direct par un route-reflector, pour faire passer le nombre de sites à l'échelle.</li>
+<li>Ajouter de l'ingénierie de trafic MPLS (TE) et la protection rapide de liens (FRR).</li>
+<li>Appliquer de la QoS (marquage et files d'attente) pour prioriser la voix.</li>
+<li>Donner aux clients un accès Internet ou à des services partagés via un VRF commun (extranet).</li>
+<li>Accélérer la détection de pannes avec BFD.</li>
+<li>Remplacer les CE par des pare-feu FortiGate et comparer ce modèle avec le VPN chiffré du projet <a href="interconnexion-de-deux-sites-d-entreprise-par-vpn-ipsec-ikev.html">Interconnexion de deux sites d'entreprise par VPN IPsec IKEv2 site-à-site (FortiGate) avec réseau LAN redondant HSRP et routage OSPF</a>.</li>
+</ul>
+<h2 id="annexes-configurations">Annexes : configurations</h2>
+<p>Les mots de passe sont remplacés par des marqueurs. Les équipements non listés suivent le même modèle, aux adresses près.</p>
+<ul>
+<li>
+<p>ISP_PE1 (PE, côté siège)</p>
+<p><code>hostname ISP_PE1
+!
+ip vrf ATLAS
+ rd 111:111
+ route-target both 111:111
+ip vrf POSEIDON
+ rd 222:222
+ route-target both 222:222
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+! vers ISP_P1
+interface GigabitEthernet2/0
+ ip address 20.20.20.9 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+ mpls ip
+! vers atlas_HQ_WAN
+interface GigabitEthernet0/0
+ ip vrf forwarding ATLAS
+ ip address 20.20.20.2 255.255.255.252
+! vers poseidon_HQ_WAN
+interface GigabitEthernet1/0
+ ip vrf forwarding POSEIDON
+ ip address 20.20.20.6 255.255.255.252
+!
+mpls ldp neighbor 20.20.20.10 password &lt;MOT_DE_PASSE&gt;
+!
+router ospf 1 vrf ATLAS
+ network 20.20.20.0 0.0.0.3 area 0
+ redistribute bgp 1 metric 10
+router ospf 2 vrf POSEIDON
+ network 20.20.20.4 0.0.0.3 area 0
+ redistribute bgp 1 metric 10
+!
+router bgp 1
+ neighbor 10.10.10.10 remote-as 1
+ neighbor 10.10.10.10 update-source Loopback0
+ address-family vpnv4
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 send-community both
+ exit-address-family
+ address-family ipv4 vrf ATLAS
+  redistribute ospf 1 metric 10
+ exit-address-family
+ address-family ipv4 vrf POSEIDON
+  redistribute ospf 2 metric 10
+ exit-address-family</code></p>
+</li>
+<li>
+<p>ISP_PE2 (PE, côté agences)</p>
+<p><code>hostname ISP_PE2
+!
+ip vrf ATLAS
+ rd 111:111
+ route-target both 111:111
+ip vrf POSEIDON
+ rd 222:222
+ route-target both 222:222
+!
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+! vers ISP_P3
+interface GigabitEthernet2/0
+ ip address 20.20.20.29 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+ mpls ip
+! vers atlas_BR_WAN
+interface GigabitEthernet0/0
+ ip vrf forwarding ATLAS
+ ip address 20.20.20.34 255.255.255.252
+! vers poseidon_BR_WAN
+interface GigabitEthernet1/0
+ ip vrf forwarding POSEIDON
+ ip address 20.20.20.38 255.255.255.252
+!
+mpls ldp neighbor 20.20.20.30 password &lt;MOT_DE_PASSE&gt;
+!
+router ospf 1 vrf ATLAS
+ network 20.20.20.32 0.0.0.3 area 0
+ redistribute bgp 1 metric 10
+router ospf 2 vrf POSEIDON
+ network 20.20.20.36 0.0.0.3 area 0
+ redistribute bgp 1 metric 10
+!
+router bgp 1
+ neighbor 5.5.5.5 remote-as 1
+ neighbor 5.5.5.5 update-source Loopback0
+ address-family vpnv4
+  neighbor 5.5.5.5 activate
+  neighbor 5.5.5.5 send-community both
+ exit-address-family
+ address-family ipv4 vrf ATLAS
+  redistribute ospf 1 metric 10
+ exit-address-family
+ address-family ipv4 vrf POSEIDON
+  redistribute ospf 2
+ exit-address-family</code></p>
+</li>
+<li>
+<p>ISP_P1 (routeur P, point de jonction du losange)</p>
+<p><code>hostname ISP_P1
+!
+interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+! vers ISP_PE1
+interface GigabitEthernet0/0
+ ip address 20.20.20.10 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+ mpls ip
+! vers ISP_P2
+interface GigabitEthernet1/0
+ ip address 20.20.20.13 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+ mpls ip
+! vers ISP_P4
+interface GigabitEthernet2/0
+ ip address 20.20.20.25 255.255.255.252
+ ip ospf 20 area 0
+ ip ospf network point-to-point
+ mpls ip
+!
+mpls ldp neighbor 20.20.20.9 password &lt;MOT_DE_PASSE&gt;
+mpls ldp neighbor 20.20.20.14 password &lt;MOT_DE_PASSE&gt;
+mpls ldp neighbor 20.20.20.26 password &lt;MOT_DE_PASSE&gt;</code></p>
+</li>
+<li>
+<p>atlas_HQ_WAN (CE du siège ATLAS)</p>
+<p><code>hostname atlas_HQ_WAN
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+! vers ISP_PE1
+interface GigabitEthernet0/0
+ ip address 20.20.20.1 255.255.255.252
+! vers atlas_HQ_core_sw_1
+interface FastEthernet2/0
+ ip address 192.168.1.2 255.255.255.252
+ ip ospf network point-to-point
+! vers atlas_HQ_core_sw_2
+interface FastEthernet2/1
+ ip address 192.168.2.2 255.255.255.252
+ ip ospf network point-to-point
+!
+router ospf 1
+ network 1.1.1.1 0.0.0.0 area 0
+ network 192.168.1.0 0.0.0.3 area 0
+ network 192.168.2.0 0.0.0.3 area 0
+ network 20.20.20.0 0.0.0.3 area 0</code></p>
+</li>
+<li>
+<p>atlas_HQ_core_sw_1 (cœur de LAN, HSRP actif sur le VLAN 10)</p>
+<p><code>hostname atlas_HQ_core_sw_1
+!
+vlan 10
+ name IT
+vlan 20
+ name DRH
+! vers atlas_HQ_WAN
+interface Ethernet0/0
+ ip address 192.168.1.1 255.255.255.252
+ ip ospf network point-to-point
+interface Vlan10
+ ip address 192.168.10.254 255.255.255.0
+ standby 10 ip 192.168.10.1
+ standby 10 priority 110
+ standby 10 preempt
+interface Vlan20
+ ip address 192.168.20.254 255.255.255.0
+ standby 20 ip 192.168.20.1
+ standby 20 priority 100
+ standby 20 preempt
+interface range Ethernet0/1 - 3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+interface Ethernet0/3
+ ip ospf network point-to-point
+!
+router ospf 1
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+ network 192.168.1.0 0.0.0.3 area 0
+ passive-interface default
+ no passive-interface Ethernet0/0
+ no passive-interface Ethernet0/3</code></p>
+</li>
+<li>
+<p>atlas_HQ_acc_sw_1 (commutateur d'accès)</p>
+<p><code>hostname atlas_HQ_acc_sw_1
+!
+vlan 10
+ name IT
+vlan 20
+ name DRH
+interface range Ethernet0/0 - 1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20</code></p>
+</li>
+</ul>
+<hr />
+<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
+<blockquote>
+<p><strong>Comment remplir cette fiche :</strong> coche une case uniquement lorsque l’action est réellement réalisée et qu’une preuve est ajoutée. « Configuré » ne veut pas dire « testé ». Cette méthode s’inspire de pratiques ITIL 4 (gestion des changements, incidents, problèmes, configuration et amélioration continue), sans prétendre à une conformité ou certification formelle.
+</p>
+</blockquote>
+<h2 id="1-cadrage">1. Cadrage</h2>
+<ul>
+<li>☐ Décrire le besoin, les utilisateurs/services concernés et le problème à résoudre.</li>
+<li>☐ Définir périmètre inclus/exclu, hypothèses, versions et limites du laboratoire.</li>
+<li>☐ Inventorier les composants, ressources matérielles, licences et prérequis.</li>
+<li>☐ Établir des critères d’acceptation mesurables avant les tests.</li>
+<li>☐ Identifier les dépendances, risques et points uniques de défaillance (SPOF).</li>
+<li>☐ Lister les preuves attendues et l’ordre de priorité des travaux.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de cadrage, périmètre, critères d’acceptation et registre des risques.</p>
+<h2 id="2-conception">2. Conception</h2>
+<ul>
+<li>☐ Mettre à jour le schéma logique et physique, avec noms/rôles cohérents.</li>
+<li>☐ Documenter adressage, VLAN, routes, ports, protocoles, flux et dépendances.</li>
+<li>☐ Vérifier les prérequis et la compatibilité des versions auprès de la documentation du fournisseur.</li>
+<li>☐ Justifier les choix techniques et consigner les compromis/alternatives.</li>
+<li>☐ Prévoir sécurité, privilèges minimums, gestion des secrets et accès d’administration.</li>
+<li>☐ Préparer une matrice de tests : nominal, négatif, panne et reprise.</li>
+</ul>
+<p><strong>Livrable :</strong> schéma, inventaire, matrice des flux/dépendances et plan de tests.</p>
+<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
+<ul>
+<li>☐ Sauvegarder/exporter les configurations et données avant une modification à risque.</li>
+<li>☐ Capturer l’état initial : versions, états, commandes de contrôle et journaux pertinents.</li>
+<li>☐ Écrire les étapes d’exécution et les contrôles après chaque étape.</li>
+<li>☐ Définir le retour arrière et les conditions qui imposent l’arrêt.</li>
+<li>☐ Modifier une variable à la fois et consigner les résultats.</li>
+<li>☐ Vérifier le retour à l’état attendu après changement ou rollback.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
+<h2 id="4-tests-et-validation">4. Tests et validation</h2>
+<ul>
+<li>☐ Exécuter le scénario nominal de bout en bout depuis un client ou système consommateur.</li>
+<li>☐ Tester les dépendances et au moins un cas négatif adapté au projet.</li>
+<li>☐ Simuler une panne contrôlée sans mettre en risque des données ou systèmes hors périmètre.</li>
+<li>☐ Vérifier journaux, états, compteurs et mesures ; ne pas se fier uniquement à une interface verte.</li>
+<li>☐ Vérifier la reprise après correction ou retour arrière.</li>
+<li>☐ Enregistrer chaque test avec résultat attendu, résultat observé, preuve et verdict : Réussi / Échoué / Non testé.</li>
+</ul>
+<p><strong>Livrable :</strong> matrice de tests et liste des écarts à corriger.</p>
+<h2 id="5-incidents-et-problemes">5. Incidents et problèmes</h2>
+<ul>
+<li>☐ Décrire symptôme, impact et heure sans présumer de la cause.</li>
+<li>☐ Consigner la chronologie et les changements récents.</li>
+<li>☐ Collecter journaux, commandes de diagnostic, métriques et messages d’erreur.</li>
+<li>☐ Tester les hypothèses une par une et documenter les preuves.</li>
+<li>☐ Distinguer contournement, rétablissement et cause racine confirmée.</li>
+<li>☐ Définir une action préventive : alerte, correction, procédure ou test supplémentaire.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche d’incident/retour d’expérience. Si aucun incident n’a été testé, écrire « à réaliser » et ne pas inventer de cause racine.</p>
+<h2 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h2>
+<ul>
+<li>☐ Vérifier les critères d’acceptation et relier chacun à une preuve.</li>
+<li>☐ Mettre à jour schéma, inventaire, versions, dépendances et configurations de référence.</li>
+<li>☐ Documenter les commandes de contrôle, les tâches courantes et le dépannage initial.</li>
+<li>☐ Documenter supervision, sauvegarde/restauration et reprise quand c’est pertinent.</li>
+<li>☐ Lister les limites du laboratoire, risques résiduels et prérequis de production.</li>
+<li>☐ Contrôler qu’aucun mot de passe, jeton ou donnée confidentielle n’est publié.</li>
+</ul>
+<p><strong>Livrable :</strong> dossier d’exploitation court et liste des limites connues.</p>
+<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
+<ul>
+<li>☐ Résumer ce qui fonctionne et citer les preuves qui le démontrent.</li>
+<li>☐ Lister tests non réalisés, échecs, défauts et dettes techniques.</li>
+<li>☐ Décrire la principale leçon apprise et la cause racine seulement si elle est confirmée.</li>
+<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort nécessaire.</li>
+<li>☐ Définir la prochaine action concrète et les preuves à ajouter au portfolio.</li>
+</ul>
+<p><strong>Livrable :</strong> bilan et plan d’amélioration priorisé.</p>
+<h2 id="criteres-specifiques-mpls-l3vpn-multi-clients">Critères spécifiques — MPLS L3VPN multi-clients</h2>
+<ul>
+<li>☐ Vérifier l’adressage et les interfaces CE–PE, l’IGP du backbone, les loopbacks et la portée des adjacences OSPF.</li>
+<li>☐ Prouver l’établissement de LDP sur les liens concernés et la cohérence des labels attendus.</li>
+<li>☐ Vérifier les VRF par client : interfaces associées, RD, route-target import/export et tables de routage séparées.</li>
+<li>☐ Prouver les sessions MP-BGP VPNv4 entre PE et l’échange de routes avec les attributs/RT attendus.</li>
+<li>☐ Tester la connectivité siège–agence pour chaque client et prouver l’isolation : un client ne doit pas atteindre les préfixes privés de l’autre.</li>
+<li>☐ Tester les passerelles HSRP et les VLAN clients, en validant les chemins retour et les ACL nécessaires.</li>
+<li>☐ Simuler la perte d’un lien du backbone et d’un équipement LAN séparément ; mesurer convergence et pertes observées.</li>
+<li>☐ Documenter commandes de vérification, routes avant/après, résultat des pings/traceroutes et limites de l’émulation GNS3.</li>
+</ul>
+<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
+<ul>
+<li>Tests réussis : ___ / ___</li>
+<li>Tests échoués : ___</li>
+<li>Tests non réalisés : ___</li>
+<li>Panne contrôlée testée : Oui / Non</li>
+<li>Rétablissement/rollback/restauration prouvé : Oui / Non / Sans objet</li>
+<li>Schéma et procédures à jour : Oui / Non</li>
+<li>Limites et risques résiduels documentés : Oui / Non</li>
+<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
+<li>Prochaine action concrète : ___</li>
+</ul>
+<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases encore vides restent des actions ouvertes ; elles ne doivent pas être présentées comme des réalisations.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>

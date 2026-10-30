@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cisco CME — Architecture VoIP SCCP & SIP</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Google+Sans+Code:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#f6f7f9; --surface:#fff; --surface2:#f1f3f5; --text:#15171a;
+  --muted:#69717c; --line:#dfe3e8; --accent:#1769e0; --accent-soft:#eaf2ff;
+  --green:#16834b; --green-soft:#e8f7ef; --orange:#b56b00; --orange-soft:#fff4df;
+  --red:#c33b32; --shadow:0 18px 50px rgba(18,24,32,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Google Sans Flex",Arial,sans-serif}
+header{border-bottom:1px solid var(--line);background:rgba(255,255,255,.88);backdrop-filter:blur(14px);position:sticky;top:0;z-index:10}
+.header-inner{max-width:1380px;margin:auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.eyebrow{font:600 11px "Google Sans Code";letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:27px;line-height:1.15;margin:5px 0 0;font-weight:650}
+.badge{font:500 12px "Google Sans Code";padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+main{max-width:1380px;margin:0 auto;padding:30px 28px 55px}
+.hero{display:grid;grid-template-columns:1.55fr .8fr;gap:22px;margin-bottom:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.hero-main{padding:30px}
+.hero-main h2{font-size:40px;line-height:1.02;margin:10px 0 14px;max-width:800px}
+.hero-main p{font-size:16px;line-height:1.65;color:var(--muted);max-width:850px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--surface2)}
+.stat strong{display:block;font-size:25px}.stat span{color:var(--muted);font-size:12px}
+.section-title{display:flex;align-items:end;justify-content:space-between;margin:32px 0 13px}
+.section-title h3{margin:0;font-size:20px}.section-title span{color:var(--muted);font-size:13px}
+.arch{padding:20px;overflow:hidden}
+svg{width:100%;height:auto;min-height:520px}
+.node{cursor:pointer}
+.node rect{fill:#fff;stroke:#ccd2d9;stroke-width:1.4;transition:.18s}
+.node:hover rect,.node.active rect{stroke:var(--accent);stroke-width:2;filter:drop-shadow(0 8px 15px rgba(23,105,224,.12))}
+.node-title{font-family:"Google Sans Flex";font-size:15px;font-weight:650;fill:#15171a}
+.node-sub{font-family:"Google Sans Code";font-size:11px;fill:#69717c}
+.edge{stroke:#9ca6b2;stroke-width:2.2;fill:none}
+.edge.sccp{stroke:#1769e0}.edge.sip{stroke:#16834b}.edge.qos{stroke:#b56b00;stroke-dasharray:7 6}
+.edge-label{font:600 10px "Google Sans Code";fill:#69717c}
+.dot{fill:#1769e0}.dot-sip{fill:#16834b}
+.legend{display:flex;gap:18px;flex-wrap:wrap;padding:10px 4px 0;color:var(--muted);font-size:12px}
+.legend i{display:inline-block;width:25px;height:3px;vertical-align:middle;margin-right:6px;background:#1769e0}.legend i.sip{background:#16834b}.legend i.qos{background:#b56b00}
+.lower{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.info{padding:22px}
+.info h4{margin:0 0 14px;font-size:17px}
+.row{display:flex;justify-content:space-between;gap:15px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.row:last-child{border-bottom:0}.row span:first-child{color:var(--muted)}
+code,.mono{font-family:"Google Sans Code";font-size:12px}
+.code{background:#111417;color:#d9e0e8;border-radius:13px;padding:17px;overflow:auto;line-height:1.6;font-family:"Google Sans Code";font-size:12px}
+.pills{display:flex;gap:7px;flex-wrap:wrap}.pill{font:500 11px "Google Sans Code";padding:6px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.green{background:var(--green-soft);color:var(--green)}.pill.orange{background:var(--orange-soft);color:var(--orange)}
+.panel{position:fixed;right:22px;bottom:22px;width:min(390px,calc(100vw - 44px));padding:20px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 70px rgba(0,0,0,.18);transform:translateY(130%);transition:.25s;z-index:20}
+.panel.show{transform:translateY(0)}.panel .close{float:right;border:0;background:var(--surface2);border-radius:50%;width:28px;height:28px;cursor:pointer}
+.panel h3{margin:0 35px 5px 0}.panel p{color:var(--muted);font-size:13px;line-height:1.55}.panel pre{white-space:pre-wrap}
+footer{text-align:center;color:var(--muted);font-size:12px;padding-top:25px}
+@media(max-width:900px){.hero,.lower{grid-template-columns:1fr}.hero-main h2{font-size:32px}svg{min-height:430px}.header-inner{align-items:flex-start;flex-direction:column}}
+@media(prefers-color-scheme:dark){
+:root{--bg:#0d0f11;--surface:#15181c;--surface2:#1b1f24;--text:#f0f2f4;--muted:#9ba4ae;--line:#2b3138;--accent:#66a0ff;--accent-soft:#182945;--green:#50c98a;--green-soft:#12291e;--orange:#e6a548;--orange-soft:#302515}
+header{background:rgba(13,15,17,.88)}.node rect{fill:#15181c;stroke:#343b44}.node-title{fill:#f0f2f4}.node-sub{fill:#9ba4ae}.edge{stroke:#69737f}.panel{background:#15181c}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+  <div><div class="eyebrow">Network Engineering / VoIP</div><h1>Cisco CME — Architecture VoIP</h1></div>
+  <div class="badge">SCCP + SIP · QoS</div>
+ </div>
+</header>
+
+<main>
+<section class="hero">
+ <div class="card hero-main">
+  <div class="eyebrow">Projet de laboratoire</div>
+  <h2>Un Cisco 3725 comme cœur de téléphonie IP.</h2>
+  <p>Le routeur fournit le DHCP voix, le CallManager Express SCCP, le registrar SIP et la priorisation du trafic VoIP. Les terminaux peuvent être représentés comme des téléphones IP physiques ou des softphones selon le scénario de test.</p>
+  <div class="pills" style="margin-top:18px">
+   <span class="pill">192.168.10.0/24</span><span class="pill">CME</span>
+   <span class="pill green">SIP / UDP 5060</span><span class="pill">SCCP / TCP 2000</span>
+   <span class="pill orange">QoS</span>
+  </div>
+ </div>
+ <div class="card stats">
+  <div class="stat"><strong>1</strong><span>Routeur CME</span></div>
+  <div class="stat"><strong>6</strong><span>DN SCCP configurés</span></div>
+  <div class="stat"><strong>5</strong><span>DN SIP configurés</span></div>
+  <div class="stat"><strong>2</strong><span>Terminaux SIP enregistrés</span></div>
+ </div>
+</section>
+
+<div class="section-title"><h3>Architecture logique</h3><span>Clique sur un équipement pour inspecter sa configuration</span></div>
+<section class="card arch">
+<svg viewBox="0 0 1200 560" role="img" aria-label="Architecture VoIP Cisco CME">
+ <defs>
+  <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1769e0"/></marker>
+  <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#16834b"/></marker>
+ </defs>
+
+ <!-- WAN -->
+ <g class="node" data-title="Accès réseau / WAN" data-body="Le routeur Cisco est connecté au réseau amont. Dans le laboratoire, le lien physique peut passer par l’interface Ethernet du PC et un routeur/ONT selon le montage.">
+  <rect x="35" y="215" width="190" height="90" rx="16"/>
+  <text x="130" y="250" text-anchor="middle" class="node-title">Réseau amont</text>
+  <text x="130" y="273" text-anchor="middle" class="node-sub">Ethernet / accès IP</text>
+  <text x="130" y="291" text-anchor="middle" class="node-sub">connectivité du lab</text>
+ </g>
+
+ <!-- Router -->
+ <g class="node" data-title="Cisco 3725 — CME" data-body="IP LAN : 192.168.10.254/24\nDHCP : VOICE\nOption 150 : 192.168.10.254\nSCCP : telephony-service / TCP 2000\nSIP : registrar / UDP 5060\nCodec : G.711 u-law puis G.711 a-law">
+  <rect x="420" y="150" width="360" height="220" rx="22"/>
+  <text x="600" y="193" text-anchor="middle" class="node-title" style="font-size:21px">Cisco 3725</text>
+  <text x="600" y="218" text-anchor="middle" class="node-sub">CallManager Express · VoIP Core</text>
+  <line x1="465" y1="235" x2="735" y2="235" stroke="#dfe3e8"/>
+  <text x="600" y="264" text-anchor="middle" class="node-sub">192.168.10.254 / 24</text>
+  <text x="600" y="288" text-anchor="middle" class="node-sub">DHCP + Option 150</text>
+  <text x="600" y="312" text-anchor="middle" class="node-sub">SCCP · TCP/2000</text>
+  <text x="600" y="333" text-anchor="middle" class="node-sub">SIP · UDP/5060</text>
+  <text x="600" y="353" text-anchor="middle" class="node-sub">G.711 μ-law / a-law</text>
+ </g>
+
+ <path class="edge" d="M225 260 C300 260 345 260 420 260" marker-end="url(#arrowBlue)"/>
+ <text x="323" y="247" text-anchor="middle" class="edge-label">IP</text>
+
+ <!-- SCCP cluster -->
+ <g class="node" data-title="Téléphones SCCP" data-body="6 ephone-dn configurés :\n2000 Joris\n2001 Koffi\n2002 David\n2003 Paul\n2004 Alice\n2005 Sarah\n\nEnregistrement automatique activé avec auto-reg-ephone.">
+  <rect x="860" y="55" width="295" height="145" rx="18"/>
+  <text x="1007" y="91" text-anchor="middle" class="node-title">Téléphones SCCP</text>
+  <text x="1007" y="115" text-anchor="middle" class="node-sub">ephone / ephone-dn</text>
+  <text x="1007" y="139" text-anchor="middle" class="node-sub">2000 → 2005</text>
+  <text x="1007" y="163" text-anchor="middle" class="node-sub">TCP 2000 · SCCP</text>
+  <text x="1007" y="184" text-anchor="middle" class="node-sub">Auto-registration</text>
+ </g>
+ <path class="edge sccp" d="M780 215 C820 185 825 150 860 135" marker-end="url(#arrowBlue)"/>
+ <text x="817" y="175" class="edge-label">SCCP / 2000</text>
+
+ <!-- SIP cluster -->
+ <g class="node" data-title="Terminaux SIP / Softphones" data-body="Registrar SIP : 192.168.10.254:5060\nDN SIP configurés : 1001 à 1005.\nDeux pools sont explicitement configurés dans la configuration fournie :\n1001 — MAC D453.83D3.45C8\n1002 — MAC E888.439A.CA06\nCodec : voice-class codec 1.">
+  <rect x="860" y="245" width="295" height="145" rx="18"/>
+  <text x="1007" y="281" text-anchor="middle" class="node-title">Terminaux SIP</text>
+  <text x="1007" y="305" text-anchor="middle" class="node-sub">voice register pool</text>
+  <text x="1007" y="329" text-anchor="middle" class="node-sub">1001 → 1005</text>
+  <text x="1007" y="353" text-anchor="middle" class="node-sub">UDP 5060 · SIP</text>
+  <text x="1007" y="374" text-anchor="middle" class="node-sub">G.711 μ-law / a-law</text>
+ </g>
+ <path class="edge sip" d="M780 290 C820 310 825 315 860 318" marker-end="url(#arrowGreen)"/>
+ <text x="813" y="292" class="edge-label">SIP / 5060</text>
+
+ <!-- DHCP -->
+ <g class="node" data-title="DHCP VOICE" data-body="Pool : VOICE\nNetwork : 192.168.10.0/24\nDefault gateway : 192.168.10.254\nOption 150 : 192.168.10.254\n\nL’option 150 indique aux téléphones l’adresse du serveur TFTP/CME pour récupérer leur configuration selon le scénario Cisco CME.">
+  <rect x="120" y="400" width="290" height="105" rx="18"/>
+  <text x="265" y="436" text-anchor="middle" class="node-title">DHCP VOICE</text>
+  <text x="265" y="460" text-anchor="middle" class="node-sub">192.168.10.0/24</text>
+  <text x="265" y="480" text-anchor="middle" class="node-sub">Option 150 → 192.168.10.254</text>
+ </g>
+ <path class="edge" d="M420 340 C355 385 330 400 350 400" marker-end="url(#arrowBlue)"/>
+
+ <!-- QoS -->
+ <g class="node" data-title="QoS / Priorisation" data-body="La configuration fournie tente de prioriser :\nTCP 5060\nUDP 2000\nUDP 5060\n\nAttention : TCP/5060 correspond généralement au SIP de signalisation TCP, tandis que la configuration SCCP utilise ici TCP/2000. Le trafic média RTP n’est pas explicitement classifié dans ce bloc.">
+  <rect x="520" y="425" width="310" height="90" rx="18"/>
+  <text x="675" y="458" text-anchor="middle" class="node-title">QoS / Priorité VoIP</text>
+  <text x="675" y="482" text-anchor="middle" class="node-sub">TCP 5060 · UDP 2000 · UDP 5060</text>
+  <text x="675" y="501" text-anchor="middle" class="node-sub">default → medium</text>
+ </g>
+ <path class="edge qos" d="M600 370 L600 425" marker-end="url(#arrowBlue)"/>
+</svg>
+<div class="legend">
+ <span><i></i>SCCP / signalisation</span>
+ <span><i class="sip"></i>SIP / signalisation</span>
+ <span><i class="qos"></i>QoS / priorisation</span>
+</div>
+</section>
+
+<div class="section-title"><h3>Vue technique</h3><span>Configuration représentée dans le laboratoire</span></div>
+<section class="lower">
+ <div class="card info">
+  <h4>Plan d’adressage & services</h4>
+  <div class="row"><span>LAN voix</span><strong class="mono">192.168.10.0/24</strong></div>
+  <div class="row"><span>Gateway / CME</span><strong class="mono">192.168.10.254</strong></div>
+  <div class="row"><span>DHCP pool</span><strong class="mono">VOICE</strong></div>
+  <div class="row"><span>Option 150</span><strong class="mono">192.168.10.254</strong></div>
+  <div class="row"><span>SCCP</span><strong class="mono">TCP / 2000</strong></div>
+  <div class="row"><span>SIP</span><strong class="mono">UDP / 5060</strong></div>
+  <div class="row"><span>Codec</span><strong class="mono">G.711 μ-law / a-law</strong></div>
+ </div>
+
+ <div class="card info">
+  <h4>Numérotation</h4>
+  <div class="row"><span>Joris</span><strong class="mono">2000</strong></div>
+  <div class="row"><span>Koffi</span><strong class="mono">2001</strong></div>
+  <div class="row"><span>David</span><strong class="mono">2002</strong></div>
+  <div class="row"><span>Paul</span><strong class="mono">2003</strong></div>
+  <div class="row"><span>Alice</span><strong class="mono">2004</strong></div>
+  <div class="row"><span>Sarah</span><strong class="mono">2005</strong></div>
+  <div class="row"><span>SIP</span><strong class="mono">1001 → 1005</strong></div>
+ </div>
+</section>
+
+<div class="section-title"><h3>Extraits de configuration</h3><span>Version condensée pour la documentation</span></div>
+<section class="lower">
+ <div class="card info">
+  <h4>SCCP / CME</h4>
+  <pre class="code">telephony-service
+ max-ephone 6
+ max-dn 6
+ auto assign 1 to 6
+ auto-reg-ephone
+ ip source-address 192.168.10.254 port 2000
+ create cnf-files
+
+ephone-dn 1
+ number 2000
+ name Joris</pre>
+ </div>
+ <div class="card info">
+  <h4>SIP / CME</h4>
+  <pre class="code">voice service voip
+ allow-connections sip to sip
+ sip
+  registrar server
+
+voice register global
+ mode cme
+ source-address 192.168.10.254 port 5060
+ max-dn 5
+ max-pool 5
+ authenticate register
+ create profile</pre>
+ </div>
+</section>
+
+<footer>Projet VoIP Cisco CME · Documentation technique interactive · Configuration basée sur le lab fourni</footer>
+</main>
+
+<div class="panel" id="panel">
+ <button class="close" onclick="closePanel()">×</button>
+ <div class="eyebrow">Inspection</div>
+ <h3 id="panelTitle"></h3>
+ <p id="panelBody"></p>
+</div>
+
+<script>
+const panel=document.getElementById('panel');
+const title=document.getElementById('panelTitle');
+const body=document.getElementById('panelBody');
+document.querySelectorAll('.node').forEach(n=>{
+ n.addEventListener('click',()=>{
+  document.querySelectorAll('.node').forEach(x=>x.classList.remove('active'));
+  n.classList.add('active');
+  title.textContent=n.dataset.title||'Équipement';
+  body.innerHTML=(n.dataset.body||'').replace(/\n/g,'<br>');
+  panel.classList.add('show');
+ });
+});
+function closePanel(){
+ panel.classList.remove('show');
+ document.querySelectorAll('.node').forEach(x=>x.classList.remove('active'));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Méthode d’ingénierie IT — Checklist projet inspirée d’ITIL 4 — Joris Allabi</title><meta name="description" content="Méthode de travail inspirée d&#x27;ITIL 4">
+<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
+.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
+.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
+.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
+.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
+h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
+.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
+.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
+.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
+@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
+.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
+.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
+.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
+.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
+.lead{font-size:18px;color:var(--mut)}
+pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
+blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
+ul{padding-left:1.3em}li{margin:.2em 0}
+.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
+<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<main class="wrap article"><p class="crumb"><a href="index.html">← Accueil</a></p><h1>Méthode d’ingénierie IT — Checklist projet inspirée d’ITIL 4</h1><h1 id="objectif">Objectif</h1>
+<p>Utiliser une démarche d’ingénierie reproductible pour chaque laboratoire : partir d’un besoin, définir des critères de réussite, concevoir une solution, la mettre en œuvre de façon maîtrisée, tester les pannes, documenter les preuves et tirer des améliorations.</p>
+<p>Cette méthode s’inspire des pratiques ITIL 4 — notamment gestion des changements, gestion des incidents, gestion des problèmes, gestion des mises en production, gestion de la configuration et amélioration continue. C’est une méthode de travail personnelle pour des laboratoires, pas une prétention à une certification ITIL.</p>
+<aside>
+<p>🎯</p>
+<p><strong>Principe de preuve :</strong> je ne déclare pas un service fiable parce qu’il fonctionne une fois. Je documente les conditions du test, le résultat attendu, le résultat observé, les écarts et les limites connues.</p>
+</aside>
+<h1 id="1-fiche-de-cadrage-avant-de-toucher-a-la-configuration">1. Fiche de cadrage — avant de toucher à la configuration</h1>
+<ul>
+<li>☐ Décrire le besoin métier en quelques phrases : quel service doit fonctionner et pour qui ?</li>
+<li>☐ Définir le problème actuel ou le risque à réduire.</li>
+<li>☐ Définir les objectifs mesurables et les critères d’acceptation.</li>
+<li>☐ Délimiter le périmètre : systèmes inclus, systèmes exclus, dépendances et hypothèses.</li>
+<li>☐ Identifier les utilisateurs, services et données impactés.</li>
+<li>☐ Lister les contraintes : matériel, mémoire, stockage, licences, versions logicielles, temps disponible.</li>
+<li>☐ Définir les risques et les points uniques de défaillance (SPOF).</li>
+<li>☐ Établir l’état initial et les prérequis.</li>
+<li>☐ Créer un registre des décisions : choix retenu, alternative écartée et justification.</li>
+<li>☐ Définir les preuves à collecter : schéma, commandes, captures, journaux, résultats et mesures.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de cadrage d’une page, périmètre, critères d’acceptation et liste des risques.</p>
+<h1 id="2-conception-avant-le-deploiement">2. Conception — avant le déploiement</h1>
+<ul>
+<li>☐ Dessiner la topologie logique et physique, avec une légende.</li>
+<li>☐ Documenter l’adressage IP, VLAN, DNS, routes, flux, ports et règles de filtrage nécessaires.</li>
+<li>☐ Décrire les rôles des serveurs, équipements, hyperviseurs et services.</li>
+<li>☐ Identifier les dépendances : DNS, annuaire, base de données, stockage, certificats, licences, synchronisation horaire, réseau.</li>
+<li>☐ Choisir les versions compatibles et vérifier les prérequis.</li>
+<li>☐ Définir les comptes et privilèges nécessaires selon le moindre privilège.</li>
+<li>☐ Prévoir sauvegarde, restauration, retour arrière et accès de secours.</li>
+<li>☐ Définir la supervision : disponibilité, capacité, performance, journaux et seuils d’alerte.</li>
+<li>☐ Préparer un plan de tests positif, négatif et de panne.</li>
+<li>☐ Faire une revue de conception : est-ce réalisable avec les ressources du laboratoire ? Quelles limites resteront ?</li>
+</ul>
+<p><strong>Livrables :</strong> schéma d’architecture, matrice des flux/dépendances, plan d’adressage, plan de tests et plan de retour arrière.</p>
+<h1 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h1>
+<p>Pour chaque modification importante, traiter la configuration comme un changement contrôlé, même dans un laboratoire.</p>
+<ul>
+<li>☐ Décrire le changement et le résultat attendu.</li>
+<li>☐ Évaluer l’impact, les risques, les dépendances et le périmètre d’indisponibilité.</li>
+<li>☐ Vérifier les sauvegardes et la possibilité de revenir à l’état précédent.</li>
+<li>☐ Enregistrer l’état initial : configuration exportée, captures, versions et mesures.</li>
+<li>☐ Préparer les étapes d’exécution et les commandes exactes.</li>
+<li>☐ Définir les contrôles à réaliser après chaque étape.</li>
+<li>☐ Définir les conditions d’arrêt et de retour arrière.</li>
+<li>☐ Réaliser le changement dans un créneau maîtrisé, sans modifier plusieurs variables à la fois.</li>
+<li>☐ Noter l’heure, l’action, le résultat et les erreurs.</li>
+<li>☐ Comparer le résultat aux critères d’acceptation et décider : poursuivre, corriger ou revenir en arrière.</li>
+</ul>
+<p><strong>Livrable :</strong> fiche de changement avec risque, approbation personnelle/revue, plan d’exécution, validation et rollback.</p>
+<h1 id="4-validation-technique-prouver-que-le-service-fonctionne">4. Validation technique — prouver que le service fonctionne</h1>
+<ul>
+<li>☐ Tester le scénario nominal de bout en bout.</li>
+<li>☐ Tester l’accès depuis un client réel ou une VM cliente, pas uniquement depuis la console serveur.</li>
+<li>☐ Tester les dépendances une par une : DNS, routage, authentification, base de données, stockage, pare-feu, heure.</li>
+<li>☐ Vérifier les journaux et compteurs, pas seulement le message « service démarré ».</li>
+<li>☐ Mesurer le résultat quand c’est pertinent : temps de détection, temps de restauration, perte de paquets, latence, taux d’erreur, utilisation CPU/RAM/disque.</li>
+<li>☐ Tester un cas négatif : mauvais identifiants, ressource indisponible, règle bloquante ou client non autorisé.</li>
+<li>☐ Tester une panne contrôlée et documenter le comportement attendu.</li>
+<li>☐ Vérifier les alertes et notifications de supervision.</li>
+<li>☐ Vérifier la restauration des données quand le projet comporte des sauvegardes.</li>
+<li>☐ Conserver une preuve pour chaque test : résultat attendu, résultat observé, date, capture/log et conclusion.</li>
+<li>☐ Ouvrir un incident si le résultat est inattendu ; ne pas masquer l’échec.</li>
+<li>☐ Refaire le test après correction.</li>
+</ul>
+<p><strong>Livrable :</strong> tableau de tests avec verdict « Réussi / Échoué / Non testé », preuves et anomalies restantes.</p>
+<h1 id="5-incident-diagnostic-et-probleme-quand-ca-ne-marche-pas">5. Incident, diagnostic et problème — quand ça ne marche pas</h1>
+<ul>
+<li>☐ Décrire le symptôme sans conclure trop vite sur la cause.</li>
+<li>☐ Préciser l’heure de début, le périmètre affecté et l’impact.</li>
+<li>☐ Vérifier les changements récents et les dépendances.</li>
+<li>☐ Collecter les faits : journaux, commandes de diagnostic, métriques, captures et messages d’erreur.</li>
+<li>☐ Formuler plusieurs hypothèses et les tester une à une.</li>
+<li>☐ Rétablir le service de manière sûre si nécessaire (contournement ou rollback).</li>
+<li>☐ Identifier la cause racine après rétablissement, si les éléments le permettent.</li>
+<li>☐ Documenter la solution, les preuves qui la confirment et les effets secondaires.</li>
+<li>☐ Ajouter une action préventive : supervision, documentation, correction de conception ou test automatisable.</li>
+<li>☐ Réaliser un bref retour d’expérience sans chercher un coupable.</li>
+</ul>
+<p><strong>Livrables :</strong> fiche d’incident, chronologie, diagnostic, cause racine (si confirmée), résolution et actions préventives.</p>
+<h1 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h1>
+<ul>
+<li>☐ Vérifier que les critères d’acceptation sont satisfaits.</li>
+<li>☐ Mettre à jour les schémas, inventaires, versions, adresses et dépendances.</li>
+<li>☐ Documenter les procédures courantes et les commandes de vérification.</li>
+<li>☐ Documenter les alertes, seuils, gravités et premières actions de diagnostic.</li>
+<li>☐ Documenter sauvegarde, restauration, comptes de secours et retour arrière.</li>
+<li>☐ Définir la capacité à surveiller et les seuils d’alerte.</li>
+<li>☐ Préparer une procédure de reprise après panne.</li>
+<li>☐ Faire une revue finale des risques résiduels et des limites connues.</li>
+<li>☐ Mettre le statut à « Livré » uniquement lorsque le périmètre promis et ses tests sont réellement terminés.</li>
+<li>☐ Si des tests sont incomplets, conserver « En cours » ou « Révision » et l’indiquer explicitement.</li>
+</ul>
+<p><strong>Livrable :</strong> dossier d’exploitation court, critères de validation signés par toi-même/relecteur et limites connues.</p>
+<h1 id="7-amelioration-continue">7. Amélioration continue</h1>
+<p>À la fin de chaque projet, répondre par écrit :</p>
+<ul>
+<li>☐ Qu’est-ce qui fonctionne et quelle preuve le démontre ?</li>
+<li>☐ Qu’est-ce qui n’a pas été testé ?</li>
+<li>☐ Quelle panne a été la plus instructive ?</li>
+<li>☐ Quelle était la cause racine de l’incident le plus important ?</li>
+<li>☐ Quelle décision d’architecture changerais-je avec plus de ressources ?</li>
+<li>☐ Quelles limites viennent du matériel, du caractère imbriqué du lab ou des licences ?</li>
+<li>☐ Quelle amélioration réduit le plus le risque ou le temps de dépannage ?</li>
+<li>☐ Quelle prochaine étape technique est justifiée par les résultats ?</li>
+</ul>
+<p><strong>Livrable :</strong> bilan de projet et liste priorisée d’améliorations.</p>
+<h1 id="modele-de-page-a-dupliquer-pour-chaque-projet">Modèle de page à dupliquer pour chaque projet</h1>
+<h2 id="a-resume-executif">A. Résumé exécutif</h2>
+<ul>
+<li>Besoin / problème :</li>
+<li>Objectif :</li>
+<li>Environnement et versions :</li>
+<li>Périmètre inclus / exclu :</li>
+<li>Statut réel :</li>
+<li>Résultat en 3 phrases :</li>
+</ul>
+<h2 id="b-architecture-et-decisions">B. Architecture et décisions</h2>
+<ul>
+<li>Schéma :</li>
+<li>Inventaire et adressage :</li>
+<li>Dépendances :</li>
+<li>Choix techniques et justification :</li>
+<li>Alternatives et compromis :</li>
+<li>Risques / SPOF :</li>
+</ul>
+<h2 id="c-mise-en-uvre">C. Mise en œuvre</h2>
+<ul>
+<li>Prérequis :</li>
+<li>Étapes réalisées :</li>
+<li>Changements appliqués :</li>
+<li>Difficultés rencontrées :</li>
+<li>Retour arrière prévu :</li>
+</ul>
+<h2 id="d-tests-et-preuves">D. Tests et preuves</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Scénario</th>
+<th>Résultat attendu</th>
+<th>Résultat observé</th>
+<th>Preuve</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T01</td>
+<td>Fonctionnement nominal</td>
+<td>Service accessible</td>
+<td>À renseigner</td>
+<td>Capture / log</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T02</td>
+<td>Dépendance indisponible</td>
+<td>Alerte ou échec maîtrisé</td>
+<td>À renseigner</td>
+<td>Capture / log</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T03</td>
+<td>Panne contrôlée</td>
+<td>Comportement documenté</td>
+<td>À renseigner</td>
+<td>Chronologie</td>
+<td>Non testé</td>
+</tr>
+<tr>
+<td>T04</td>
+<td>Retour au service</td>
+<td>Service rétabli</td>
+<td>À renseigner</td>
+<td>Mesure / log</td>
+<td>Non testé</td>
+</tr>
+</tbody>
+</table>
+<h2 id="e-incident-et-retour-dexperience">E. Incident et retour d’expérience</h2>
+<ul>
+<li>Symptôme :</li>
+<li>Impact :</li>
+<li>Chronologie :</li>
+<li>Hypothèses testées :</li>
+<li>Cause racine confirmée ou inconnue :</li>
+<li>Résolution :</li>
+<li>Action préventive :</li>
+</ul>
+<h2 id="f-conclusion-honnete">F. Conclusion honnête</h2>
+<ul>
+<li>Compétences réellement démontrées :</li>
+<li>Compétences seulement étudiées :</li>
+<li>Tests non réalisés :</li>
+<li>Limites du laboratoire :</li>
+<li>Prochaine amélioration :</li>
+</ul>
+<h1 id="critere-personnel-de-fin-de-projet">Critère personnel de fin de projet</h1>
+<p>Un projet n’est pas « terminé » parce que la configuration est copiée ou que l’écran est vert. Il est prêt à être présenté quand je peux expliquer le besoin, justifier l’architecture, refaire la mise en œuvre, démontrer les tests, diagnostiquer au moins une panne, restaurer le service et reconnaître clairement ce qui reste à améliorer.</p></main>
+<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
+</body></html>
