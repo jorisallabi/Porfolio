@@ -338,7 +338,7 @@ router ospf 10
  no passive-interface Port-channel1
  no passive-interface Port-channel2
  default-information originate</code></pre>
-<p>Les lignes de sécurité d'accès (bannières, comptes, SNMP) sont identiques à celles des autres switches.</p>
+<p>Le lien de bordure est direct : le port 3 du FortiGate (<code>172.16.0.1/30</code>) est raccordé à <code>Gi0/0</code> de <code>SW_EDGE</code> (<code>172.16.0.2/30</code>). Aucun VLAN 99 n'est utilisé pour ce transit. Les lignes de sécurité d'accès (bannières, comptes, SNMP) sont identiques à celles des autres switches.</p>
 <div class="slot"><b>📸 Capture à insérer — <code>show ip ospf neighbor</code> et <code>show ip route ospf</code></b><span>Légende suggérée : « Voisinages OSPF de SW_EDGE avec les deux L3 de distribution ; route par défaut annoncée en OSPF. »</span></div>
 <div class="slot"><b>📸 Capture à insérer — <code>show etherchannel summary</code></b><span>Légende suggérée : « Port-channel 1 et 2 de SW_EDGE : deux membres en état bundled (P) chacun. »</span></div>
 
@@ -410,7 +410,7 @@ interface GigabitEthernet3/3
 <li>Créer le groupe d'adresses <code>172.16.0.0/16</code> et une route statique vers ce réseau, avec pour saut suivant l'interface de SW_EDGE (le pare-feu ne connaît pas dynamiquement les réseaux du LAN).</li>
 <li>Autoriser par politique le trafic du LAN vers la zone SD-WAN (sans filtrage pour l'instant).</li>
 </ol>
-<p>SNMP pour la supervision :</p>
+<p>SNMP pour la supervision : l'accès est limité à l'adresse du serveur Zabbix (<code>172.16.50.20/32</code>). La communauté est volontairement masquée dans cette documentation publique.</p>
 <pre><code>config system snmp sysinfo
     set status enable
     set description "FortiGate - Bordure Reseau"
@@ -519,8 +519,8 @@ end</code></pre>
 <li><b>Type de réseau OSPF :</b> les liens cœur ↔ distribution sont des /30 à deux routeurs. Le type <code>point-to-point</code> supprimerait l'élection DR/BDR et accélérerait la convergence ; l'élection actuelle n'économise pas de trafic sur un segment à deux routeurs.</li>
 <li><b>ACL invités :</b> la dernière ligne refuse tout le trafic du VLAN 40 sauf DHCP, DNS et ping de la passerelle. Les invités n'ont donc pas non plus accès à Internet. Si la politique prévoit Internet pour les invités, il faut refuser les réseaux internes <code>172.16.0.0/16</code> puis autoriser le reste.</li>
 <li><b><code>ip routing</code> sur SW_EDGE :</b> la commande n'apparaît pas dans le fichier alors que les autres L3 la contiennent ; à confirmer sur l'équipement.</li>
-<li><b>VLAN 99 et 100 :</b> cités en tête du fichier (transit vers le FortiGate, DMZ) mais configurés sur aucun switch ; reliquats d'une version antérieure de l'architecture.</li>
-<li><b>Fichier FortiGate :</b> il contient deux variantes antérieures (sous-interfaces VLAN 99 et 100, puis agrégats LACP directs vers les distributions) et ne contient pas la zone SD-WAN, le SLA ni la route vers SW_EDGE décrits ci-dessus. L'export actuel du pare-feu est la référence à ajouter à la place.</li>
+<li><b>Anciennes variantes FortiGate :</b> les blocs de configuration faisant référence aux sous-interfaces VLAN 99/100 ou aux agrégats LACP vers les switches de distribution sont des versions antérieures et ne décrivent pas l'architecture retenue. Le transit actuel est le lien routé direct FortiGate port 3 (<code>172.16.0.1/30</code>) ↔ SW_EDGE <code>Gi0/0</code> (<code>172.16.0.2/30</code>), sans VLAN 99.</li>
+<li><b>Export FortiGate :</b> les configurations historiques jointes ne constituent pas l'export complet de la version SD-WAN actuellement retenue. La description de la zone SD-WAN, du SLA et du lien routé direct vers SW_EDGE est issue du document de validation ; un export nettoyé du FortiGate reste à joindre pour vérifier la configuration effective.</li>
 <li><b>Secrets :</b> mots de passe et communauté SNMP v2c en clair dans les fichiers de laboratoire ; remplacés ici par des repères. SNMP v3 serait préférable en production.</li>
 </ol>
 
