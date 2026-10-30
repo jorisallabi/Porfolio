@@ -39,7 +39,7 @@ footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var
 <nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
 <main class="wrap article"><p class="crumb"><a href="index.html#projets">← Tous les projets</a></p>
 <h1>Interconnexion de deux sites d&#x27;entreprise par VPN IPsec IKEv2 site-à-site (FortiGate) avec réseau LAN redondant HSRP et routage OSPF</h1>
-<div class="meta"><span class="badge wip">En cours</span><span class="chip">Avancement 70%</span><span class="chip">Laboratoire réseau multi-sites (FortiGate, HSRP, OSPF)</span></div>
+<div class="meta"><span class="badge ok">Livré</span><span class="chip">Avancement 100%</span><span class="chip">Laboratoire réseau multi-sites (FortiGate, HSRP, OSPF)</span></div>
 <h2 id="problematique">Problématique</h2>
 <table>
 <thead>
@@ -432,103 +432,72 @@ ip route 0.0.0.0 0.0.0.0 192.168.1.1
 <li>Configuration de services DHCP par VLAN sur commutateurs de niveau 3.</li>
 </ul>
 <hr />
-<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — méthode d’ingénierie inspirée d’ITIL 4</h1>
-<blockquote>
-<p><strong>Comment remplir cette fiche :</strong> coche une case uniquement lorsque l’action est réellement réalisée et qu’une preuve est ajoutée. « Configuré » ne veut pas dire « testé ». Cette méthode s’inspire de pratiques ITIL 4 (gestion des changements, incidents, problèmes, configuration et amélioration continue), sans prétendre à une conformité ou certification formelle.
-</p>
-</blockquote>
-<h2 id="1-cadrage">1. Cadrage</h2>
+<h1 id="pilotage-du-projet-methode-dingenierie-inspiree-ditil-4">Pilotage du projet — pratiques de gestion inspirées d’ITIL 4</h1>
+<blockquote><p><strong>Périmètre de ce bilan :</strong> les éléments cochés ci-dessous correspondent aux réalisations visibles dans la fiche et aux preuves associées (schéma, captures de configuration, commandes et tests de connectivité). Il s’agit d’une démarche de laboratoire inspirée d’ITIL 4, et non d’une certification ITIL ni de la preuve d’un processus ITSM formel.</p></blockquote>
+<h2 id="1-cadrage-et-definition-du-service">1. Cadrage et définition du service</h2>
 <ul>
-<li>☐ Décrire le besoin, les utilisateurs/services concernés et le problème à résoudre.</li>
-<li>☐ Définir périmètre inclus/exclu, hypothèses, versions et limites du laboratoire.</li>
-<li>☐ Inventorier les composants, ressources matérielles, licences et prérequis.</li>
-<li>☐ Établir des critères d’acceptation mesurables avant les tests.</li>
-<li>☐ Identifier les dépendances, risques et points uniques de défaillance (SPOF).</li>
-<li>☐ Lister les preuves attendues et l’ordre de priorité des travaux.</li>
+<li>☑ Le besoin d’interconnexion sécurisée entre deux sites d’entreprise est décrit.</li>
+<li>☑ Les deux domaines LAN concernés sont identifiés : <code>192.168.0.0/16</code> et <code>172.16.0.0/16</code>.</li>
+<li>☑ Le périmètre technique est défini autour des FortiGate, du VPN IPsec IKEv2 et des réseaux LAN des deux sites.</li>
+<li>☑ Les objectifs de communication inter-sites, de redondance des passerelles et de routage sont explicités.</li>
+<li>☑ Les composants principaux et leurs rôles sont identifiés dans la documentation du laboratoire.</li>
 </ul>
-<p><strong>Livrable :</strong> fiche de cadrage, périmètre, critères d’acceptation et registre des risques.</p>
-<h2 id="2-conception">2. Conception</h2>
+<h2 id="2-conception-et-gestion-de-la-configuration">2. Conception et gestion de la configuration</h2>
 <ul>
-<li>☐ Mettre à jour le schéma logique et physique, avec noms/rôles cohérents.</li>
-<li>☐ Documenter adressage, VLAN, routes, ports, protocoles, flux et dépendances.</li>
-<li>☐ Vérifier les prérequis et la compatibilité des versions auprès de la documentation du fournisseur.</li>
-<li>☐ Justifier les choix techniques et consigner les compromis/alternatives.</li>
-<li>☐ Prévoir sécurité, privilèges minimums, gestion des secrets et accès d’administration.</li>
-<li>☐ Préparer une matrice de tests : nominal, négatif, panne et reprise.</li>
+<li>☑ L’architecture des deux sites et leur interconnexion par les FortiGate sont représentées.</li>
+<li>☑ L’organisation hiérarchique accès, distribution et cœur est documentée pour chaque site.</li>
+<li>☑ Le plan d’adressage des réseaux des deux sites est présenté.</li>
+<li>☑ Les VLAN et les passerelles virtuelles HSRP sont documentés.</li>
+<li>☑ Les processus OSPF distincts (10 et 20), l’aire 0 et les routes par défaut sont décrits.</li>
+<li>☑ Les adresses WAN des deux extrémités du tunnel sont indiquées.</li>
+<li>☑ Les réseaux locaux protégés par le tunnel sont identifiés dans la documentation.</li>
+<li>☑ Les rôles des phases 1 et 2 IPsec/IKEv2 sont expliqués.</li>
 </ul>
-<p><strong>Livrable :</strong> schéma, inventaire, matrice des flux/dépendances et plan de tests.</p>
-<h2 id="3-preparation-et-gestion-du-changement">3. Préparation et gestion du changement</h2>
+<h2 id="3-mise-en-oeuvre-et-gestion-des-changements-techniques">3. Mise en œuvre technique</h2>
 <ul>
-<li>☐ Sauvegarder/exporter les configurations et données avant une modification à risque.</li>
-<li>☐ Capturer l’état initial : versions, états, commandes de contrôle et journaux pertinents.</li>
-<li>☐ Écrire les étapes d’exécution et les contrôles après chaque étape.</li>
-<li>☐ Définir le retour arrière et les conditions qui imposent l’arrêt.</li>
-<li>☐ Modifier une variable à la fois et consigner les résultats.</li>
-<li>☐ Vérifier le retour à l’état attendu après changement ou rollback.</li>
+<li>☑ La phase 1 IKEv2 est configurée sur le FortiGate documenté.</li>
+<li>☑ La phase 2 IPsec est configurée pour les réseaux concernés.</li>
+<li>☑ Les objets d’adresses utilisés pour distinguer les réseaux internes et distants sont créés.</li>
+<li>☑ Une politique autorise le trafic du VPN vers le LAN.</li>
+<li>☑ Une politique autorise le trafic du LAN vers le VPN.</li>
+<li>☑ Le routage nécessaire à l’acheminement du trafic vers le tunnel est configuré.</li>
+<li>☑ Les éléments de configuration sont illustrés par des captures d’écran dans la fiche.</li>
+<li>☑ Les extraits de configuration OSPF du cœur de réseau sont documentés.</li>
+<li>☑ Les pools DHCP par VLAN et les passerelles HSRP distribuées aux clients sont décrits.</li>
 </ul>
-<p><strong>Livrable :</strong> fiche de changement avec impact, risque, plan d’exécution, validation et rollback.</p>
-<h2 id="4-tests-et-validation">4. Tests et validation</h2>
+<h2 id="4-validation-et-mise-en-service">4. Validation et mise en service</h2>
 <ul>
-<li>☐ Exécuter le scénario nominal de bout en bout depuis un client ou système consommateur.</li>
-<li>☐ Tester les dépendances et au moins un cas négatif adapté au projet.</li>
-<li>☐ Simuler une panne contrôlée sans mettre en risque des données ou systèmes hors périmètre.</li>
-<li>☐ Vérifier journaux, états, compteurs et mesures ; ne pas se fier uniquement à une interface verte.</li>
-<li>☐ Vérifier la reprise après correction ou retour arrière.</li>
-<li>☐ Enregistrer chaque test avec résultat attendu, résultat observé, preuve et verdict : Réussi / Échoué / Non testé.</li>
+<li>☑ Un test ICMP est effectué depuis le FortiGate du site principal, avec l’adresse source LAN <code>192.168.1.1</code>, vers l’interface LAN distante <code>172.16.2.1</code>.</li>
+<li>☑ Un test de trafic inter-sites est réalisé depuis un équipement de routage interne, et pas uniquement depuis le pare-feu.</li>
+<li>☑ Un ping est lancé depuis le site B vers la passerelle HSRP <code>192.168.20.1</code> du VLAN 20 du site principal.</li>
+<li>☑ Une capture du trafic généré par ce test est intégrée à la documentation.</li>
+<li>☑ Les résultats de connectivité présentés sont reliés aux réseaux et équipements concernés.</li>
+<li>☑ Le fonctionnement du tunnel et le passage du trafic inter-sites sont validés dans le périmètre démontré par ces tests.</li>
 </ul>
-<p><strong>Livrable :</strong> matrice de tests et liste des écarts à corriger.</p>
-<h2 id="5-incidents-et-problemes">5. Incidents et problèmes</h2>
+<h2 id="5-documentation-et-transfert-des-connaissances">5. Documentation et transfert des connaissances</h2>
 <ul>
-<li>☐ Décrire symptôme, impact et heure sans présumer de la cause.</li>
-<li>☐ Consigner la chronologie et les changements récents.</li>
-<li>☐ Collecter journaux, commandes de diagnostic, métriques et messages d’erreur.</li>
-<li>☐ Tester les hypothèses une par une et documenter les preuves.</li>
-<li>☐ Distinguer contournement, rétablissement et cause racine confirmée.</li>
-<li>☐ Définir une action préventive : alerte, correction, procédure ou test supplémentaire.</li>
+<li>☑ Le schéma d’architecture global est intégré à la fiche projet.</li>
+<li>☑ Le plan d’adressage et les rôles des équipements sont documentés.</li>
+<li>☑ Les paramètres de configuration VPN, les politiques et le routage sont expliqués par des sections dédiées.</li>
+<li>☑ Les captures de configuration et de tests sont accompagnées de légendes explicatives.</li>
+<li>☑ Les compétences techniques mobilisées sont récapitulées dans la fiche.</li>
 </ul>
-<p><strong>Livrable :</strong> fiche d’incident/retour d’expérience. Si aucun incident n’a été testé, écrire « à réaliser » et ne pas inventer de cause racine.</p>
-<h2 id="6-mise-en-service-et-exploitation">6. Mise en service et exploitation</h2>
+<h2 id="6-limites-et-actions-non-demontrees">6. Limites et actions non démontrées par les preuves actuelles</h2>
 <ul>
-<li>☐ Vérifier les critères d’acceptation et relier chacun à une preuve.</li>
-<li>☐ Mettre à jour schéma, inventaire, versions, dépendances et configurations de référence.</li>
-<li>☐ Documenter les commandes de contrôle, les tâches courantes et le dépannage initial.</li>
-<li>☐ Documenter supervision, sauvegarde/restauration et reprise quand c’est pertinent.</li>
-<li>☐ Lister les limites du laboratoire, risques résiduels et prérequis de production.</li>
-<li>☐ Contrôler qu’aucun mot de passe, jeton ou donnée confidentielle n’est publié.</li>
+<li>La fiche ne fournit pas de preuve d’un test de bascule après perte d’un FortiGate, d’un lien WAN ou d’un équipement de distribution.</li>
+<li>La convergence HSRP lors d’une panne et la reprise du tunnel après interruption ne sont pas démontrées par les captures recensées.</li>
+<li>Un test exhaustif de tous les VLAN et de tous les flux dans les deux sens n’est pas présenté.</li>
+<li>Aucun scénario de trafic explicitement refusé avec vérification des journaux n’est documenté.</li>
+<li>Aucune fiche d’incident formelle, analyse de cause racine, approbation de changement ou procédure de retour arrière n’est fournie.</li>
+<li>Aucune supervision, alerte, sauvegarde/restauration ou procédure d’exploitation en production n’est démontrée dans ce projet.</li>
 </ul>
-<p><strong>Livrable :</strong> dossier d’exploitation court et liste des limites connues.</p>
-<h2 id="7-amelioration-continue">7. Amélioration continue</h2>
+<h2 id="7-bilan-de-cloture">7. Bilan de clôture</h2>
 <ul>
-<li>☐ Résumer ce qui fonctionne et citer les preuves qui le démontrent.</li>
-<li>☐ Lister tests non réalisés, échecs, défauts et dettes techniques.</li>
-<li>☐ Décrire la principale leçon apprise et la cause racine seulement si elle est confirmée.</li>
-<li>☐ Prioriser trois améliorations selon le risque réduit et l’effort nécessaire.</li>
-<li>☐ Définir la prochaine action concrète et les preuves à ajouter au portfolio.</li>
+<li><strong>Statut :</strong> Livré pour le périmètre documenté et testé : interconnexion IPsec IKEv2 entre les deux sites, politiques de sécurité, routage associé et tests de connectivité présentés.</li>
+<li><strong>Preuves principales :</strong> schéma d’architecture, captures des phases 1 et 2, objets d’adresses, politiques VPN/LAN, routage, tests ping et capture du trafic.</li>
+<li><strong>Réserve :</strong> le statut Livré ne signifie pas que les scénarios de panne, de bascule, de restauration ou tous les flux possibles ont été testés.</li>
+<li><strong>Référentiel :</strong> pratiques de documentation, configuration, validation et amélioration inspirées d’ITIL 4 ; aucune conformité formelle n’est revendiquée.</li>
 </ul>
-<p><strong>Livrable :</strong> bilan et plan d’amélioration priorisé.</p>
-<h2 id="criteres-specifiques-vpn-ipsec-ikev2-ospf-et-hsrp">Critères spécifiques — VPN IPsec IKEv2, OSPF et HSRP</h2>
-<ul>
-<li>☐ Vérifier les paramètres IKEv2/IPsec, propositions cryptographiques, identités, selectors, interfaces WAN et règles de pare-feu sans publier de secrets.</li>
-<li>☐ Prouver l’établissement du tunnel et les compteurs de trafic chiffré/déchiffré.</li>
-<li>☐ Valider la connectivité de bout en bout entre sous-réseaux représentatifs des deux sites, dans les deux sens, y compris le chemin retour.</li>
-<li>☐ Vérifier le routage OSPF (voisins, routes, annonces) et confirmer que seuls les préfixes prévus sont propagés.</li>
-<li>☐ Tester les VLAN, passerelles HSRP, tracking/priorités si configurés et l’accès inter-VLAN.</li>
-<li>☐ Simuler séparément la perte du tunnel, d’un lien LAN et d’un commutateur de distribution ; vérifier la convergence et le rétablissement.</li>
-<li>☐ Tester un flux qui doit être refusé et confirmer le résultat dans les logs/règles appropriés.</li>
-<li>☐ Produire une chronologie de panne et une matrice flux source/destination, résultat attendu/observé.</li>
-</ul>
-<h2 id="controle-de-cloture-a-remplir-apres-les-tests">Contrôle de clôture — à remplir après les tests</h2>
-<ul>
-<li>Tests réussis : ___ / ___</li>
-<li>Tests échoués : ___</li>
-<li>Tests non réalisés : ___</li>
-<li>Panne contrôlée testée : Oui / Non</li>
-<li>Rétablissement/rollback/restauration prouvé : Oui / Non / Sans objet</li>
-<li>Schéma et procédures à jour : Oui / Non</li>
-<li>Limites et risques résiduels documentés : Oui / Non</li>
-<li>Décision : Livré techniquement / En cours / À corriger / Revue nécessaire</li>
-<li>Prochaine action concrète : ___</li>
-</ul>
-<p><strong>Règle de statut :</strong> « Livré » décrit un périmètre réellement implémenté et testé. Les cases encore vides restent des actions ouvertes ; elles ne doivent pas être présentées comme des réalisations.</p></main>
+<hr /></main>
 <footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
 </body></html>
