@@ -1,61 +1,164 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Joris Allabi — Administrateur réseaux et systèmes</title><meta name="description" content="Portfolio de laboratoires réseaux, systèmes et virtualisation : MPLS, FortiGate, VMware, Zabbix, VoIP.">
-<style>:root{--bg:#fbfbfa;--fg:#1c1f24;--mut:#5d6570;--line:#e3e5e8;--card:#fff;--acc:#0b5fff;--code:#f3f4f6}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--fg:#e8eaed;--mut:#9aa3ad;--line:#262b32;--card:#171b21;--acc:#6ea0ff;--code:#1b2027}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:0 20px}
-a{color:var(--acc)}img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin:.5rem 0}
-.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:5}
-.bar{display:flex;justify-content:space-between;align-items:center;height:56px}
-.brand{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:18px;text-decoration:none;color:var(--mut);font-size:15px}nav a:hover{color:var(--acc)}
-.hero{padding:64px 0 32px;border-bottom:1px solid var(--line)}
-.eyebrow{color:var(--acc);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin:0}
-.hero h1{font-size:clamp(36px,7vw,56px);margin:.2em 0;line-height:1.1}.sub{font-size:20px;color:var(--mut)}
-.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--acc);padding:12px 16px;border-radius:8px}
-h2{font-size:28px;margin:2.2em 0 .6em}h3.grp{margin:1.6em 0 .6em;font-size:16px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
-.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;color:var(--fg);transition:.15s}
-.card:hover{border-color:var(--acc);transform:translateY(-2px)}.card h3{font-size:16px;line-height:1.35;margin:.6em 0 .4em}.card p{color:var(--mut);font-size:14px;margin:0}
-.badge{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;display:inline-block}
-.ok{background:#d9f5e3;color:#0a6b33}.wip{background:#fff1cc;color:#8a5a00}.rev{background:#e5e0ff;color:#4a35b8}.plan{background:#e8ebef;color:#4b5563}
-@media(prefers-color-scheme:dark){.ok{background:#12351f;color:#7be3a2}.wip{background:#3a2d0b;color:#ffd166}.rev{background:#26214a;color:#b9aaff}.plan{background:#252b33;color:#aab3bf}}
-.bar-p{height:5px;background:var(--line);border-radius:9px;margin-top:12px;overflow:hidden}.bar-p i{display:block;height:100%;background:var(--acc)}
-.chip{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 11px;font-size:13px;color:var(--mut);margin:0 6px 6px 0}
-.chips{margin-top:18px}.meta{margin:10px 0 18px}.crumb{margin:28px 0 0;font-size:14px}
-.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600}
-.article h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:.4em 0 .3em}.article h2{font-size:24px;border-bottom:1px solid var(--line);padding-bottom:.3em}
-.lead{font-size:18px;color:var(--mut)}
-pre{background:var(--code);padding:14px;border-radius:10px;overflow:auto;font-size:13.5px;line-height:1.5}code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em}pre code{padding:0;background:none}
-table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14.5px}th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
-aside{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px;margin:1em 0}
-blockquote{border-left:3px solid var(--line);margin:1em 0;padding:0 1em;color:var(--mut)}
-ul{padding-left:1.3em}li{margin:.2em 0}
-.embed{margin:1.2em 0}.embed iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:10px;background:#fff}.embed figcaption{font-size:14px;margin-top:6px}
-footer{border-top:1px solid var(--line);margin-top:4rem;padding:24px 0;color:var(--mut);font-size:14px}
-</style></head><body>
-<header class="top"><div class="wrap bar"><a class="brand" href="index.html">Joris Allabi</a>
-<nav><a href="index.html#projets">Projets</a><a href="methode.html">Méthode</a><a href="index.html#contact">Contact</a></nav></div></header>
+<title>Joris Allabi — Réseaux, systèmes & infrastructures</title>
+<meta name="description" content="Portfolio professionnel de Joris Allabi : réseaux, systèmes, virtualisation, sécurité et infrastructures. Projets techniques documentés et laboratoires vérifiables.">
+<meta name="theme-color" content="#0b0d0e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/portfolio.css">
+</head>
+<body>
+<header class="top"><div class="bar">
+<a class="brand" href="index.html">JORIS ALLABI <span class="micro">/ PORTFOLIO</span></a>
+<nav aria-label="Navigation principale">
+<a href="#projets">Projets</a><a href="#expertise">Expertise</a><a href="methode.html">Méthode</a><a href="#contact">Contact</a>
+</nav>
+</div></header>
 <main>
-<section class="hero"><div class="wrap"><p class="eyebrow">Réseaux · Systèmes · Virtualisation</p>
-<h1>Joris Allabi</h1><p class="sub">Administrateur réseaux et systèmes basé au Bénin, en progression vers l’ingénierie des infrastructures.</p>
-<p>Je documente ici des laboratoires techniques reproductibles : architecture, choix techniques, configurations, tests, diagnostic d’incidents, résultats observés et limites identifiées.</p>
-<p class="note"><b>Trois niveaux de preuve :</b> projets réalisés et testés, projets en cours de validation, projets planifiés. Les environnements présentés sont des laboratoires personnels ou de simulation, pas des déploiements de production.</p>
-<p class="chips"><span class="chip">Licence ENEAM 2024 — Administration des réseaux informatiques</span><span class="chip">FortiGate FCA</span></p></div></section>
-<section class="wrap" id="projets"><h2>Projets</h2><h3 class="grp">Projets réalisés et testés</h3><div class="grid"><a class="card" href="design-et-implementation-d-une-infrastructure-vmware-resilie.html"><span class="badge ok">Livré</span><h3>Design et Implémentation d&#x27;une Infrastructure VMware Résiliente (HA &amp; DRS) avec Clustering ESXi et Stockage iSCSI Partagé</h3>
-<p>Laboratoire VMware vSphere 7.0 (ESXi, vCenter, TrueNAS)</p><div class="bar-p"><i style="width:100%"></i></div></a><a class="card" href="deploiement-dune-infrastructure-voip-hybride-cisco-cme-sccp.html"><span class="badge ok">Livré</span><h3>Déploiement d’une Infrastructure VoIP Hybride Cisco CME (SCCP &amp; SIP) en Environnement Virtualisé</h3>
-<p>Laboratoire GNS3</p><div class="bar-p"><i style="width:100%"></i></div></a><a class="card" href="supervision-zabbix-en-tres-haute-disponibilite-reseau-campus.html"><span class="badge ok">Livré</span><h3>Supervision Zabbix en très haute disponibilité : réseau campus redondant (HSRP, OSPF, LACP), SD-WAN double ISP et cluster Hyper-V sur stockage iSCSI</h3>
-<p>Laboratoire sur deux PC : campus GNS3 (IOSvL2, FortiGate SD-WAN, AD DS) et plateforme de supervision Zabbix hébergée sur un cluster Hyper-V 2019 avec stockage iSCSI partagé</p><div class="bar-p"><i style="width:100%"></i></div></a></div><h3 class="grp">En cours de validation</h3><div class="grid"><a class="card" href="interconnexion-de-deux-sites-d-entreprise-par-vpn-ipsec-ikev.html"><span class="badge ok">Livré</span><h3>Interconnexion de deux sites d&#x27;entreprise par VPN IPsec IKEv2 site-à-site (FortiGate) avec réseau LAN redondant HSRP et routage OSPF</h3>
-<p>Laboratoire réseau multi-sites (FortiGate, HSRP, OSPF)</p><div class="bar-p"><i style="width:100%"></i></div></a><a class="card" href="reseau-d-entreprise-campus-redondant-segmentation-vlan-passe.html"><span class="badge wip">En cours</span><h3>Réseau d&#x27;entreprise campus redondant : segmentation VLAN, passerelles HSRP, DHCP centralisé (AD), FortiGate double WAN et supervision SNMP Zabbix</h3>
-<p>Laboratoire GNS3 réseau campus (IOSvL2, FortiGate, Windows Server, Zabbix)</p><div class="bar-p"><i style="width:40%"></i></div></a></div><h3 class="grp">Planifiés — objectifs d’apprentissage</h3><div class="grid"><a class="card" href="infrastructure-windows-server-resiliente-ad-ds-dns-dhcp-gpo.html"><span class="badge plan">Planifié</span><h3>Infrastructure Windows Server résiliente : AD DS, DNS, DHCP, GPO et contrôleur secondaire</h3>
-<p>Laboratoire Windows Server / services d’infrastructure d’entreprise</p><div class="bar-p"><i style="width:0%"></i></div></a><a class="card" href="publication-d-applications-et-de-bureaux-avec-microsoft-remo.html"><span class="badge plan">Planifié</span><h3>Publication d&#x27;applications et de bureaux avec Microsoft Remote Desktop Services (RDS)</h3>
-<p>Laboratoire virtualisation d&#x27;applications et de bureaux (Microsoft RDS, Windows Server)</p><div class="bar-p"><i style="width:0%"></i></div></a><a class="card" href="sauvegarde-et-reprise-apres-sinistre-avec-veeam-backup-repli.html"><span class="badge plan">Planifié</span><h3>Sauvegarde et reprise après sinistre avec Veeam Backup &amp; Replication</h3>
-<p>Laboratoire de virtualisation VMware / protection des machines virtuelles</p><div class="bar-p"><i style="width:0%"></i></div></a><a class="card" href="supervision-et-gestion-des-incidents-avec-zabbix-glpi-et-sau.html"><span class="badge plan">Planifié</span><h3>Supervision et gestion des incidents avec Zabbix + GLPI et sauvegarde/restauration avec Veeam</h3>
-<p>Laboratoire de supervision et d&#x27;exploitation sur deux PC de travail sous VMware Workstation : Zabbix, GLPI, Veeam Backup &amp; Replication/Agent, Active Directory comme charge supervisée, tests de sauvegarde et de restauration. Pas de changement d&#x27;OS hôte ni d&#x27;Hyper-V imbriqué dans le périmètre principal.</p><div class="bar-p"><i style="width:0%"></i></div></a></div><h3 class="grp">Fiches de support et en révision</h3><div class="grid"><a class="card" href="interconnexion-de-sites-clients-par-un-backbone-operateur-mp.html"><span class="badge rev">En révision</span><h3>Interconnexion de sites clients par un backbone opérateur MPLS L3VPN (OSPF, LDP, VRF, MP-BGP VPNv4) avec LAN redondant HSRP</h3>
-<p>Laboratoire GNS3 réseau opérateur (MPLS L3VPN, MP-BGP, VRF, HSRP)</p></a><a class="card" href="sauvegarde-et-restauration-d-une-infrastructure-virtualisee.html"><span class="badge rev">En révision</span><h3>Sauvegarde et restauration d&#x27;une infrastructure virtualisée avec Veeam Backup &amp; Replication</h3>
-<p>Laboratoire sauvegarde et continuité d&#x27;activité (Veeam Backup &amp; Replication)</p><div class="bar-p"><i style="width:0%"></i></div></a></div></section>
-<section class="wrap"><h2>Méthode de travail</h2><p>Chaque projet suit une démarche inspirée d’ITIL 4 : cadrage, conception, gestion du changement, validation, diagnostic, mise en service et amélioration continue. Une configuration seule ne constitue pas une preuve suffisante.</p><p><a class="btn" href="methode.html">Voir la checklist d’ingénierie →</a></p></section>
-<section class="wrap" id="contact"><h2>Contact</h2><p><a class="btn" href="mailto:allabijoris2001@gmail.com">allabijoris2001@gmail.com</a></p></section></main>
-<footer><div class="wrap">© 2026 Joris Allabi · Laboratoires personnels et de simulation, sauf indication contraire.</div></footer>
-</body></html>
+<section class="hero wrap">
+<div class="hero-copy">
+<p class="eyebrow">Administrateur réseaux & systèmes · Bénin</p>
+<h1>JORIS<br>ALLABI<span>.</span></h1>
+<p class="hero-role">Je construis, j'administre et je documente des infrastructures fiables.</p>
+<p class="hero-description">Réseaux d'entreprise, interconnexion multi-sites, virtualisation et services d'infrastructure. Un portfolio de projets techniques, de tests concrets et de retours d'expérience — sans confondre laboratoire et production.</p>
+<div class="hero-actions">
+<a class="action-link" href="#projets">Explorer les projets</a>
+<a class="action-link secondary" href="mailto:allabijoris2001@gmail.com">Me contacter</a>
+</div>
+</div>
+<div class="hero-visual" aria-label="Illustration abstraite d'une infrastructure réseau">
+<svg class="network-art" viewBox="0 0 520 420" role="img" aria-labelledby="network-title">
+<title id="network-title">Topologie réseau abstraite reliant des équipements et des services</title>
+<g class="wire">
+<path d="M260 205 L105 88 L42 205 L118 333 L260 205 L411 82 L478 207 L390 337 L260 205"/>
+<path d="M105 88 L260 55 L411 82 M42 205 L260 205 L478 207 M118 333 L260 355 L390 337"/>
+<path d="M105 88 L118 333 M411 82 L390 337 M260 55 L260 355"/>
+</g>
+<g class="wire-soft">
+<path d="M105 88 L260 205 L411 82 M42 205 L260 55 L478 207 M118 333 L260 205 L390 337"/>
+<circle cx="260" cy="205" r="112" stroke-dasharray="2 8"/>
+<circle cx="260" cy="205" r="160" stroke-dasharray="1 10"/>
+</g>
+<g>
+<circle class="node" cx="260" cy="205" r="22"/><circle class="node-core" cx="260" cy="205" r="5"/>
+<circle class="node" cx="105" cy="88" r="9"/><circle class="node" cx="42" cy="205" r="7"/>
+<circle class="node" cx="118" cy="333" r="9"/><circle class="node" cx="260" cy="55" r="7"/>
+<circle class="node" cx="260" cy="355" r="7"/><circle class="node" cx="411" cy="82" r="9"/>
+<circle class="node" cx="478" cy="207" r="7"/><circle class="node" cx="390" cy="337" r="9"/>
+<circle class="pulse" cx="260" cy="205" r="12"/>
+</g>
+<g class="node-label">
+<text x="78" y="65">WAN / ISP</text><text x="7" y="229">EDGE</text>
+<text x="80" y="365">CAMPUS</text><text x="240" y="28">CORE</text>
+<text x="244" y="389">DC / VM</text><text x="414" y="56">SECURITY</text>
+<text x="456" y="232">LAN</text><text x="392" y="370">SERVICES</text>
+</g>
+</svg>
+<span class="visual-caption">01 / Infrastructure thinking</span>
+</div>
+<div class="hero-foot"><span>Réseaux · Systèmes · Virtualisation</span><span>Concevoir / Déployer / Vérifier</span><span>06°22' N — 02°25' E</span></div>
+</section>
+
+<section class="section wrap" id="projets">
+<div class="section-head"><span class="section-index">01 / Sélection</span><div><h2 class="section-title">Du concret.<br>De la méthode.<br>Des preuves.</h2><p class="section-intro">Une sélection de laboratoires et de projets techniques. Chaque fiche précise le périmètre réalisé, les technologies utilisées, les validations obtenues et les limites restantes.</p></div></div>
+
+<div class="project-group">
+<div class="group-heading">Projets réalisés et testés</div>
+<div class="project-grid">
+<a class="project-card featured" href="design-et-implementation-d-une-infrastructure-vmware-resilie.html">
+<div class="project-card-top"><span class="project-number">01 / Virtualisation</span><span class="status">Livré · 100%</span></div>
+<div class="project-visual"><svg viewBox="0 0 440 105" aria-hidden="true"><g class="line"><path d="M55 52H385M120 20V84M220 20V84M320 20V84M120 52L220 20L320 52L220 84Z"/></g><g><circle class="dot" cx="55" cy="52" r="10"/><circle class="dot" cx="120" cy="20" r="8"/><circle class="dot" cx="120" cy="84" r="8"/><circle class="dot" cx="220" cy="20" r="8"/><circle class="dot" cx="220" cy="84" r="8"/><circle class="dot" cx="320" cy="52" r="8"/><circle class="dot" cx="385" cy="52" r="10"/></g></svg></div>
+<h3>Infrastructure VMware résiliente — HA, DRS & stockage iSCSI</h3><p>Cluster ESXi, vCenter et TrueNAS : administration centralisée, haute disponibilité et équilibrage des ressources.</p>
+<div class="project-card-bottom"><span>VMware vSphere 7 · TrueNAS</span><b>↗</b></div>
+</a>
+<a class="project-card featured" href="supervision-zabbix-en-tres-haute-disponibilite-reseau-campus.html">
+<div class="project-card-top"><span class="project-number">02 / Supervision</span><span class="status">Livré · 100%</span></div>
+<div class="project-visual"><svg viewBox="0 0 440 105" aria-hidden="true"><g class="line"><path d="M220 10V43M220 43L90 90M220 43L220 90M220 43L350 90M90 90H350"/></g><g><circle class="dot" cx="220" cy="10" r="9"/><circle class="dot" cx="220" cy="43" r="12"/><circle class="dot" cx="90" cy="90" r="8"/><circle class="dot" cx="220" cy="90" r="8"/><circle class="dot" cx="350" cy="90" r="8"/></g></svg></div>
+<h3>Supervision d'un campus redondant et SD-WAN</h3><p>Architecture campus, HSRP, OSPF, LACP, double accès WAN et supervision Zabbix.</p>
+<div class="project-card-bottom"><span>Zabbix · GNS3 · FortiGate</span><b>↗</b></div>
+</a>
+<a class="project-card" href="deploiement-dune-infrastructure-voip-hybride-cisco-cme-sccp.html">
+<div class="project-card-top"><span class="project-number">03 / Téléphonie IP</span><span class="status">Livré</span></div>
+<div class="project-visual"><svg viewBox="0 0 440 105" aria-hidden="true"><g class="line"><path d="M220 14V42M220 42L105 88M220 42L335 88"/></g><g><rect class="dot" x="196" y="4" width="48" height="20"/><circle class="dot" cx="105" cy="88" r="12"/><circle class="dot" cx="335" cy="88" r="12"/></g></svg></div>
+<h3>Infrastructure VoIP hybride Cisco CME</h3><p>Interopérabilité SCCP et SIP dans un environnement virtualisé GNS3.</p>
+<div class="project-card-bottom"><span>Cisco CME · SCCP · SIP</span><b>↗</b></div>
+</a>
+<a class="project-card" href="interconnexion-de-deux-sites-d-entreprise-par-vpn-ipsec-ikev.html">
+<div class="project-card-top"><span class="project-number">04 / Interconnexion</span><span class="status">Livré</span></div>
+<div class="project-visual"><svg viewBox="0 0 440 105" aria-hidden="true"><g class="line"><path d="M85 52H355M110 52C140 5 300 5 330 52M110 52C140 100 300 100 330 52"/></g><g><circle class="dot" cx="85" cy="52" r="13"/><circle class="dot" cx="355" cy="52" r="13"/><circle class="dot" cx="220" cy="52" r="9"/></g></svg></div>
+<h3>VPN IPsec IKEv2 site-à-site</h3><p>Interconnexion sécurisée de deux sites, LAN redondant HSRP et routage OSPF.</p>
+<div class="project-card-bottom"><span>FortiGate · IPsec · OSPF</span><b>↗</b></div>
+</a>
+</div>
+</div>
+
+<div class="project-group">
+<div class="group-heading">En cours, planifiés et documentation technique</div>
+<div class="project-list">
+<a class="project-row" href="reseau-d-entreprise-campus-redondant-segmentation-vlan-passe.html"><span class="num">05</span><span><strong>Réseau campus redondant & segmentation VLAN</strong><small>En cours · GNS3, FortiGate, AD DS, Zabbix</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="interconnexion-de-sites-clients-par-un-backbone-operateur-mp.html"><span class="num">06</span><span><strong>Backbone opérateur MPLS L3VPN</strong><small>En révision · OSPF, LDP, VRF, MP-BGP VPNv4</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="sauvegarde-et-restauration-d-une-infrastructure-virtualisee.html"><span class="num">07</span><span><strong>Sauvegarde et restauration d'une infrastructure virtualisée</strong><small>En révision · Veeam Backup & Replication</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="infrastructure-windows-server-resiliente-ad-ds-dns-dhcp-gpo.html"><span class="num">08</span><span><strong>Infrastructure Windows Server résiliente</strong><small>Planifié · AD DS, DNS, DHCP, GPO</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="publication-d-applications-et-de-bureaux-avec-microsoft-remo.html"><span class="num">09</span><span><strong>Publication d'applications et de bureaux</strong><small>Planifié · Microsoft RDS</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="sauvegarde-et-reprise-apres-sinistre-avec-veeam-backup-repli.html"><span class="num">10</span><span><strong>Sauvegarde & reprise après sinistre</strong><small>Planifié · Veeam Backup & Replication</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="supervision-et-gestion-des-incidents-avec-zabbix-glpi-et-sau.html"><span class="num">11</span><span><strong>Supervision, gestion des incidents & restauration</strong><small>Planifié · Zabbix, GLPI, Veeam</small></span><span class="arrow">↗</span></a>
+<a class="project-row" href="methode.html"><span class="num">12</span><span><strong>Ma méthode de travail et de validation</strong><small>Checklist d'ingénierie inspirée d'ITIL 4</small></span><span class="arrow">↗</span></a>
+</div>
+</div>
+</section>
+
+<section class="section wrap" id="expertise">
+<div class="section-head"><span class="section-index">02 / Domaines</span><div><h2 class="section-title">Des infrastructures pensées de bout en bout.</h2><p class="section-intro">Des fondamentaux réseau aux services systèmes, avec une attention particulière portée à la disponibilité, à la sécurité et à la capacité de diagnostic.</p></div></div>
+<div class="capability-grid">
+<div class="capability"><span class="cap-num">01</span><h3>Réseaux</h3><p>Routage, switching, VLAN, OSPF, HSRP, MPLS et interconnexion multi-sites.</p></div>
+<div class="capability"><span class="cap-num">02</span><h3>Sécurité</h3><p>Segmentation, VPN IPsec, FortiGate, politiques de filtrage et SD-WAN.</p></div>
+<div class="capability"><span class="cap-num">03</span><h3>Systèmes</h3><p>Windows Server, services d'infrastructure, Linux et administration.</p></div>
+<div class="capability"><span class="cap-num">04</span><h3>Virtualisation</h3><p>VMware vSphere, ESXi, vCenter, stockage partagé et haute disponibilité.</p></div>
+<div class="capability"><span class="cap-num">05</span><h3>Supervision</h3><p>Zabbix, SNMP, disponibilité des services et diagnostic d'incidents.</p></div>
+<div class="capability"><span class="cap-num">06</span><h3>Voix sur IP</h3><p>Cisco CME, SCCP, SIP et services de téléphonie IP.</p></div>
+<div class="capability"><span class="cap-num">07</span><h3>Sauvegarde</h3><p>Principes de protection, restauration et continuité d'activité.</p></div>
+<div class="capability"><span class="cap-num">08</span><h3>Documentation</h3><p>Schémas, procédures, tests, preuves et limites techniques explicites.</p></div>
+</div>
+</section>
+
+<section class="section wrap" id="apropos">
+<div class="section-head"><span class="section-index">03 / Profil</span><div><h2 class="section-title">L'ingénierie commence par la rigueur.</h2></div></div>
+<div class="about-layout">
+<p class="about-statement">Administrateur réseaux et systèmes, je développe une approche orientée <em>infrastructure, fiabilité et résolution de problèmes.</em></p>
+<div class="about-copy">
+<p>Mon objectif est d'évoluer vers l'ingénierie réseaux et systèmes. J'approfondis les architectures d'entreprise à travers des laboratoires reproductibles : je conçois, configure, teste les scénarios de panne et documente les résultats.</p>
+<p>Je distingue volontairement les environnements réellement mis en œuvre, ceux en cours de validation et les objectifs d'apprentissage. La précision technique compte autant que la présentation.</p>
+<div class="credential-list">
+<div class="credential"><span>Formation</span><span>Licence Informatique de Gestion · ENEAM</span></div>
+<div class="credential"><span>Spécialité</span><span>Administration des réseaux informatiques</span></div>
+<div class="credential"><span>Diplôme</span><span>2024</span></div>
+<div class="credential"><span>Certification</span><span>Fortinet FCA</span></div>
+<div class="credential"><span>Localisation</span><span>Bénin</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section wrap" id="methode">
+<div class="section-head"><span class="section-index">04 / Démarche</span><div><h2 class="section-title">Pas de configuration sans validation.</h2><p class="section-intro">Un laboratoire utile doit démontrer plus que le fonctionnement nominal. Il doit aussi rendre visibles les dépendances, les limites et le comportement en cas d'incident.</p></div></div>
+<div class="method-strip">
+<div class="method-step"><span class="step-no">01 / Cadrer</span><h3>Comprendre</h3><p>Besoin, périmètre, contraintes et critères d'acceptation.</p></div>
+<div class="method-step"><span class="step-no">02 / Concevoir</span><h3>Structurer</h3><p>Architecture, adressage, flux, dépendances et risques.</p></div>
+<div class="method-step"><span class="step-no">03 / Déployer</span><h3>Maîtriser</h3><p>Configuration progressive, sauvegardes et traçabilité.</p></div>
+<div class="method-step"><span class="step-no">04 / Vérifier</span><h3>Prouver</h3><p>Tests, incidents simulés, résultats observés et limites.</p></div>
+</div>
+<p style="margin:26px 0 0"><a class="action-link" href="methode.html">Consulter la méthode complète</a></p>
+</section>
+
+<section class="wrap contact-panel" id="contact">
+<div><p class="eyebrow">05 / Échangeons</p><h2>Parlons<br>infrastructure.</h2><p>Une opportunité, un projet ou une discussion technique ?</p></div>
+<a class="contact-email" href="mailto:allabijoris2001@gmail.com">ALLABIJORIS2001@GMAIL.COM ↗</a>
+</section>
+</main>
+<footer><div class="footer-inner"><span>© 2026 Joris Allabi</span><span>Portfolio professionnel · Réseaux & systèmes</span><span>Conçu avec précision.</span></div></footer>
+<script src="assets/portfolio.js" defer></script>
+</body>
+</html>
