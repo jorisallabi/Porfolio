@@ -365,6 +365,9 @@ interface GigabitEthernet3/3
 
 
 
+<div class="evidence-grid cluster-evidence">
+<figure><img src="assets/cluster%20presentation%20des%20deux%20nodes.png" alt="Les deux nœuds Hyper-V en service"><figcaption>Les deux nœuds du cluster, HYPER-V-1 et HYPER-V-2, sont en service. Chacun détient un vote.</figcaption></figure>
+<figure><img src="assets/cluster%20presentation%20du%20role%20vm%20zabbix%20.png" alt="Rôle de machine virtuelle ZABBIX dans le cluster"><figcaption>Le rôle de machine virtuelle ZABBIX est en cours d'exécution sur HYPER-V-1 et géré par le cluster.</figcaption></figure></div>
 <h3>4.5 FortiGate : double ISP en SD-WAN</h3>
 <ol>
 <li>Configurer individuellement chaque interface WAN avec son adresse et sa passerelle.</li>
@@ -444,7 +447,7 @@ end</code></pre>
 <li><b>Observé :</b> interruption inférieure à 15 secondes, même en virtualisation imbriquée (VMware Workstation, Windows Server, Ubuntu). Seul l'hôte de calcul change ; les fichiers de la VM restent sur le stockage partagé. <b>Verdict : Réussi.</b></li>
 <li><b>Intérêt :</b> déplacer une VM en production pour la maintenance préventive d'un hôte.</li>
 </ul>
-
+<div class="video-evidence"><div class="video-frame"><iframe src="https://drive.google.com/file/d/1S5GWDPHMSdlnErExFSZcjAIIWrLqPUI2/preview" title="Migration manuelle à chaud de la VM ZABBIX" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div><p><b>Migration manuelle à chaud de la VM ZABBIX.</b> Déplacement manuel du rôle de machine virtuelle ZABBIX d'un nœud Hyper-V vers l'autre pendant son exécution.</p><p><a href="https://drive.google.com/file/d/1S5GWDPHMSdlnErExFSZcjAIIWrLqPUI2/view" target="_blank" rel="noopener">Ouvrir sur Google Drive</a></p></div>
 
 <h3>Test 5 — Panne critique : extinction d'un hôte</h3>
 <ul>
@@ -453,8 +456,7 @@ end</code></pre>
 <li><b>Observé :</b> coupure temporaire de la VM ; l'hôte restant obtient la majorité des votes (lui-même et le témoin) puis relance la VM. Environ 5 minutes entre l'arrêt de l'hôte et le redémarrage de la VM. <b>Verdict : Réussi.</b></li>
 <li><b>Lecture du délai :</b> l'auteur attribue la durée à la virtualisation imbriquée, qui ajoute de la latence à toute l'infrastructure ; cette hypothèse n'a pas été isolée par une mesure comparative. Un délai d'environ une minute ou moins est attendu sur du matériel physique, mais il n'a pas été mesuré.</li>
 </ul>
-
-
+<div class="video-evidence"><div class="video-frame"><iframe src="https://drive.google.com/file/d/1oyKSnEUnoGvhqDvT5cGB_Mr0ysKGzCN2/preview" title="Redémarrage automatique après extinction de HYPER-V-2" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div><p><b>Redémarrage automatique après extinction de HYPER-V-2.</b> Extinction de HYPER-V-2 : le cluster détecte la panne et redémarre automatiquement le rôle ZABBIX sur le nœud restant.</p><p><a href="https://drive.google.com/file/d/1oyKSnEUnoGvhqDvT5cGB_Mr0ysKGzCN2/view" target="_blank" rel="noopener">Ouvrir sur Google Drive</a></p></div>
 
 <h3>Test 6 — Bascule SD-WAN</h3>
 <ul>
@@ -468,16 +470,16 @@ end</code></pre>
 <ul>
 <li><b>Procédure :</b> simuler le cas de défaillance maximale : couper l'un des ISP, puis simultanément l'un des switches de distribution ; garder des pings continus vers l'extérieur et vers les ressources internes.</li>
 <li><b>Attendu :</b> services toujours disponibles, les redondances fonctionnent de concert.</li>
-<li><b>Observé :</b> résultat à renseigner. <b>Verdict : Preuve à ajouter.</b></li>
+<li><b>Observé :</b> la vidéo montre la coupure simultanée du lien WAN suivi par le FortiGate et du switch de distribution actif, avec prise de relais des mécanismes de redondance. <b>Verdict : Démontré en vidéo.</b></li>
 </ul>
-
+<div class="video-evidence"><div class="video-frame"><iframe src="https://drive.google.com/file/d/1nTUBJwgqp3dZI3N0SEU6u9l4-3RzV5UX/preview" title="Défaillances simultanées SD-WAN et HSRP" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div><p><b>Défaillances simultanées SD-WAN et HSRP.</b> Panne générale : coupure simultanée du lien WAN suivi par le FortiGate et du switch Cisco de distribution actif. La vidéo illustre la prise de relais des mécanismes de redondance.</p><p><a href="https://drive.google.com/file/d/1nTUBJwgqp3dZI3N0SEU6u9l4-3RzV5UX/view" target="_blank" rel="noopener">Ouvrir sur Google Drive</a></p></div>
 
 <h3>Synthèse des tests</h3>
 <table>
 <thead><tr><th>Test</th><th>Sujet</th><th>Verdict</th><th>Preuve jointe</th></tr></thead>
 <tbody>
-<tr><td>1</td><td>Validation des configurations</td><td><span class="badge ok">Réussi</span></td><td>Capture à insérer</td></tr>
-<tr><td>2</td><td>Bascule HSRP</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
+<tr><td>1</td><td>Validation des configurations</td><td><span class="badge ok">Réussi</span></td><td>Non illustré par les captures jointes</td></tr>
+<tr><td>2</td><td>Bascule HSRP</td><td><span class="badge ok">Réussi</span></td><td>Vidéo de panne générale intégrée</td></tr>
 <tr><td>3</td><td>Routage</td><td><span class="badge ok">Réussi</span></td><td>Capture à insérer</td></tr>
 <tr><td>4</td><td>Migration à chaud (&lt; 15 s)</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
 <tr><td>5</td><td>Panne d'un hôte (~ 5 min en imbriqué)</td><td><span class="badge ok">Réussi</span></td><td>Vidéo à insérer</td></tr>
@@ -541,15 +543,15 @@ end</code></pre>
 
 <h2 id="cloture">11. Contrôle de clôture</h2>
 <ul>
-<li>Tests réussis : 6 / 7</li>
+<li>Tests réussis ou démontrés : 7 / 7</li>
 <li>Tests échoués : 0</li>
-<li>Tests non réalisés ou sans preuve : 1 (test 7, défaillances cumulées)</li>
+<li>Test 7 : démonstration vidéo ajoutée ; les tests 1 et 3 ne disposent pas de capture dédiée dans les éléments transmis.</li>
 <li>Panne contrôlée testée : Oui (switch de distribution, ISP, hôte du cluster)</li>
 <li>Rétablissement prouvé : Oui pour HSRP (retour du master) et SD-WAN (retour du lien préféré)</li>
 <li>Schéma et procédures à jour : Oui, hors export FortiGate actuel à ajouter</li>
 <li>Limites et risques résiduels documentés : Oui</li>
 <li>Décision : Livré techniquement</li>
-<li>Prochaine action concrète : insérer les captures et vidéos aux emplacements marqués, exécuter et filmer le test 7</li>
+<li>Prochaine action concrète : ajouter les captures de validation des switches et de routage si une preuve visuelle est souhaitée</li>
 </ul>
 <p><b>Règle de statut :</b> « Livré » décrit un périmètre réellement implémenté et testé. Les cadres de preuve restants et les écarts du chapitre 6 sont des actions ouvertes ; ils ne doivent pas être présentés comme des réalisations.</p>
 <hr />
