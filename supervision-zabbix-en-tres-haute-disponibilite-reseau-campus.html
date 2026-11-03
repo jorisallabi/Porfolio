@@ -47,8 +47,8 @@
 <li>Interruption mesurée : migration à chaud manuelle de la VM de test inférieure à 15 s ; reprise automatique après extinction d'un hôte d'environ 5 min en virtualisation imbriquée.</li>
 </ul>
 <p>Périmètre exclu : GLPI et la génération automatique de tickets sont reportés (voir <a href="#evolutions">Évolutions</a>).</p>
-<div class="slot"><b>📸 Capture à insérer — topologie GNS3 complète</b><span>Légende suggérée : « Topologie du laboratoire : FortiGate, SW_EDGE, SW_DISTRI_1 et 2, switches d'accès, serveurs, hôtes du cluster. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — schéma logique du cluster</b><span>Légende suggérée : « Cluster Hyper-V : 2 nœuds, réseaux serveurs, iSCSI et heartbeat, NAS iSCSI, partage témoin. »</span></div>
+
+
 
 <h2 id="cadrage">1. Cadrage et politique de sécurité</h2>
 <h3>Besoin</h3>
@@ -156,7 +156,7 @@
 <tr><td>UC9</td><td>Administrateur</td><td>Superviser switches et FortiGate par SNMP v2c depuis Zabbix (172.16.50.20)</td><td>Communauté SNMP en lecture seule, ACL source</td><td>Captures Zabbix (voir chapitre 4)</td></tr>
 <tr><td>UC10</td><td>Tous les utilisateurs</td><td>Un ISP et un switch tombent en même temps ; les services restent joignables</td><td>Redondances combinées</td><td>Test 7</td></tr>
 </tbody></table>
-<div class="slot"><b>📸 Capture à insérer — test invité (UC2)</b><span>Légende suggérée : « Poste du VLAN 40 : adresse DHCP obtenue, résolution DNS réussie, accès refusé vers un serveur interne. »</span></div>
+
 
 <h2 id="mise-en-oeuvre">4. Mise en œuvre : configuration actuelle</h2>
 <p>Les extraits ci-dessous sont les configurations de référence du laboratoire. Les secrets sont remplacés par des repères <code>&lt;…&gt;</code> : aucun mot de passe ni communauté SNMP n'est publié. Le fichier de configuration est la source ; les commandes abrégées (<code>int vlan 10</code>) sont ici écrites en entier.</p>
@@ -263,8 +263,8 @@ snmp-server host 172.16.50.20 version 2c &lt;COMMUNAUTE_SNMP&gt;</code></pre>
 <tr><td>Route par défaut statique</td><td>via 172.16.1.1</td><td>via 172.16.1.5</td></tr>
 </tbody></table>
 <p>Le reste est identique : VLAN, relais DHCP, ACL invités, trunks, SNMP.</p>
-<div class="slot"><b>📸 Capture à insérer — <code>show standby brief</code> sur les deux switches</b><span>Légende suggérée : « HSRP : SW_DISTRI_1 actif sur les VLAN 10, 30, 50, 70 ; SW_DISTRI_2 actif sur les VLAN 20, 40, 60. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — <code>show ip interface brief</code></b><span>Légende suggérée : « Toutes les interfaces SVI en état up/up sur SW_DISTRI_1 et SW_DISTRI_2. »</span></div>
+
+
 
 <h3>4.2 Switch de cœur : SW_EDGE</h3>
 <pre><code>hostname SW_EDGE
@@ -304,8 +304,8 @@ router ospf 10
  no passive-interface Port-channel2
  default-information originate</code></pre>
 <p>Les lignes de sécurité d'accès (bannières, comptes, SNMP) sont identiques à celles des autres switches.</p>
-<div class="slot"><b>📸 Capture à insérer — <code>show ip ospf neighbor</code> et <code>show ip route ospf</code></b><span>Légende suggérée : « Voisinages OSPF de SW_EDGE avec les deux L3 de distribution ; route par défaut annoncée en OSPF. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — <code>show etherchannel summary</code></b><span>Légende suggérée : « Port-channel 1 et 2 de SW_EDGE : deux membres en état bundled (P) chacun. »</span></div>
+
+
 
 <h3>4.3 Switches d'accès</h3>
 <p>Même squelette sur les quatre switches : bannières, compte local, VLAN utiles, SVI de management 172.16.60.x avec passerelle <code>172.16.60.1</code>, deux trunks montants (<code>g0/0</code> vers SW_DISTRI_1, <code>g0/1</code> vers SW_DISTRI_2), ports d'accès et SNMP.</p>
@@ -361,9 +361,9 @@ interface GigabitEthernet3/3
 <li>Désigner le réseau heartbeat pour les migrations.</li>
 </ol>
 <p><b>Quorum.</b> Chaque nœud détient un vote. Avec deux nœuds, le témoin apporte le troisième vote : la majorité est de 2 sur 3. En cas de coupure entre les nœuds, celui qui obtient le vote du témoin garde la majorité et héberge les VM ; l'autre cesse de les exécuter. Le témoin sert d'arbitre pour éviter que les deux hôtes lancent les mêmes VM (split-brain).</p>
-<div class="slot"><b>📸 Capture à insérer — Gestionnaire de cluster de basculement</b><span>Légende suggérée : « Cluster : deux nœuds en ligne, témoin de partage de fichiers en ligne, réseaux serveurs, iSCSI et heartbeat. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — rapport de l'outil de validation du cluster</b><span>Légende suggérée : « Rapport de validation : tests réussis, avertissements éventuels commentés. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — initiateur iSCSI et disque partagé</b><span>Légende suggérée : « Disque iSCSI connecté sur les deux hôtes, dossiers distincts pour la configuration et les disques des VM. »</span></div>
+
+
+
 
 <h3>4.5 FortiGate : double ISP en SD-WAN</h3>
 <ol>
@@ -392,13 +392,23 @@ config system snmp community
         end
     next
 end</code></pre>
-<div class="slot"><b>📸 Capture à insérer — export de la configuration SD-WAN</b><span>Légende suggérée : « Zone SD-WAN, SLA vers 8.8.8.8 (150 ms / 50 ms / 2 %), règle et lien préféré. » À coller ici : sortie de <code>show system sdwan</code> (sans secret).</span></div>
-<div class="slot"><b>📸 Capture à insérer — routes et politiques du FortiGate</b><span>Légende suggérée : « Route par défaut via la zone SD-WAN, route 172.16.0.0/16 vers SW_EDGE, politique LAN vers WAN. »</span></div>
+
+
 
 <h3>4.6 Supervision Zabbix</h3>
 <p>Le serveur Zabbix (172.16.50.20) interroge les 7 switches et le FortiGate en SNMP v2c. Sur chaque équipement, la communauté est en lecture seule, restreinte par ACL à l'adresse du serveur Zabbix, avec une destination de traps vers la même adresse.</p>
-<div class="slot"><b>📸 Capture à insérer — liste des hôtes Zabbix</b><span>Légende suggérée : « Les 7 switches et le FortiGate supervisés, disponibilité SNMP au vert. »</span></div>
-<div class="slot"><b>📸 Capture à insérer — dernières données et graphiques</b><span>Légende suggérée : « Collecte SNMP : état des interfaces, trafic, charge. » Ajouter une capture d'un graphique de trafic pendant une bascule.</span></div>
+
+<div class="evidence-grid" aria-label="Captures de supervision Zabbix">
+  <figure><img src="assets/ZABBIX_LAN%20DIscovery%20setup.png" alt="Configuration de la règle de découverte LAN dans Zabbix"><figcaption>Configuration de la découverte LAN : plage 172.16.60.3–254, contrôles SNMP et ICMP, identification des équipements par adresse IP.</figcaption></figure>
+  <figure><img src="assets/ZABBIX%20HOST%20DISCOVERY%20SCREEN.png" alt="Résultat de la découverte réseau Zabbix"><figcaption>Résultat de la découverte : huit équipements détectés sur le réseau de management.</figcaption></figure>
+  <figure><img src="assets/ZABBIX_ACTION%20ON%20LAN%20DISCOVERY.png" alt="Conditions de l'action automatique de découverte Zabbix"><figcaption>Action de découverte : conditions SNMP, règle LAN, état de découverte et identification des équipements Cisco.</figcaption></figure>
+  <figure><img src="assets/ZABBIX_ACTIONS_%20OPERATIONS%20ON%20LAN%20DICOVERY.png" alt="Opérations de l'action de découverte Zabbix"><figcaption>Opérations automatisées : ajout de l'hôte, affectation au groupe Cisco et liaison du modèle Cisco IOS par SNMP.</figcaption></figure>
+  <figure><img src="assets/ZABBIX%20HOST%20DASHBOARD.png" alt="Liste des hôtes supervisés dans Zabbix"><figcaption>Inventaire Zabbix : équipements réseau et serveur, interfaces de supervision et disponibilité SNMP par hôte.</figcaption></figure>
+  <figure><img src="assets/ZABBIX%20-%20FORTIGATE%20DASHBOARD.png" alt="Tableau de bord de supervision du FortiGate dans Zabbix"><figcaption>Supervision du FortiGate : consommation CPU, mémoire et espace disque présentée sous forme de graphiques.</figcaption></figure>
+  <figure><img src="assets/ZABBIX%20FROTIGATE%20SDWAN%20DASHBOARD.png" alt="Statistiques SD-WAN du FortiGate dans Zabbix"><figcaption>Suivi SD-WAN : paquets reçus et envoyés, pertes, latence et gigue du lien.</figcaption></figure>
+</div>
+
+
 
 <h2 id="tests">5. Tests et validation</h2>
 <p>Chaque test est mené depuis un système consommateur avec un ping continu, pour simuler un environnement de production. Verdicts possibles : Réussi, Échoué, Preuve à ajouter.</p>
@@ -409,7 +419,7 @@ end</code></pre>
 <li><b>Attendu :</b> SVI up/up, VLAN, HSRP et OSPF présents.</li>
 <li><b>Observé :</b> configurations complètes. <b>Verdict : Réussi.</b></li>
 </ul>
-<div class="slot"><b>📸 Capture à insérer — validation des configurations</b><span>Légende suggérée : « <code>show run</code> et état des SVI sur SW_DISTRI_1 et SW_DISTRI_2. »</span></div>
+
 
 <h3>Test 2 — Bascule HSRP</h3>
 <ul>
@@ -417,7 +427,7 @@ end</code></pre>
 <li><b>Attendu :</b> coupure très brève, puis reprise ; le switch rétabli redevient master (<code>preempt</code>).</li>
 <li><b>Observé :</b> coupure très brève du trafic, le second switch prend le relais ; le switch qui a causé la bascule redevient master à son retour. Nombre de paquets perdus : à relever sur la capture. <b>Verdict : Réussi.</b></li>
 </ul>
-<div class="slot"><b>🎥 Vidéo à insérer — arrêt d'un L3 de distribution</b><span>Légende suggérée : « Ping continu depuis un poste, arrêt de SW_DISTRI_1, reprise du trafic via SW_DISTRI_2, puis retour au rôle de master. »</span></div>
+
 
 <h3>Test 3 — Routage de l'infrastructure</h3>
 <ul>
@@ -425,7 +435,7 @@ end</code></pre>
 <li><b>Attendu :</b> joignabilité complète, sauf les restrictions prévues (invités).</li>
 <li><b>Observé :</b> pings internes et externes réussis. <b>Verdict : Réussi.</b></li>
 </ul>
-<div class="slot"><b>📸 Capture à insérer — pings inter-VLAN et vers l'extérieur</b><span>Légende suggérée : « Ping d'un poste du VLAN 10 vers un poste du VLAN 30, vers le serveur 172.16.50.10 et vers 8.8.8.8. »</span></div>
+
 
 <h3>Test 4 — Migration manuelle à chaud d'une VM</h3>
 <ul>
@@ -434,7 +444,7 @@ end</code></pre>
 <li><b>Observé :</b> interruption inférieure à 15 secondes, même en virtualisation imbriquée (VMware Workstation, Windows Server, Ubuntu). Seul l'hôte de calcul change ; les fichiers de la VM restent sur le stockage partagé. <b>Verdict : Réussi.</b></li>
 <li><b>Intérêt :</b> déplacer une VM en production pour la maintenance préventive d'un hôte.</li>
 </ul>
-<div class="slot"><b>🎥 Vidéo à insérer — migration à chaud</b><span>Légende suggérée : « Ping continu vers 172.16.50.60 pendant le déplacement de la VM de l'hôte 2 vers l'hôte 1. »</span></div>
+
 
 <h3>Test 5 — Panne critique : extinction d'un hôte</h3>
 <ul>
@@ -443,8 +453,8 @@ end</code></pre>
 <li><b>Observé :</b> coupure temporaire de la VM ; l'hôte restant obtient la majorité des votes (lui-même et le témoin) puis relance la VM. Environ 5 minutes entre l'arrêt de l'hôte et le redémarrage de la VM. <b>Verdict : Réussi.</b></li>
 <li><b>Lecture du délai :</b> l'auteur attribue la durée à la virtualisation imbriquée, qui ajoute de la latence à toute l'infrastructure ; cette hypothèse n'a pas été isolée par une mesure comparative. Un délai d'environ une minute ou moins est attendu sur du matériel physique, mais il n'a pas été mesuré.</li>
 </ul>
-<div class="slot"><b>🎥 Vidéo à insérer — extinction d'un hôte du cluster</b><span>Légende suggérée : « Extinction de l'hôte qui exécute la VM ; perte du ping, bascule des votes, redémarrage de la VM sur l'autre hôte. » Indiquer l'heure de l'extinction et celle de la reprise du ping.</span></div>
-<div class="slot"><b>📸 Capture à insérer — état du cluster après la panne</b><span>Légende suggérée : « Un nœud hors ligne, VM en cours d'exécution sur l'hôte restant, témoin en ligne. »</span></div>
+
+
 
 <h3>Test 6 — Bascule SD-WAN</h3>
 <ul>
@@ -452,7 +462,7 @@ end</code></pre>
 <li><b>Attendu :</b> perte brève, reprise quasi immédiate ; retour automatique au lien préféré.</li>
 <li><b>Observé :</b> temps de timeout du ping noté sur l'hôte, puis reprise quasi instantanée ; dès que le lien revient, il reprend le rôle principal. <b>Verdict : Réussi.</b></li>
 </ul>
-<div class="slot"><b>🎥 Vidéo à insérer — coupure d'un ISP</b><span>Légende suggérée : « Ping vers l'extérieur pendant la coupure du lien préféré, bascule sur WAN2, retour sur le lien préféré. »</span></div>
+
 
 <h3>Test 7 — Défaillances cumulées</h3>
 <ul>
@@ -460,7 +470,7 @@ end</code></pre>
 <li><b>Attendu :</b> services toujours disponibles, les redondances fonctionnent de concert.</li>
 <li><b>Observé :</b> résultat à renseigner. <b>Verdict : Preuve à ajouter.</b></li>
 </ul>
-<div class="slot"><b>🎥 Vidéo à insérer — défaillances cumulées</b><span>Légende suggérée : « Un ISP et un L3 de distribution coupés ; pings continus vers l'extérieur et vers 172.16.50.x ; services restés disponibles. »</span></div>
+
 
 <h3>Synthèse des tests</h3>
 <table>
