@@ -93,6 +93,7 @@
 <h2 id="conception">2. Conception et justification des choix</h2>
 <h3>Architecture en trois tiers</h3>
 <p>La couche <b>accès</b> raccorde les postes et les serveurs, la couche <b>distribution</b> porte le routage inter-VLAN et la haute disponibilité des passerelles, la couche <b>cœur</b> (SW_EDGE) relie le campus au FortiGate. Chaque switch d'accès a deux liens montants, un vers chaque switch de distribution.</p>
+<figure class="project-figure"><img src="assets/TOPOLOGIE%20LAB%20ZABBIX%20GLPI.png" alt="Topologie GNS3 du laboratoire réseau et supervision"><figcaption>Topologie générale du laboratoire GNS3 : architecture réseau du campus et interconnexion des composants de l’infrastructure supervisée.</figcaption></figure>
 <h3>Plan de VLAN et d'adressage</h3>
 <table>
 <thead><tr><th>VLAN</th><th>Nom</th><th>Réseau</th><th>VIP HSRP</th><th>Actif (priorité 110)</th><th>Adressage des hôtes</th></tr></thead>
