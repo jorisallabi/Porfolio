@@ -330,3 +330,11 @@ footer{background:none}
  .method-step p{margin:0}
  .about-layout{grid-template-columns:1fr;gap:24px}
 }
+
+
+/* Galerie de preuves du laboratoire Zabbix */
+.article .evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:30px 0 42px}
+.article .evidence-grid figure{min-width:0;margin:0}
+.article .evidence-grid img{display:block;width:100%;height:auto;margin:0;border:1px solid var(--line-strong)}
+.article .evidence-grid figcaption{font:11px/1.65 var(--mono);letter-spacing:0;color:var(--muted);margin-top:10px}
+@media(max-width:680px){.article .evidence-grid{grid-template-columns:1fr;gap:22px}}
