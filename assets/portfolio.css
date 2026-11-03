@@ -338,3 +338,9 @@ footer{background:none}
 .article .evidence-grid img{display:block;width:100%;height:auto;margin:0;border:1px solid var(--line-strong)}
 .article .evidence-grid figcaption{font:11px/1.65 var(--mono);letter-spacing:0;color:var(--muted);margin-top:10px}
 @media(max-width:680px){.article .evidence-grid{grid-template-columns:1fr;gap:22px}}
+
+/* Preuves vidéo du laboratoire */
+.article .video-evidence{margin:24px 0 38px;max-width:900px}
+.article .video-frame{position:relative;width:100%;aspect-ratio:16/9;background:#080b0d;border:1px solid var(--line-strong)}
+.article .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.article .video-evidence p{font:11px/1.7 var(--mono);color:var(--muted);margin-top:10px}
